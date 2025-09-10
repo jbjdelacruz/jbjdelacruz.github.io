@@ -262,3 +262,12 @@
     }
   }
 }
+
+.author__urls.social-icons i {
+  color: #555;
+  transition: color 0.2s ease;
+}
+
+.author__urls.social-icons i:hover {
+  color: #007acc;
+}

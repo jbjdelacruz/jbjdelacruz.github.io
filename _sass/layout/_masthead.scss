@@ -65,3 +65,19 @@
     font-weight: 700;
   }
 }
+
+.masthead__brand {
+  display: inline-flex !important; /* force flexbox */
+  align-items: center;
+  text-decoration: none;
+}
+
+.masthead__logo {
+  max-height: 18px;
+  margin-right: 8px; /* fallback spacing */
+}
+
+.masthead__title {
+  font-weight: 600;
+  font-size: 1rem;
+}

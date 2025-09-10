@@ -27,5 +27,24 @@ layout: compress
 
     {% include scripts.html %}
 
+    <!-- Carousel Script -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      document.querySelectorAll(".carousel").forEach(carousel => {
+        let items = carousel.querySelectorAll(".carousel-item");
+        if (items.length === 0) return;
+
+        let index = 0;
+        items[index].classList.add("active");
+
+        setInterval(() => {
+          items[index].classList.remove("active");
+          index = (index + 1) % items.length;
+          items[index].classList.add("active");
+        }, 4000); // switch every 4s
+      });
+    });
+    </script>
+
   </body>
 </html>
