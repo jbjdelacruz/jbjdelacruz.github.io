@@ -42,6 +42,10 @@
   margin-bottom: 0.5rem;
 }
 
+.about-project-card a {
+  text-decoration: none;
+}
+
 .about-project-card h3 {
   text-align: center;
   font-size: 0.9rem;
@@ -107,13 +111,9 @@
 .see-all-projects a {
   font-size: 0.85rem;
   font-weight: 500;
-  color: #52adc8;
+  color: rgb(115, 115, 115);
   text-decoration: none;
   transition: color 0.2s ease;
-}
-
-.see-all-projects a:hover {
-  color: rgb(115, 115, 115);
 }
 
 /* ==========================================================================
@@ -207,4 +207,11 @@
   box-shadow: none !important;
   transform: none !important;
   transition: none !important;
+}
+
+.archive__item-title a {
+  font-size: 0.95rem;
+  color: rgb(115, 115, 115);
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
