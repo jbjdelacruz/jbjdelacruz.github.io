@@ -53,6 +53,10 @@
   color: rgb(115, 115, 115);
 }
 
+.about-project-card a:hover h3 {
+  text-decoration: underline;
+}
+
 /* ==========================================================================
    PORTFOLIO PAGE PROJECTS (LIST)
    ========================================================================== */
@@ -114,6 +118,10 @@
   color: rgb(115, 115, 115);
   text-decoration: none;
   transition: color 0.2s ease;
+}
+
+.see-all-projects a:hover {
+  text-decoration: underline;
 }
 
 /* ==========================================================================
@@ -214,4 +222,52 @@
   color: rgb(115, 115, 115);
   text-decoration: none;
   transition: color 0.2s ease;
+}
+
+.archive__item-title a:hover {
+  text-decoration: underline;
+}
+
+.page__date {
+  font-size: 0.8em;
+  color: #666;
+  font-style: normal;
+  margin: 0.5em 0;
+}
+
+.page__date i {
+  font-style: italic;
+}
+
+.resource-links a {
+  text-decoration: none; /* optional */
+}
+.resource-links a:hover {
+  text-decoration: underline; /* optional */
+}
+
+/* Sidebar icon colors for dark mode */
+html[data-theme="dark"] {
+  .sidebar .author__urls {
+    i, .fas, .fab, .far {
+      color: var(--sidebar-icon-color, #ffffff) !important;
+      
+      &:hover {
+        color: var(--sidebar-icon-color-hover, #88C7D9) !important;
+      }
+    }
+  }
+  
+  /* Target specific Font Awesome classes */
+  .sidebar {
+    .fa, .fas, .fab, .far, .fal, .fad {
+      color: var(--sidebar-icon-color, #ffffff) !important;
+    }
+    
+    a:hover {
+      .fa, .fas, .fab, .far, .fal, .fad {
+        color: var(--sidebar-icon-color-hover, #88C7D9) !important;
+      }
+    }
+  }
 }
