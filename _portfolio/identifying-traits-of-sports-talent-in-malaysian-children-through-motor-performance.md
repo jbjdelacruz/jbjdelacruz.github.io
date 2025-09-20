@@ -9,10 +9,13 @@ venue: 'DataCamp'
 categories:
   - R
 # slidesurl:
-paperurl: 'https://www.datacamp.com/datalab/w/7b91f332-e08a-41a0-9db4-a1c5c1ac5e28'
+images:
+  - '/files/identifying-traits-of-sports-talent-in-malaysian-children-through-motor-performance/page-1.png'
+link: 'https://www.datacamp.com/datalab/w/7b91f332-e08a-41a0-9db4-a1c5c1ac5e28'
+url: 'https://www.datacamp.com/datalab/w/7b91f332-e08a-41a0-9db4-a1c5c1ac5e28'
 thumbnail: "/images/projects/project3-cover.png"
 featured: false
 doc_type: 'Full Report'
 ---
 
-The contents above will be part of a list of publications, if the user clicks the link for the publication than the contents of section will be rendered as a full page, allowing you to provide more information about the paper for the reader. When publications are displayed as a single page, the contents of the above "citation" field will automatically be included below this section in a smaller font.
+This project—which earned first place in a [24-hour DataCamp challenge](https://www.datacamp.com/competitions/childrens-motor-performance?entry=7b91f332-e08a-41a0-9db4-a1c5c1ac5e28)—investigates how the Motor Performance Index (MPI), based on four essential motor skills (power, speed, flexibility, and coordination), relates to children’s attributes such as age, gender, weight, and height. Through multiple linear regression, it identifies the most significant predictors of motor performance, offering valuable insights for early sports talent identification.

@@ -17,8 +17,19 @@
   margin-right: 0;
 }
 
+.masthead__inner-wrap {
+  padding: 1em 1em;
+}
+
 /* ==========================================================================
-   ABOUT PAGE FEATURED PROJECTS (GRID)
+   HIDE PAGE TITLE
+   ========================================================================== */
+.page__title {
+  display: none;
+}
+
+/* ==========================================================================
+   HOME PAGE FEATURED PROJECTS (GRID)
    ========================================================================== */
 .about-projects {
   display: grid;
@@ -29,7 +40,6 @@
 
 .about-project-card {
   padding: 1rem;
-  background: #fff;
   transition: transform 0.2s ease;
 }
 
@@ -40,6 +50,7 @@
 .about-project-card img {
   width: 100%;
   margin-bottom: 0.5rem;
+  border-radius: 3px;
 }
 
 .about-project-card a {
@@ -50,63 +61,12 @@
   text-align: center;
   font-size: 0.9rem;
   margin: 0.5rem 0;
-  color: rgb(115, 115, 115);
 }
 
 .about-project-card a:hover h3 {
   text-decoration: underline;
 }
 
-/* ==========================================================================
-   PORTFOLIO PAGE PROJECTS (LIST)
-   ========================================================================== */
-.portfolio-projects {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.portfolio-project-card {
-  padding: 1rem;
-  width: 50%;
-  border-bottom: 1px solid #ddd;
-}
-
-.portfolio-project-card img {
-  display: block;
-  margin: 0 auto 0.5rem auto;
-  width: 50%;
-  height: auto;
-}
-
-.portfolio-project-card h3 {
-  text-align: center;
-  font-size: 0.85rem;
-  color: rgb(115, 115, 115);
-}
-
-/* ==========================================================================
-   PROJECT CATEGORIES
-   ========================================================================== */
-.project-categories {
-  margin-top: 0.5rem;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
-
-.project-categories .category {
-  background: #f5f5f5;
-  border-radius: 4px;
-  padding: 0.2rem 0.6rem;
-  font-size: 0.8rem;
-  color: #333;
-}
-
-/* ==========================================================================
-   SEE ALL PROJECTS LINK
-   ========================================================================== */
 .see-all-projects {
   text-align: center;
   margin-top: 1.5rem;
@@ -115,7 +75,6 @@
 .see-all-projects a {
   font-size: 0.85rem;
   font-weight: 500;
-  color: rgb(115, 115, 115);
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -125,101 +84,32 @@
 }
 
 /* ==========================================================================
-   PUBLICATION DATES
+   ARCHIVE ITEMS (LIST)
    ========================================================================== */
-.pub-dates {
-  font-size: 0.85em;
-  color: #555;
-  text-align: left;
-  margin-bottom: 0.75em;
-}
-
-.pub-dates .pub-date {
-  font-weight: 500;
-}
-
-.last-updated {
-  font-size: 0.85em;
-  color: #555;
-  font-style: italic;
-  margin-top: 0.25em;
-}
-
-.pub-dates .pub-separator {
-  margin: 0.25em 0;
-  border: 0;
-  border-top: 1px solid #ccc;
-}
-
-/* ==========================================================================
-   CAROUSEL
-   ========================================================================== */
-.carousel {
-  position: relative;
-  width: 50%;
-  max-width: 250px;
-  margin: 0 auto 1rem auto;
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.carousel-item img {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: contain;
-}
-
-.carousel-item.active {
-  display: block;
-}
-
-.carousel-controls {
-  text-align: center;
-  margin-top: 0.25rem;
-}
-
-.carousel-controls button {
-  background: #ddd;
-  border: none;
-  border-radius: 50%;
-  width: 10px;
-  height: 10px;
-  margin: 0 4px;
-  cursor: pointer;
-}
-
-.carousel-controls button.active {
-  background: #007acc;
-}
-
-/* ==========================================================================
-   ARCHIVE ITEMS
-   ========================================================================== */
-.archive__item-teaser img {
-  display: block;
-  margin: 0 auto;
-  width: 50%;
-  height: auto;
-}
+// .archive__item-teaser img {
+//   display: block;
+//   margin: 0 auto;
+//   width: 50%;
+//   height: auto;
+// }
 
 .archive__item {
-  padding-bottom: 1.5rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid #ddd;
-  text-align: center;
+  // box-shadow: none !important;
+  // transform: none !important;
+  // transition: none !important;
+  border-bottom: 1px solid var(--global-border-color);
+  padding-bottom: 0.8rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.archive__item,
-.archive__item * {
-  box-shadow: none !important;
-  transform: none !important;
-  transition: none !important;
+.archive__item:hover .carousel,
+.archive__item:hover .carousel-single {
+  transform: translateY(-4px);
 }
 
 .archive__item-title a {
-  font-size: 0.95rem;
-  color: rgb(115, 115, 115);
+  font-size: 1.1rem;
+  color: var(---global-text-color);
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -228,46 +118,137 @@
   text-decoration: underline;
 }
 
-.page__date {
+.pub-dates {
   font-size: 0.8em;
-  color: #666;
-  font-style: normal;
-  margin: 0.5em 0;
+  color: var(---global-text-color);
+  margin-top: 0.25em;
+  font-weight: 400;
 }
 
-.page__date i {
-  font-style: italic;
+.pub-dates .separator {
+  margin: 0.25em 0.5em;
+  border: 0;
 }
 
-.resource-links a {
-  text-decoration: none; /* optional */
-}
-.resource-links a:hover {
-  text-decoration: underline; /* optional */
+.archive__item p {
+  text-align: left;
+  margin-top: 0.5em;
+  color: var(---global-text-color);
 }
 
-/* Sidebar icon colors for dark mode */
-html[data-theme="dark"] {
-  .sidebar .author__urls {
-    i, .fas, .fab, .far {
-      color: var(--sidebar-icon-color, #ffffff) !important;
-      
-      &:hover {
-        color: var(--sidebar-icon-color-hover, #88C7D9) !important;
-      }
-    }
-  }
-  
-  /* Target specific Font Awesome classes */
-  .sidebar {
-    .fa, .fas, .fab, .far, .fal, .fad {
-      color: var(--sidebar-icon-color, #ffffff) !important;
-    }
-    
-    a:hover {
-      .fa, .fas, .fab, .far, .fal, .fad {
-        color: var(--sidebar-icon-color-hover, #88C7D9) !important;
-      }
-    }
-  }
+/* ==========================================================================
+   CAROUSEL
+   ========================================================================== */
+.carousel,
+.carousel-single {
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  border-radius: 6px;
+  transition: transform 0.2s ease;
+}
+
+.carousel__track {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.carousel__slide {
+  display: none;
+  position: relative;
+  width: 100%;
+}
+
+.carousel-single,
+.carousel__slide {
+  padding-top: 2.5rem;
+}
+
+.carousel__slide img,
+.carousel-single img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 6px;
+}
+
+.carousel__indicators {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.carousel__indicators label {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ccc;
+  margin: 0 3px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+/* ==========================================================================
+   TABLEAU EMBED
+   ========================================================================== */
+
+.tableau-container {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  padding-top: 2rem;
+  max-width: 600px;
+  width: 100%;
+}
+
+.tableauPlaceholder {
+  position: relative;
+  width: 100%;
+  padding-top: 78%;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.tableauPlaceholder object,
+.tableauPlaceholder iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ==========================================================================
+   CV PAGE
+   ========================================================================== */
+.cv-item-detail {
+  margin-top: 0.25rem;
+}
+
+.cv-item-subtitle {
+  margin-top: 0.10rem;
+}
+
+.cv-item {
+  margin-bottom: 1.0rem;
+}
+
+/* ==========================================================================
+   DATACAMP ICON
+   ========================================================================== */
+.fa-datacamp {
+  -webkit-mask: url("/assets/icons/datacamp.svg") no-repeat center;
+  -webkit-mask-size: contain;
+  mask: url("/assets/icons/datacamp.svg") no-repeat center;
+  mask-size: contain;
+
+  display: inline-block;
+  width: 1.25em;
+  height: 1.15em;
+  background-color: var(--global-sidebar-icon-color);
+  vertical-align: middle;
+  margin-left: -0.10em;
 }

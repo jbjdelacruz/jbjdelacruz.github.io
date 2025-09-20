@@ -18,95 +18,54 @@ layout: default
   {% include sidebar.html %}
 
   <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
-    
-    {% if page.title %}
-      <meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">
-    {% endif %}
-    {% if page.excerpt %}
-      <meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">
-    {% endif %}
-    {% if page.date %}
-      <meta itemprop="datePublished" content="{{ page.date | date: "%B %d, %Y" }}">
-    {% endif %}
-    {% if page.modified %}
-      <meta itemprop="dateModified" content="{{ page.modified | date: "%B %d, %Y" }}">
-    {% endif %}
+    {% if page.title %}<meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+    {% if page.excerpt %}<meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+    {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date: "%B %d, %Y" }}">{% endif %}
+    {% if page.modified %}<meta itemprop="dateModified" content="{{ page.modified | date: "%B %d, %Y" }}">{% endif %}
 
     <div class="page__inner-wrap">
       {% unless page.header.overlay_color or page.header.overlay_image %}
-
         <header>
-          {% if page.title %}
-            <h1 class="page__title" itemprop="headline">
-              {{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}
-            </h1>
+          {% if page.title %}<h1 class="page__title" itemprop="headline">{{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}</h1>{% endif %}
+          {% if page.read_time %}
+            <p class="page__meta"><i class="fa fa-clock" aria-hidden="true"></i> {% include read-time.html %}</p>
           {% endif %}
-
-          <div class="pub-dates">
-            {% if page.date %}
-              <div class="pub-date">
-                {{ page.date | default: "1900-01-01" | date: "%B %d, %Y" }}
-              </div>
-            {% endif %}
-
-            <hr class="pub-separator">
-
-            {% if page.last_updated %}
-              <div class="last-updated">
-                Last Updated on {{ page.last_updated | date: "%b %d, %Y" }}
-              </div>
-            {% endif %}
-          </div>
+        {% if page.modified %}
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_label | default: "Published:" }}</strong> <time datetime="{{ page.modified | date: "%Y-%m-%d" }}">{{ page.modified | date: "%B %d, %Y" }}</time></p>
+        {% endif %}
         </header>
-
       {% endunless %}
 
       <section class="page__content" itemprop="text">
         {{ content }}
 
-        {% if page.citation or page.paperurl or page.slidesurl or page.bibtexurl %}
-          <p class="resource-links" style="font-size: smaller">
-            {% if page.citation %}
-              Recommended citation: {{ page.citation }}<br />
-            {% endif %}
-
-            {% assign links = "" %}
-
-            {% if page.paperurl %}
-              {% assign label = page.doc_type | default: "Paper" %}
-              {% assign links = links | append: '<a href="' | append: page.paperurl | append: '">Read ' | append: label | append: '</a>' %}
-            {% endif %}
-
-            {% if page.slidesurl %}
-              {% if links != "" %}
-                {% assign links = links | append: ' | ' %}
-              {% endif %}
-              {% assign links = links | append: '<a href="' | append: page.slidesurl | append: '">Download Slides</a>' %}
-            {% endif %}
-
-            {% if page.bibtexurl %}
-              {% if links != "" %}
-                {% assign links = links | append: ' | ' %}
-              {% endif %}
-              {% assign links = links | append: '<a href="' | append: page.bibtexurl | append: '">Download Bibtex</a>' %}
-            {% endif %}
-
-            {{ links }}
-          </p>
-        
-          {% if page.dashboard_embed %}
-            <h2>Dashboard</h2>
-            {{ page.dashboard_embed }}
-          {% endif %}
+        {% if page.citation and page.paperurl and page.slidesurl and page.bibtexurl %}
+          <p style="font-size: smaller">Recommended citation: {{ page.citation }}<br /><a href="{{ page.paperurl }}">Download Paper</a> | <a href="{{ page.slidesurl }}">Download Slides</a> | <a href="{{ page.bibtexurl }}">Download Bibtex</a></p>
+        {% elsif page.citation and page.paperurl and page.slidesurl %}
+          <p style="font-size: smaller">Recommended citation: {{ page.citation }}<br /><a href="{{ page.paperurl }}">Download Paper</a> | <a href="{{ page.slidesurl }}">Download Slides</a></p>
+        {% elsif page.citation and page.paperurl and page.bibtexurl %}
+          <p style="font-size: smaller">Recommended citation: {{ page.citation }}<br /><a href="{{ page.paperurl }}">Download Paper</a> | <a href="{{ page.bibtexurl }}">Download Bibtex</a></p>
+        {% elsif page.citation and page.paperurl %}
+          <p style="font-size: smaller">Recommended citation: {{ page.citation }}<br /><a href="{{ page.paperurl }}">Download Paper</a></p>
+        {% elsif page.citation and page.slidesurl and page.bibtexurl %}
+          <p style="font-size: smaller">Recommended citation: {{ page.citation }}<br /><a href="{{ page.slidesurl }}">Download Slides</a> | <a href="{{ page.bibtexurl }}">Download Bibtex</a></p>
+        {% elsif page.citation and page.slidesurl %}
+          <p style="font-size: smaller">Recommended citation: {{ page.citation }}<br /><a href="{{ page.slidesurl }}">Download Slides</a></p>
+        {% elsif page.slidesurl and page.bibtexurl %}
+          <p style="font-size: smaller"><a href="{{ page.slidesurl }}">Download Slides</a> | <a href="{{ page.bibtexurl }}">Download Bibtex</a></p>
+        {% elsif page.paperurl and page.bibtexurl %}
+          <p style="font-size: smaller"><a href="{{ page.paperurl }}">Download Paper</a> | <a href="{{ page.bibtexurl }}">Download Bibtex</a></p>
+        {% elsif page.citation and page.bibtexurl %}
+          <p style="font-size: smaller">Recommended citation: {{ page.citation }}<br /><a href="{{ page.bibtexurl }}">Download Bibtex</a></p>
+        {% elsif page.citation %}
+          <p style="font-size: smaller">Recommended citation: {{ page.citation }}</p>
+        {% elsif page.slidesurl %}
+          <p style="font-size: smaller"><a href="{{ page.slidesurl }}">Download Slides</a></p>
+        {% elsif page.bibtexurl %}
+          <p style="font-size: smaller"><a href="{{ page.bibtexurl }}">Download Bibtex</a></p>
         {% endif %}
 
-        {% if page.link %}
-          <div>
-            <a href="{{ page.link }}" class="btn">
-              {{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}
-            </a>
-          </div>
-        {% endif %}
+        {% if page.link %}<div><a href="{{ page.link }}" class="btn">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
       </section>
 
       <footer class="page__meta">
@@ -116,9 +75,7 @@ layout: default
         {% include page__taxonomy.html %}
       </footer>
 
-      {% if page.share %}
-        {% include social-share.html %}
-      {% endif %}
+      {% if page.share %}{% include social-share.html %}{% endif %}
 
       {% include post_pagination.html %}
     </div>
@@ -128,16 +85,11 @@ layout: default
     {% endif %}
   </article>
 
-  {% comment %}
-    <!-- only show related on a post page when not disabled -->
-  {% endcomment %}
-  
+  {% comment %}<!-- only show related on a post page when not disabled -->{% endcomment %}
   {% if page.id and page.related and site.related_posts.size > 0 %}
     <div class="page__related">
       {% if site.data.ui-text[site.locale].related_label %}
-        <h4 class="page__related-title">
-          {{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}
-        </h4>
+        <h4 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h4>
       {% endif %}
       <div class="grid__wrapper">
         {% for post in site.related_posts limit:4 %}

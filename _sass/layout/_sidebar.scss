@@ -264,10 +264,6 @@
 }
 
 .author__urls.social-icons i {
-  color: #555;
+  color: var(--global-sidebar-icon-color);
   transition: color 0.2s ease;
-}
-
-.author__urls.social-icons i:hover {
-  color: #007acc;
 }

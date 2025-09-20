@@ -2,17 +2,21 @@
 title: "Student Satisfaction and Academic Performance in Remote Learning"
 collection: portfolio
 permalink: /portfolio/student-satisfaction-and-academic-performance-in-remote-learning
-# excerpt: 'This paper is about the number 2. The number 3 is left for future work.'
+# excerpt: 'This report examines student experiences with remote learning using survey scale data from University of the Philippines students collected more than a year after the onset of the COVID-19 pandemic. It explores the demographics of the respondents, summarizes the overall and item-level ratings related to satisfaction with remote learning and academic performance, and analyzes the correlations between these two scales at both the overall and item levels.'
 date: 2025-08-04
 last_updated: 2025-08-10
 venue: 'Kaggle'
 categories:
   - R
 # slidesurl: 
-paperurl: 'https://www.kaggle.com/code/jondelacruz/student-satisfaction-and-academic-performance'
+images:
+  - '/files/student-satisfaction-and-academic-performance-in-remote-learning/images/page-1.png'
+link: 'https://www.kaggle.com/code/jondelacruz/student-satisfaction-and-academic-performance'
+url: 'https://www.kaggle.com/code/jondelacruz/student-satisfaction-and-academic-performance'
 thumbnail: "/images/projects/project1-cover.png"
 featured: false
 doc_type: 'Full Report'
+  
 ---
 
-The contents above will be part of a list of publications, if the user clicks the link for the publication than the contents of section will be rendered as a full page, allowing you to provide more information about the paper for the reader. When publications are displayed as a single page, the contents of the above "citation" field will automatically be included below this section in a smaller font.
+This report analyzes the remote learning experiences of University of the Philippines students using survey-scale data collected more than a year after the onset of the COVID-19 pandemic. It examines respondent demographics, summarizes both overall and item-level ratings of satisfaction and academic performance, and investigates correlations between the two scales. The findings highlight patterns that can inform strategies for enhancing online instruction.

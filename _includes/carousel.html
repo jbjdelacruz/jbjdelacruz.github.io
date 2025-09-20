@@ -1,0 +1,103 @@
+{% comment %}
+Carousel include
+Usage:
+  {% include carousel.html images=post.images id="optional-id" %}
+`images` can be:
+  - a string → plain image
+  - an object with `image` and optional `link`
+If `id` is not provided, a unique one is generated automatically.
+{% endcomment %}
+
+{% assign image_count = include.images | size %}
+
+{% if image_count == 1 %}
+  <!-- Just show a static image -->
+  {% assign item = include.images[0] %}
+  {% assign src = item.image | default: item %}
+  {% assign href = item.link %}
+  <div class="carousel-single">
+    {% if href %}
+      <a href="{{ href }}" target="_blank" rel="noopener">
+        <img src="{{ src | relative_url }}" alt="single image">
+      </a>
+    {% else %}
+      <img src="{{ src | relative_url }}" alt="single image">
+    {% endif %}
+  </div>
+{% else %}
+  {% if include.id %}
+    {% assign carousel_id = include.id %}
+  {% else %}
+    {% capture ts %}{{ "now" | date: "%s%N" }}{% endcapture %}
+    {% assign carousel_id = "carousel-" | append: ts %}
+  {% endif %}
+
+  <div class="carousel" id="{{ carousel_id }}">
+    {% assign images = include.images %}
+    {% for item in images %}
+      <input 
+        type="radio" 
+        name="{{ carousel_id }}-radio" 
+        id="{{ carousel_id }}-{{ forloop.index }}" 
+        {% if forloop.first %}checked{% endif %} 
+        style="display:none;" 
+      />
+    {% endfor %}
+
+    <div class="carousel__track">
+      {% for item in images %}
+        {% assign src = item.image | default: item %}
+        {% assign href = item.link %}
+        <div class="carousel__slide">
+          {% if href %}
+            <a href="{{ href }}" target="_blank" rel="noopener">
+              <img src="{{ src | relative_url }}" alt="carousel image {{ forloop.index }}">
+            </a>
+          {% else %}
+            <img src="{{ src | relative_url }}" alt="carousel image {{ forloop.index }}">
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="carousel__indicators">
+      {% for item in images %}
+        <label for="{{ carousel_id }}-{{ forloop.index }}"></label>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Scoped dynamic styles -->
+  <style>
+  #{{ carousel_id }} {
+    {% for item in include.images %}
+      #{{ carousel_id }}-{{ forloop.index }}:checked 
+      ~ .carousel__track .carousel__slide:nth-of-type({{ forloop.index }}) {
+        display: block;
+      }
+      #{{ carousel_id }}-{{ forloop.index }}:checked 
+      ~ .carousel__indicators label:nth-of-type({{ forloop.index }}) {
+        background: #333;
+      }
+    {% endfor %}
+  }
+  </style>
+
+  <!-- Scoped auto-rotate script -->
+  <script>
+  (function() {
+    const carousel = document.getElementById("{{ carousel_id }}");
+    if (!carousel) return;
+
+    const radios = carousel.querySelectorAll("input[type=radio]");
+    if (radios.length <= 1) return;
+
+    let index = 0;
+    setInterval(() => {
+      radios[index].checked = false; 
+      index = (index + 1) % radios.length;
+      radios[index].checked = true;
+    }, 5000);
+  })();
+  </script>
+{% endif %}

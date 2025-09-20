@@ -43,7 +43,7 @@ html[data-theme="dark"] {
     --global-code-background-color      : #fafafa;
     --global-code-text-color            : #{$darker-gray};
     --global-fig-caption-color          : #{$light-gray};
-    --global-link-color                 : #{$link};
+    --global-link-color                 : #{$text};
     --global-link-color-hover           : #{$link-dark};
     --global-link-color-visited         : #{$link-light};
     --global-masthead-link-color        : #{$text};
@@ -51,5 +51,5 @@ html[data-theme="dark"] {
     --global-text-color                 : #{$text};
     --global-text-color-light           : #f3f3f3;
     --global-thead-color                : #{$background-lighter};
-    --global-sidebar-icon-color         : #ffffff;  
+    --global-sidebar-icon-color         : #{$text};
 }

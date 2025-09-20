@@ -67,14 +67,15 @@
 }
 
 .masthead__brand {
-  display: inline-flex !important; /* force flexbox */
+  display: inline-flex !important;
   align-items: center;
   text-decoration: none;
 }
 
 .masthead__logo {
-  max-height: 18px;
-  margin-right: 8px; /* fallback spacing */
+  max-height: 17px;
+  margin-right: 8px;
+  margin-bottom: 1px;
 }
 
 .masthead__title {

@@ -10,27 +10,28 @@
 locale                   : "en-US"
 site_theme               : "default" # Currently available options are "default", "air"
 title                    : "The Data Setlist"
-logo                     : "logo.png"
 title_separator          : "-"
 name                     : &name "Jon Bon Jovi Dela Cruz"
-description              : &description "personal description"
-url                      : https://jbjdelacruz.github.io # the base hostname & protocol for your site e.g. "https://[your GitHub username].github.io" or if you already have some other page hosted on Github then use "https://[your GitHub username].github.io/[Your Repo Name]"
+description              : &description "Jon Bon Jovi Dela Cruz's academic portfolio"   # Update this with a general description of your site, this is the default if not overridden by a page
+url                      : https://jbjdelacruz.github.io # The base hostname & protocol for your site e.g. "https://[your GitHub username].github.io",
+                                                           # or if you already have some other page hosted on Github then use "https://[your GitHub username].github.io/[Your Repo Name]"
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
 repository               : "jbjdelacruz/jbjdelacruz.github.io"
+logo                     : "/images/logo.png"
 
 # Site Author - The following control what appear as part of the author content on the side bar.
 #               If a field is blank the icon and link will not appear, otherwise it will be shown.
 #               Additional customization can be done by editing /_includes/author-profile.html
 author:
   # Biographic information
-  avatar           : "profile.jpg"
-  name             : "Jon Bon Jovi Dela Cruz" # Your name
+  avatar           : "profile.png"
+  name             : "Jon Bon Jovi Dela Cruz"
   pronouns         : # example: "she/her"  
-  bio              : "Statistics | Data Science"
-  location         : "Metro Manila, Philippines"
-  employer         : # example: "Red Brick University"
+  bio              : "Statistician | Data Analyst"
+  location         : "Quezon City, PH"
+  employer         : # "Red Brick University"
   uri              : # URL
-  email            : "jbjdelacruz@gmail.com" 
+  email            : "jbjdelacruz@gmail.com"
 
   # Academic websites
   academia         : # URL
@@ -48,13 +49,14 @@ author:
   bitbucket        : # Username - Update with your username on the site
   codepen          : # Username
   dribbble         : # Username
+  datacamp         : "jondelacruz"
   github           : "jbjdelacruz"
-  kaggle           : "jondelacruz"  
+  kaggle           : "jondelacruz"
   stackoverflow    : # User number or user number and name (i.e., use "1" or "1/jeff-atwood")    
 
   # Social media
-  artstation       : # Username
-  bluesky          : # "bsky.app" # Replace this with you Bluesky username
+  artstation       : # Username - Replace this with your username
+  bluesky          : # Username 
   facebook         : # Username
   flickr           : # Username
   foursquare       : # Username
