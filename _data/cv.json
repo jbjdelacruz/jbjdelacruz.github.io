@@ -45,7 +45,7 @@
       "endDate": "2023",
       "gpa": null,
       "distinction": "cum laude",   
-      "courses": ["Probability Theory", "Statistical Inference", "EDA", "Multivariate Analysis", "Survey Methods", "Statistical Computing"]
+      "courses": ["Probability Theory", "Statistical Inference", "Exploratory Data Analysis", "Multivariate Analysis", "Survey Methods", "Statistical Computing"]
     }
   ],
   "skills": [

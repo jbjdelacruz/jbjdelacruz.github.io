@@ -18,7 +18,7 @@
 }
 
 .masthead__inner-wrap {
-  padding: 1em 1em;
+  padding: 1em;
 }
 
 /* ==========================================================================
@@ -41,99 +41,89 @@
 .about-project-card {
   padding: 1rem;
   transition: transform 0.2s ease;
-}
 
-.about-project-card:hover {
-  transform: translateY(-4px);
-}
+  &:hover {
+    transform: translateY(-4px);
+  }
 
-.about-project-card img {
-  width: 100%;
-  margin-bottom: 0.5rem;
-  border-radius: 3px;
-}
+  img {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    border-radius: 3px;
+  }
 
-.about-project-card a {
-  text-decoration: none;
-}
+  a {
+    text-decoration: none;
 
-.about-project-card h3 {
-  text-align: center;
-  font-size: 0.9rem;
-  margin: 0.5rem 0;
-}
+    &:hover h3 {
+      text-decoration: underline;
+    }
+  }
 
-.about-project-card a:hover h3 {
-  text-decoration: underline;
+  h3 {
+    text-align: center;
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+  }
 }
 
 .see-all-projects {
   text-align: center;
   margin-top: 1.5rem;
-}
 
-.see-all-projects a {
-  font-size: 0.85rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
+  a {
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
 
-.see-all-projects a:hover {
-  text-decoration: underline;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 /* ==========================================================================
    ARCHIVE ITEMS (LIST)
    ========================================================================== */
-// .archive__item-teaser img {
-//   display: block;
-//   margin: 0 auto;
-//   width: 50%;
-//   height: auto;
-// }
-
 .archive__item {
-  // box-shadow: none !important;
-  // transform: none !important;
-  // transition: none !important;
   border-bottom: 1px solid var(--global-border-color);
   padding-bottom: 0.8rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
 
-.archive__item:hover .carousel,
-.archive__item:hover .carousel-single {
-  transform: translateY(-4px);
+  &:hover .carousel,
+  &:hover .carousel-single {
+    transform: translateY(-4px);
+  }
 }
 
 .archive__item-title a {
   font-size: 1.1rem;
-  color: var(---global-text-color);
+  color: var(--global-text-color);
   text-decoration: none;
   transition: color 0.2s ease;
-}
 
-.archive__item-title a:hover {
-  text-decoration: underline;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .pub-dates {
   font-size: 0.8em;
-  color: var(---global-text-color);
+  color: var(--global-text-color);
   margin-top: 0.25em;
   font-weight: 400;
-}
 
-.pub-dates .separator {
-  margin: 0.25em 0.5em;
-  border: 0;
+  .separator {
+    margin: 0.25em 0.5em;
+    border: 0;
+  }
 }
 
 .archive__item p {
   text-align: left;
   margin-top: 0.5em;
-  color: var(---global-text-color);
+  color: var(--global-text-color);
 }
 
 /* ==========================================================================
@@ -158,43 +148,50 @@
   display: none;
   position: relative;
   width: 100%;
-}
-
-.carousel-single,
-.carousel__slide {
   padding-top: 2.5rem;
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 6px;
+  }
 }
 
-.carousel__slide img,
-.carousel-single img {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: contain;
-  object-position: center;
-  border-radius: 6px;
+.carousel-single {
+  padding-top: 2.5rem;
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 6px;
+  }
 }
 
 .carousel__indicators {
   text-align: center;
   margin-top: 10px;
-}
 
-.carousel__indicators label {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #ccc;
-  margin: 0 3px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  label {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ccc;
+    margin: 0 3px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
 }
 
 /* ==========================================================================
    TABLEAU EMBED
    ========================================================================== */
-
 .tableau-container {
   display: flex;
   justify-content: center;
@@ -207,33 +204,33 @@
 .tableauPlaceholder {
   position: relative;
   width: 100%;
-  padding-top: 78%;
+  padding-top: 78%; /* maintain aspect ratio */
   overflow: hidden;
   border-radius: 6px;
-}
 
-.tableauPlaceholder object,
-.tableauPlaceholder iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100% !important;
-  height: 100% !important;
+  object,
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+  }
 }
 
 /* ==========================================================================
    CV PAGE
    ========================================================================== */
-.cv-item-detail {
-  margin-top: 0.25rem;
-}
-
-.cv-item-subtitle {
-  margin-top: 0.10rem;
-}
-
 .cv-item {
-  margin-bottom: 1.0rem;
+  margin-bottom: 1rem;
+
+  &-detail {
+    margin-top: 0.25rem;
+  }
+
+  &-subtitle {
+    margin-top: 0.1rem;
+  }
 }
 
 /* ==========================================================================
@@ -246,9 +243,52 @@
   mask-size: contain;
 
   display: inline-block;
-  width: 1.25em;
+  width: 1.3em;
   height: 1.15em;
   background-color: var(--global-sidebar-icon-color);
   vertical-align: middle;
-  margin-left: -0.10em;
+  margin-left: -0.1em;
+}
+
+/* ==========================================================================
+   CV SKILLS
+   ========================================================================== */
+.cv-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1rem;
+  margin-left: 2rem;
+}
+
+.cv-skill {
+
+  &-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.5em;
+  }
+
+  &-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  &-badge {
+    background: var(--global-border-color, #f2f3f3);
+    border: 1px solid var(--global-dark-border-color, #bdc1c4);
+    border-radius: 20px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.85em;
+    font-weight: 500;
+    color: var(--global-text-color, #494e52);
+    white-space: nowrap;
+    transition: background 0.2s ease;
+
+    // &:hover {
+    //   background: var(--global-link-color-hover, #2f7f93);
+    //   color: #fff;
+    // }
+  }
 }

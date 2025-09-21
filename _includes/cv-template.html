@@ -102,7 +102,7 @@
   {% if cv.work.size > 0 %}
   <!-- Work Experience -->
   <div class="cv-section">
-    <h2>Work Experience</h2>
+    <h2>Experience</h2>
     <ul class="cv-list">
       {% for work in cv.work %}
       <li class="cv-item">
@@ -131,7 +131,7 @@
   {% if cv.affiliation.size > 0 %}
   <!-- Affiliation -->
   <div class="cv-section">
-    <h2>Leadership & Affiliation</h2>
+    <h2>Affiliation</h2>
     <ul class="cv-list">
       {% for affiliation in cv.affiliation %}
       <li class="cv-item">
@@ -154,31 +154,27 @@
   </div>
   {% endif %}
 
-  {% if cv.skills.size > 0 %}
-  <!-- Skills -->
-  <div class="cv-section">
-    <h2>Technical Skills</h2>
-    <ul class="cv-list">
-      {% for skill in cv.skills %}
-      <li class="cv-item">
-        <div class="cv-item-header">
-          <div class="cv-item-title">{{ skill.name }}</div>
-        </div>
-        <div class="cv-item-content">
-          {% if skill.keywords and skill.keywords.size > 0 %}
-          <ul class="cv-highlights">
-            {% for keyword in skill.keywords %}
-            <li>{{ keyword }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-        </div>
-      </li>
-      {% endfor %}
-    </ul>
+{% if cv.skills.size > 0 %}
+<!-- Skills -->
+<div class="cv-section">
+  <h2>Technical Skills</h2>
+  <div class="cv-skills-grid">
+    {% for skill in cv.skills %}
+    <div class="cv-skill">
+      <h3 class="cv-skill-title">{{ skill.name }}</h3>
+      {% if skill.keywords and skill.keywords.size > 0 %}
+      <div class="cv-skill-badges">
+        {% for keyword in skill.keywords %}
+        <span class="cv-skill-badge">{{ keyword }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
   </div>
-  {% endif %}
-  
+</div>
+{% endif %}
+
   {% if cv.publications.size > 0 %}
   <!-- Publications -->
   <div class="cv-section">
