@@ -2,7 +2,6 @@
 title: "Manhattan's Urban Forestry Report, 2015"
 collection: portfolio
 permalink: /portfolio/manhattans-urban-forestry-report-2015
-excerpt: 'This analysis of census data on more than 60,000 street trees across Manhattan won first place in [Which Tree Species Should the City Plant?](https://www.datacamp.com/competitions/city-tree-species?entry=ba331d65-5607-4c69-adb4-406663585edc) competition. It evaluates spatial distribution, biological characteristics, and biodiversity while ranking species by median trunk diameter and health index, presenting evidence-based recommendations for future tree planting.'
 date: 2023-01-01
 last_updated: 2025-07-30
 venue: 'DataCamp'
@@ -18,10 +17,10 @@ images:
   - '/files/manhattans-urban-forestry-report-2015/images/page-5.png'
   - '/files/manhattans-urban-forestry-report-2015/images/page-6.png'
   - image: '/files/manhattans-urban-forestry-report-2015/images/page-7.png'
-    link:  'https://public.tableau.com/app/profile/jbjdelacruz/viz/NYCURBANPLANNINGFORESTRYREPORT2015/Dashboard'
+    link: 'https://public.tableau.com/app/profile/jbjdelacruz/viz/NYCURBANPLANNINGFORESTRYREPORT2015/Dashboard'
   - '/files/manhattans-urban-forestry-report-2015/images/page-8.png'
   - image: '/files/manhattans-urban-forestry-report-2015/images/page-9.png'
-    link:  'https://www.datacamp.com/competitions/city-tree-species?entry=ba331d65-5607-4c69-adb4-406663585edc'
+    link: 'https://www.datacamp.com/competitions/city-tree-species?entry=ba331d65-5607-4c69-adb4-406663585edc'
 link: 'https://www.datacamp.com/datalab/w/ba331d65-5607-4c69-adb4-406663585edc'
 url: 'https://www.datacamp.com/datalab/w/ba331d65-5607-4c69-adb4-406663585edc'
 thumbnail: '/images/projects/project4-cover.png'
@@ -34,8 +33,9 @@ doc_type: 'Full Report'
 #   name: "NYCURBANPLANNINGFORESTRYREPORT2015/Dashboard"
 #   width: 600
 #   height: 337.5
-
 ---
+
+This analysis of census data on more than 60,000 street trees across Manhattan won first place in [Which Tree Species Should the City Plant?](https://www.datacamp.com/competitions/city-tree-species?entry=ba331d65-5607-4c69-adb4-406663585edc) competition. It evaluates spatial distribution, biological characteristics, and biodiversity while ranking species by median trunk diameter and health index, presenting evidence-based recommendations for future tree planting.
 
 <!-- # Manhattan's Urban Forestry Report, 2015
 

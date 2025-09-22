@@ -11,7 +11,7 @@ redirect_from:
 
 <hr>
 
-Just as a composer’s setlist is a carefully crafted arrangement of musical works that shapes a performance or album, *The Data Setlist*—a curated collection of projects—showcases my problem-solving, creativity, and storytelling with data.
+Just as a composer’s setlist is a carefully crafted arrangement of musical works that shapes a performance or album, *The Data Setlist* is a curated collection of projects that showcases my problem-solving, creativity, and storytelling with data.
 
 Welcome! I’m a Statistics graduate from the University of the Philippines and a freelance Statistical Consultant specializing in research design and data analysis.
 

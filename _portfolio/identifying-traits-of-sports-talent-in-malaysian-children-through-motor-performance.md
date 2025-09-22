@@ -1,19 +1,20 @@
 ---
-title: "Identifying Traits of Sports Talent in Malaysian Children Through Motor Performance"
+title: 'Identifying Traits of Sports Talent in Malaysian Children Through Motor Performance'
 collection: portfolio
 permalink: /portfolio/identifying-traits-of-sports-talent-in-malaysian-children-through-motor-performance
-# excerpt:
 date: 2022-12-18
 last_updated: 2024-11-01
 venue: 'DataCamp'
 categories:
   - R
-# slidesurl:
+slidesurl: []
 images:
-  - '/files/identifying-traits-of-sports-talent-in-malaysian-children-through-motor-performance/page-1.png'
+  - '/files/identifying-traits-of-sports-talent-in-malaysian-children-through-motor-performance/images/page-1.png'
+  - image: '/files/identifying-traits-of-sports-talent-in-malaysian-children-through-motor-performance/images/page-2.png'
+    link:  'https://www.datacamp.com/competitions/why-hair-loss?entry=05f354fb-dd89-4631-a682-00499eab8fb2'
 link: 'https://www.datacamp.com/datalab/w/7b91f332-e08a-41a0-9db4-a1c5c1ac5e28'
 url: 'https://www.datacamp.com/datalab/w/7b91f332-e08a-41a0-9db4-a1c5c1ac5e28'
-thumbnail: "/images/projects/project3-cover.png"
+thumbnail: '/images/projects/project3-cover.png'
 featured: false
 doc_type: 'Full Report'
 ---
