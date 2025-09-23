@@ -24,7 +24,10 @@
       "startDate": "2024",
       "endDate": "Present",
       "summary": "",
-      "highlights": ["Highlight 1", "Highlight 2", "Highlight 3", "Highlight 4"]
+      "highlights": [
+        "Advised on research design for academic projects",
+        "Provided technical guidance on data analysis, interpretation, and presentation"
+      ]
     },
         {
       "company": ", Glimpse",
@@ -33,7 +36,12 @@
       "startDate": "2023",
       "endDate": "2024",
       "summary": "",
-      "highlights": ["Highlight 1", "Highlight 2", "Highlight 3", "Highlight 4"]
+      "highlights": [
+        "Created KPI reports that informed product life cycle strategies", 
+        "Executed keyword research and content creation for blogs, landing pages, and newsletters", 
+        "Prepared and maintained datasets for QA testing and marketing campaigns", 
+        "Monitored billing operations and delivered customer support"
+      ]
     }
   ],
   "education": [
@@ -45,25 +53,43 @@
       "endDate": "2023",
       "gpa": null,
       "distinction": "cum laude",   
-      "courses": ["Probability Theory", "Statistical Inference", "Exploratory Data Analysis", "Multivariate Analysis", "Survey Methods", "Statistical Computing"]
+      "courses": [
+        "Probability Theory", 
+        "Statistical Inference", 
+        "Exploratory Data Analysis", 
+        "Multivariate Analysis", 
+        "Survey Methods", 
+        "Statistical Computing"
+      ]
     }
   ],
   "skills": [
     {
-      "name": "Programming Languages",
+      "name": "Programming",
       "keywords": [
         "R",
+        "Python",
         "PostgreSQL",
         "SAS"
       ]
     },
     {
-      "name": "Data Analysis & BI",
-      "keywords": ["Microsoft Excel", "Google Sheets", "SPSS", "Tableau", "PowerBI"]
+      "name": "Analytics & BI",
+      "keywords": [
+        "Excel", 
+        "Google Sheets", 
+        "Tableau", 
+        "Power BI",
+        "SPSS"
+      ]
     },
     {
-      "name": "Software Suites",
-      "keywords": ["Microsoft 365", "Google Workspace", "Adobe Creative Cloud", "Canva Visual Suite"]
+      "name": "Productivity & Design",
+      "keywords": [
+        "Microsoft 365", 
+        "Google Workspace", 
+        "Adobe Creative Cloud"
+      ]
     }
   ],
   "languages": [],
@@ -75,7 +101,10 @@
       "startDate": "2019",
       "endDate": "2023",
       "summary": "",
-      "highlights": ["Vice Chairperson, Accounts & Portals", "Co-Director, LIMITLESS 2019"]
+      "highlights": [
+        "Vice Chairperson, Communication Committee (Website & Account Portals)", 
+        "Co-Director, Publicity & Promotions – LIMITLESS: National Youth Summit on Statistics 2019"
+      ]
     }
   ]
 }

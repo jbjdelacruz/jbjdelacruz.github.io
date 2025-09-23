@@ -128,36 +128,10 @@
   </div>
   {% endif %}
   
-  {% if cv.affiliation.size > 0 %}
-  <!-- Affiliation -->
-  <div class="cv-section">
-    <h2>Affiliation</h2>
-    <ul class="cv-list">
-      {% for affiliation in cv.affiliation %}
-      <li class="cv-item">
-        <div class="cv-item-header">
-          <div class="cv-item-title">{{ affiliation.organization }}</div>     
-          <div class="cv-item-date">{{ affiliation.startDate }} – {{ affiliation.endDate }}</div>
-        </div>
-        <div class="cv-item-content">
-          {% if affiliation.highlights.size > 0 %}
-            <ul class="cv-highlights">
-              {% for highlight in affiliation.highlights %}
-              <li>{{ highlight }}</li>
-              {% endfor %}
-            </ul>
-          {% endif %}
-        </div>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
-
 {% if cv.skills.size > 0 %}
 <!-- Skills -->
 <div class="cv-section">
-  <h2>Technical Skills</h2>
+  <h2>Skills</h2>
   <div class="cv-skills-grid">
     {% for skill in cv.skills %}
     <div class="cv-skill">
@@ -202,7 +176,33 @@
     </ul>
   </div>
   {% endif %}
-  
+
+  {% if cv.affiliation.size > 0 %}
+  <!-- Affiliation -->
+  <div class="cv-section">
+    <h2>Affiliation</h2>
+    <ul class="cv-list">
+      {% for affiliation in cv.affiliation %}
+      <li class="cv-item">
+        <div class="cv-item-header">
+          <div class="cv-item-title">{{ affiliation.organization }}</div>     
+          <div class="cv-item-date">{{ affiliation.startDate }} – {{ affiliation.endDate }}</div>
+        </div>
+        <div class="cv-item-content">
+          {% if affiliation.highlights.size > 0 %}
+            <ul class="cv-highlights">
+              {% for highlight in affiliation.highlights %}
+              <li>{{ highlight }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
   {% if cv.presentations.size > 0 %}
   <!-- Presentations/Talks -->
   <div class="cv-section">
