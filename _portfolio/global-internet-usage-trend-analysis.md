@@ -31,11 +31,10 @@ tableau:
 # Global Internet Usage Trend Analysis
 
 {% include tableau.html tableau=page.tableau %}
-This map illustrates the magnitudes of internet usage represented as a percentage of the population that accessed the Internet during the last quarter of 2019.
+This map illustrates the magnitudes of internet usage across the world, represented as a percentage of population that accessed the Internet during the last quarter of 2019.
 
 ## 1. Introduction 
 ### 1.1. Objectives
-This report presents the state of internet accessibility across the world by answering these specific questions:
 This report presents the state of internet accessibility across the world by answering these specific questions:
 
 1. What are the **top five (5) countries** with the **highest internet use** (by population share)? How many **people had internet access** in those countries in **2019**
@@ -1004,4 +1003,5 @@ Based on the data and results of the analyses, the following conclusions can be 
 * **Western regions** experienced a **significantly quicker growth in internet accessibility** compared to their eastern counterparts.
 * The **countries with the highest internet usage** within a region are **not necessarily those with the largest land areas**.
 * Conversely, the **most populous countries** tend to have the **greatest total number of internet users**.
+
 * In **2019**, **countries with a higher percentage of internet users** in their population also had a corresponding increase in **fixed broadband subscriptions** (at downstream speeds of 256 kbit/s or more).
