@@ -25,7 +25,7 @@ Explore to see how I compose meaningful insights from raw data.
   {% assign featured_projects = site.portfolio | where: "featured", true | sort: "date" | reverse | slice: 0, 2 %}
   {% for project in featured_projects %}
     <div class="about-project-card">
-      <a href="{{ project.link }}">
+      <a href="{{ project.url | relative_url }}">
         {% if project.thumbnail %}
           <img src="{{ project.thumbnail | relative_url }}" alt="{{ project.title }}">
         {% endif %}
