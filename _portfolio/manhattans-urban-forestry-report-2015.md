@@ -4,6 +4,7 @@ collection: portfolio
 permalink: /portfolio/manhattans-urban-forestry-report-2015
 date: 2023-01-01
 last_updated: 2025-07-30
+excerpt: 'This analysis of census data on more than 60,000 street trees across Manhattan won first place in [Which Tree Species Should the City Plant?](https://www.datacamp.com/competitions/city-tree-species?entry=ba331d65-5607-4c69-adb4-406663585edc) competition. It evaluates spatial distribution, biological characteristics, and biodiversity while ranking species by median trunk diameter and health index, presenting evidence-based recommendations for future tree planting.'
 venue: 'DataCamp'
 categories:
   - R
@@ -21,83 +22,50 @@ images:
   - '/files/manhattans-urban-forestry-report-2015/images/page-8.png'
   - image: '/files/manhattans-urban-forestry-report-2015/images/page-9.png'
     link: 'https://www.datacamp.com/competitions/city-tree-species?entry=ba331d65-5607-4c69-adb4-406663585edc'
-link: 'https://www.datacamp.com/datalab/w/ba331d65-5607-4c69-adb4-406663585edc'
-url: 'https://www.datacamp.com/datalab/w/ba331d65-5607-4c69-adb4-406663585edc'
+# link: 'https://www.datacamp.com/datalab/w/ba331d65-5607-4c69-adb4-406663585edc'
+# url: 'https://www.datacamp.com/datalab/w/ba331d65-5607-4c69-adb4-406663585edc'
 thumbnail: '/images/projects/project4-cover.png'
 featured: true
 doc_type: 'Full Report'
-# tableau:
-#   id: "viz1758103536624"
-#   url: "https://public.tableau.com/app/profile/jbjdelacruz/viz/NYCURBANPLANNINGFORESTRYREPORT2015/Dashboard"
-#   static_img: "https://public.tableau.com/static/images/NY/NYCURBANPLANNINGFORESTRYREPORT2015/Dashboard/1.png"
-#   name: "NYCURBANPLANNINGFORESTRYREPORT2015/Dashboard"
-#   width: 600
-#   height: 337.5
+tableau:
+  id: "viz1758103536624"
+  url: "https://public.tableau.com/app/profile/jbjdelacruz/viz/NYCURBANPLANNINGFORESTRYREPORT2015/Dashboard"
+  static_img: "https://public.tableau.com/static/images/NY/NYCURBANPLANNINGFORESTRYREPORT2015/Dashboard/1.png"
+  name: "NYCURBANPLANNINGFORESTRYREPORT2015/Dashboard"
+
 ---
 
-This analysis of census data on more than 60,000 street trees across Manhattan won first place in [Which Tree Species Should the City Plant?](https://www.datacamp.com/competitions/city-tree-species?entry=ba331d65-5607-4c69-adb4-406663585edc) competition. It evaluates spatial distribution, biological characteristics, and biodiversity while ranking species by median trunk diameter and health index, presenting evidence-based recommendations for future tree planting.
+# Manhattan's Urban Forestry Report, 2015
 
-<!-- # Manhattan's Urban Forestry Report, 2015
+{% include tableau.html tableau=page.tableau %}
 
-<img src="cover.png" alt="" title=""/>
-
-## 1. Introduction 
+## Introduction 
 
 The urban design team believes that tree size (in terms of trunk diameter) and health are the most desirable characteristics of city trees. In order to help the planning department improve the quantity and quality of trees in New York City, our organization is advised to provide a data analysis report.
 
-### 1.1. Objectives
+### Objectives
 The main objective of this report is to profile Manhattan's tree population and species by different attributes using summary statistics, visualizations, and textual explanations. Specifically, it aims to:
-
+  
 1.	Describe all censused trees by their spatial and biological characteristics.
 2.	Map the tree profile of the neighborhoods. 
-3.	Illustrate the biodiversity and biology of the tree species in Manhattan. 
+3.	Illustrate the biodiversity and biology of the tree species in Manhattan.
 4.	Determine tree species with the best traits.
 
-### 1.2. Libraries & Data Used
+### Datasets
 
-```R
-# Load pre-installed, required packages
-library(tidyverse)
-library(dplyr)
-library(ggplot2)
-library(sf)
-library(geojsonsf)
-library(scales)
-library(remotes)
-library(rwantshue) # For generating random color scheme
-library(ggfun) # For round rectangle borders and backgrounds in ggplots
-library(ggchicklet) # For bar charts with rounded corners
-```
-
-The following data sets come from the City of New York [NYC Open Data](https://opendata.cityofnewyork.us/data/).
+The following datasets come from the City of New York [NYC Open Data](https://opendata.cityofnewyork.us/data/).
 
 #### Trees
 
-A [data set](https://data.cityofnewyork.us/Environment/2015-Street-Tree-Census-Tree-Data/uvpi-gqnh) based on the "TreesCount! 2015 Street Tree Census, conducted by volunteers and staff organized by NYC Parks & Recreation and partner organizations. Tree data collected includes tree species, diameter and perception of health. Accompanying blockface data is available indicating status of data collection and data release citywide". 
+A [data set](https://data.cityofnewyork.us/Environment/2015-Street-Tree-Census-Tree-Data/uvpi-gqnh) based on the "TreesCount! $2015$ Street Tree Census, conducted by volunteers and staff organized by NYC Parks & Recreation and partner organizations. Tree data collected includes tree species, diameter and perception of health. Accompanying blockface data is available indicating status of data collection and data release citywide". 
 
 See the list of variables and their descriptions [here](https://i.ibb.co/vPxVhHS/tbl-of-vars-desc1.jpg).
-
-```R
-# Read the 'trees' data set from the CSV file
-trees <- read_csv("data/trees.csv", show_col_types=FALSE) %>%
-  mutate(spc_common = str_to_sentence(spc_common))
-```
 
 #### Neighborhoods
 
 A [data set](https://data.cityofnewyork.us/City-Government/NTA-map/d3qk-pfyz) based on the "boundaries of Neighborhood Tabulation Areas as created by the NYC Department of City Planning using whole census tracts from the $2010$ Census as building blocks. These aggregations of census tracts are subsets of New York City's $55$ Public Use Microdata Areas (PUMAs)."
 
 See the list of variables and their descriptions [here](https://i.ibb.co/g7G3TCt/tbl-of-vars-desc2.jpg).
-
-```R
-# Read the 'neighborhoods' data set from the SHP file
-neighborhoods <- st_read("data/nta.shp", quiet=TRUE) %>% 
-  dplyr::select(boroname, ntacode, ntaname, geometry, shape_area)
-
-# Create a merged data frame for the 'trees' and 'neighborhoods' data sets
-merged_trees_and_neighborhoods <- trees %>%
-  full_join(neighborhoods, by = c("nta"="ntacode", "nta_name"="ntaname"))
-```
 
 ## Executive Summary
 
@@ -127,27 +95,73 @@ Using descriptive and spatial analyses, the following information outlines the l
 
 While trees seem to cover much each of Manhattan's $28$ neighborhoods, some of the southern ones, including MN13, MN17, MN24, MN25, MN27, MN28, and MN50, have empty areas. Interestingly, four of these aforementioned neighborhoods (indicated by *) are among the top ten in terms of land size, which are:
 
- 1. Hudson Yards-Chelsea-Flatiron-Union Square (MN13)
- 2. Upper West Side (MN12)
- 3. Midtown-Midtown South (MN17)
- 4. Central Harlem North-Polo Grounds (MN03)
- 5. West Village (MN23)
- 6. SoHo-TriBeCa-Civic Center-Little Italy (MN24)
- 7. East Harlem North (MN34)
- 8. Lower East Side (MN28)
- 9. Washington Heights South (MN36)
+ 1. *Hudson Yards-Chelsea-Flatiron-Union Square (MN13) <br/>
+ 2. Upper West Side (MN12)<br/>
+ 3. *Midtown-Midtown South (MN17)<br/>
+ 4. Central Harlem North-Polo Grounds (MN03)<br/>
+ 5. West Village (MN23)<br/>
+ 6. *SoHo-TriBeCa-Civic Center-Little Italy (MN24)<br/>
+ 7. East Harlem North (MN34)<br/>
+ 8. *Lower East Side (MN28)<br/>
+ 9. Washington Heights South (MN36)<br/>
 10. Washington Heights North (MN35)
+</ol>
 
 
 ```R
+# ---------- Packages & Datasets
+
+# Load pre-installed, required packages
+suppressPackageStartupMessages(library(tidyverse)) 
+suppressPackageStartupMessages(library(dplyr)) 
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(sf))
+suppressPackageStartupMessages(library(geojsonsf))
+suppressPackageStartupMessages(library(scales))
+
+# Install & load the 'rwantshue' package for generating random color scheme
+suppressWarnings(suppressMessages(install.packages("remotes", quiet=TRUE)))
+suppressWarnings(suppressMessages(remotes::install_github("hoesler/rwantshue", auth_token="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", quiet=TRUE)))
+suppressPackageStartupMessages(library(rwantshue))
+
+# Install & load the 'ggfun' package for round rectangle borders and backgrounds in ggplots
+suppressWarnings(suppressMessages(install.packages("ggfun", quiet=TRUE)))
+suppressPackageStartupMessages(library(ggfun))
+
+# Install & load the 'ggchicklet' package for bar charts with rounded corners
+suppressWarnings(suppressMessages(remotes::install_github("hrbrmstr/ggchicklet", auth_token="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", quiet=TRUE)))
+suppressPackageStartupMessages(library(ggchicklet))
+
+# Read the 'trees' data set from the CSV file
+trees <- readr::read_csv("data/trees.csv", show_col_types=FALSE) %>%
+  mutate(spc_common = str_to_sentence(spc_common))
+
+# Read the 'neighborhoods' data set from the SHP file
+neighborhoods <- st_read("data/nta.shp", quiet=TRUE) %>% 
+  dplyr::select(boroname, ntacode, ntaname, geometry, shape_area)
+
+# Create a merged data frame for the 'trees' and 'neighborhoods' data sets
+merged_trees_and_neighborhoods <- trees %>%
+  full_join(neighborhoods, by = c("nta"="ntacode", "nta_name"="ntaname"))
+```
+
+
+```R
+defaultW <- getOption("warn")
+options(warn=-1)
+
+# ---------- Results & Discussion
+
+# ----- Tree Population
+
+# -- Spatial
+
 # Top 10 NTAs in terms of land size 
 top_nta_area <- neighborhoods %>%
   filter(boroname == "Manhattan", ntacode != "MN99") %>%
   arrange(desc(shape_area)) %>%
   slice(1:10)
-```
 
-```R
 # Tree count per neighborhood
 nbh_tree_cnts <- merged_trees_and_neighborhoods %>%
   filter(boroname == "Manhattan", nta != "MN99") %>%
@@ -263,7 +277,123 @@ tree_locs_map_plot <- ggplot() +
               ) +
   coord_sf(xlim = c(-74.25, -73.89), ylim = c(40.68, 40.88)) +
   scale_color_manual(values = nta_colors)
+
+options(warn = defaultW)
 ```
+
+
+```R
+# ----- For link's image thumbnail
+
+# Install and load the 'patchwork' package
+suppressWarnings(suppressMessages(install.packages("patchwork", quiet=TRUE))) 
+suppressPackageStartupMessages(library(patchwork))
+
+# Install and load the 'png' package
+suppressWarnings(suppressMessages(install.packages("png", quiet=TRUE)))       
+suppressPackageStartupMessages(library(png))
+
+# Create a data
+data <- data.frame(x = 1:3,
+                   y = 1:3)
+
+# Read the PNG file
+my_image <- readPNG("cover.png", native = TRUE)
+
+# Create a plot and combine with the image
+cover_img <- ggplot(data, aes(x, y)) +
+  geom_point() +
+  theme_minimal() +
+  theme(axis.title = element_blank(),
+          axis.text = element_blank(),
+          axis.line = element_blank(),
+          axis.ticks = element_blank()) +
+  inset_element(p = my_image,
+                  left=-0.1,
+                  bottom=-0.5,
+                  right=1.23,
+                  top=1.5)
+cover_img
+```
+
+
+    
+![png](notebook_files/notebook_4_0.png)
+    
+
+
+
+```R
+# Export plot as PNG
+ggsave(
+  plot = tree_locs_map_plot + theme(plot.title = element_text(hjust=1.25)),
+  filename = "documentation/tree_locs_map_plot.png",
+  bg = "transparent"
+)
+```
+
+    [1m[22mSaving 7 x 7 in image
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+
 
 <img src="documentation/tree_locs_map_plot.png" alt="" title=""/>
 
@@ -271,21 +401,44 @@ tree_locs_map_plot <- ggplot() +
 
 In terms of the number of trees, the top ten neighborhoods are:
  
- 1. Upper West Side (MN12)<br/>
+ 1. *Upper West Side (MN12)<br/>
  2. Upper East Side-Carnegie Hill (MN40)<br/>
- 3. West Village (MN23) <br/>
- 4. Central Harlem North-Polo Grounds (MN03) <br/>
- 5. Hudson Yards-Chelsea-Flatiron-Union Square (MN13) <br/>
- 6. Washington Heights South (MN36)<br/>
+ 3. *West Village (MN23) <br/>
+ 4. *Central Harlem North-Polo Grounds (MN03) <br/>
+ 5. *Hudson Yards-Chelsea-Flatiron-Union Square (MN13) <br/>
+ 6. *Washington Heights South (MN36)<br/>
  7. Morningside Heights (MN09)<br/>
  8. Central Harlem South (MN11)<br/>
- 9. Washington Heights North (MN35) <br/>
-10. East Harlem North (MN34)
+ 9. *Washington Heights North (MN35) <br/>
+10. *East Harlem North (MN34)
 
-Seven of which are part of the ten largest.
+Seven of which (indicated by *\) are part of the ten largest.
 
 
 ```R
+defaultW <- getOption("warn")
+options(warn=-1)
+
+# neighborhoods %>% 
+# 	st_set_geometry(NULL) %>%
+# 	summarize(total_number_of_neighborhoods_in_the_data_set = n())
+
+# neighborhoods %>% 
+# 	st_set_geometry(NULL) %>% 
+# 	filter(str_detect(ntacode, "MN")) %>%
+# 	summarize(number_of_neighborhoods_from_manhattan_in_the_data_set = n())
+
+# merged_trees_and_neighborhoods %>% 
+# 	group_by(nta) %>% 
+# 	summarize(number_of_trees_per_neighborhood = n()) %>%
+# 	summarize(number_of_neighborhoods_from_manhattan_with_trees = n())
+
+# neighborhoods %>%
+# 	st_set_geometry(NULL) %>%
+# 	anti_join(trees, by = c("ntacode" = "nta", "ntaname" = "nta_name")) %>% 
+# 	filter(str_detect(ntacode, "MN"))
+
+
 # Table for Top 10 Tree-Producing Neighborhoods
 for_table_nbh_tree_cnts <- nbh_tree_cnts %>%
   slice(1:10) %>%
@@ -293,6 +446,11 @@ for_table_nbh_tree_cnts <- nbh_tree_cnts %>%
   mutate(number_of_trees = prettyNum(number_of_trees, big.mark=","),
            percentage = label_percent(accuracy=0.01)(proportion)) %>%
   select(-proportion)
+
+# HTML Table for Top 10 Most Abundant Species
+#kable(for_table_nbh_tree_cnts, 
+#      caption = " ",
+#      label = "tables", format = "html", booktabs = TRUE)
 
 # Order by number of trees
 nbhs_map$nta_and_tree_cnt <- factor(
@@ -385,6 +543,15 @@ nbhs_tree_cnts_map_plot1 <- nbhs_tree_cnts_map_plot +
                                                     fill = color_scheme_2,
                                                     linewidth=0))
           )
+
+#nbh_tree_cnts %>%
+#	#slice(1:10) %>%
+#	#rownames_to_column("rank") %>%
+#	mutate(number_of_trees = prettyNum(number_of_trees, big.mark=","),
+#           percentage = label_percent(accuracy=0.01)(proportion)) %>%
+#	select(-proportion)
+
+options(warn = defaultW)
 ```
 
 
@@ -399,8 +566,10 @@ nbh_tree_cnts %>%
 
 
 <table class="dataframe">
+<caption>A tibble: 10 × 5</caption>
 <thead>
   <tr><th scope=col>rank</th><th scope=col>nta</th><th scope=col>nta_name</th><th scope=col>number_of_trees</th><th scope=col>percentage</th></tr>
+  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
 </thead>
 <tbody>
   <tr><td>1 </td><td>MN12</td><td>Upper West Side                           </td><td>5,807</td><td>9.04%</td></tr>
@@ -415,6 +584,25 @@ nbh_tree_cnts %>%
   <tr><td>10</td><td>MN34</td><td>East Harlem North                         </td><td>2,505</td><td>3.90%</td></tr>
 </tbody>
 </table>
+
+
+
+
+```R
+# Export plot as PNG
+ggsave(
+  plot = nbhs_tree_cnts_map_plot1 + theme(plot.title = element_text(hjust=1.1)),
+  filename = "documentation/nbhs_tree_cnts_map_plot.png",
+  bg = "transparent"
+)
+```
+
+    [1m[22mSaving 7 x 7 in image
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+    Warning message in st_point_on_surface.sfc(sf::st_zm(x)):
+    “st_point_on_surface may not give correct results for longitude/latitude data”
+
 
 <img src="documentation/nbhs_tree_cnts_map_plot.png" alt="" title=""/>
 
@@ -5249,4 +5437,3 @@ top_spc_second_ranking <- spc_second_ranking_long %>%
     9. value[[3L]](cond)
 
     10. stop(remote_install_error(remotes[[i]], e))
- -->

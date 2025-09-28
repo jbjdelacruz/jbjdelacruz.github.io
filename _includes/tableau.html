@@ -6,13 +6,13 @@
           <img alt="Dashboard" src="{{ post.tableau.static_img }}?:showVizHome=no&:showAppBanner=false" style="border: none" />
         </a>
       </noscript>
-      <object class="tableauViz">
+      <object class="tableauViz" style="display:none;">
         <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F" />
         <param name="embed_code_version" value="3" />
         <param name="site_root" value="" />
         <param name="name" value="{{ post.tableau.name }}" />
         <param name="tabs" value="no" />
-        <param name="toolbar" value="no" />
+        <param name="toolbar" value="yes"/>
         <param name="static_image" value="{{ post.tableau.static_img }}" />
         <param name="animate_transition" value="yes" />
         <param name="display_static_image" value="yes" />
@@ -29,7 +29,43 @@
     var vizElement = divElement.getElementsByTagName("object")[0];
     vizElement.style.width = "100%";
     vizElement.style.height = "100%";
+    var scriptElement = document.createElement("script");
+    scriptElement.src = "https://public.tableau.com/javascripts/api/viz_v1.js";
+    vizElement.parentNode.insertBefore(scriptElement, vizElement);
+  </script>
+{% endif %}
 
+{% if page.tableau %}
+  <div class="tableau-container">
+    <div class="tableauPlaceholder" id="{{ page.tableau.id }}">
+      <noscript>
+        <a href="{{ page.tableau.url }}">
+          <img alt="Dashboard" src="{{ page.tableau.static_img }}?:showVizHome=no&:showAppBanner=false" style="border: none" />
+        </a>
+      </noscript>
+      <object class="tableauViz" style="display:none;">
+        <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F" />
+        <param name="embed_code_version" value="3" />
+        <param name="site_root" value="" />
+        <param name="name" value="{{ page.tableau.name }}" />
+        <param name="tabs" value="no" />
+        <param name="toolbar" value="yes" />
+        <param name="static_image" value="{{ page.tableau.static_img }}" />
+        <param name="animate_transition" value="yes" />
+        <param name="display_static_image" value="yes" />
+        <param name="display_spinner" value="yes" />
+        <param name="display_overlay" value="yes" />
+        <param name="display_count" value="yes" />
+        <param name="language" value="en-US" />
+      </object>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var divElement = document.getElementById("{{ page.tableau.id }}");
+    var vizElement = divElement.getElementsByTagName("object")[0];
+    vizElement.style.width = "100%";
+    vizElement.style.height = "100%";
     var scriptElement = document.createElement("script");
     scriptElement.src = "https://public.tableau.com/javascripts/api/viz_v1.js";
     vizElement.parentNode.insertBefore(scriptElement, vizElement);

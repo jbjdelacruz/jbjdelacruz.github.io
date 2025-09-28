@@ -1,0 +1,151 @@
+id,constituent,program,year_standing,lms,upsss1,upsss2,upsss3,upsss4,upsss5,upsss6,upsss7,upsss8,upsss9,upsss10,upsss11,upsss12,upsss13,upsss14,upsss15,upsss16,upsss17,upsss18,upsss19,upsss20,spaps1,spaps2,spaps3,spaps4,spaps5,spaps6,spaps7
+001,UP Diliman,BS Statistics,III,UVLê,6,5,6,6,6,5,6,5,5,6,6,4,3,7,3,1,1,1,3,3,5,3,4,3,2,3,5
+002,UP Diliman,BS Geology,IV,UVLê;Google Classroom,5,4,6,2,4,3,6,6,7,6,3,7,6,7,5,6,1,1,1,2,2,3,3,4,3,1,1
+003,UP Diliman,B Music,V,UVLê;Google Classroom,6,6,6,7,7,5,7,5,5,4,7,5,7,7,7,7,5,1,5,6,5,7,7,7,7,4,7
+004,UP Diliman,BS Statistics,IV,UVLê,6,7,7,5,6,4,4,3,4,5,5,3,3,7,5,6,1,1,2,1,4,5,5,5,5,4,5
+005,UP Diliman,BS Biology,II,UVLê,7,7,7,7,7,4,6,6,4,7,6,6,6,6,5,7,2,2,3,4,4,6,6,6,5,4,7
+006,UP Diliman,BS Statistics,IV,UVLê;Google Classroom,7,7,7,6,5,5,6,5,5,6,5,5,6,6,5,6,3,3,4,5,5,2,3,4,5,6,4
+007,UP Diliman,BS Statistics,IV,UVLê,6,6,6,6,6,3,5,5,3,4,6,2,2,6,5,5,1,2,4,3,3,3,3,3,4,4,4
+008,UP Manila,BS Nursing,IV,UVLê,7,7,7,5,6,3,3,4,3,2,3,5,5,7,6,7,3,3,3,1,7,6,5,6,6,6,5
+009,UP Diliman,BS Mechanical Engineering,II,UVLê;Google Classroom,6,6,6,5,6,5,5,6,6,5,6,1,1,5,4,2,1,1,4,2,2,5,5,5,3,1,1
+010,UP Diliman,BS Statistics,IV,UVLê;Google Classroom,6,6,6,7,5,5,6,7,6,6,4,5,5,6,5,3,1,2,3,4,2,3,4,3,4,2,1
+011,UP Diliman,BA Creative Writing,IV,UVLê;Google Classroom,7,7,7,7,7,7,5,6,5,4,7,4,4,6,4,3,1,2,4,3,6,5,5,4,5,4,4
+012,UP Manila,BS Nursing,IV,UVLê;Canvas,7,7,7,5,5,3,6,3,3,6,6,5,5,7,6,7,3,3,3,4,6,6,3,3,6,6,3
+013,UP Diliman,BS Geodetic Engineering,III,UVLê;Google Classroom,7,7,7,7,7,5,5,5,2,5,5,1,1,7,1,1,1,1,2,3,5,3,5,5,5,1,5
+014,UP Diliman,BS Statistics,II,UVLê;Instructor's own website,6,7,5,7,6,4,5,5,5,5,4,1,1,6,3,2,1,2,2,2,5,2,5,4,3,2,5
+015,UP Diliman,BS Statistics,III,UVLê;Google Classroom;Moodle,5,4,6,6,5,3,6,4,2,5,2,6,1,7,1,6,1,1,1,2,4,5,2,4,4,7,4
+016,UP Diliman,BS Statistics,IV,UVLê;Google Classroom,6,6,6,7,7,6,7,7,2,6,7,5,5,5,6,7,1,1,2,3,2,3,3,5,4,3,5
+017,UP Diliman,BS Chemistry,II,UVLê;Google Classroom,6,7,7,7,5,3,5,5,2,6,6,7,7,7,1,7,1,1,1,3,7,3,4,6,5,1,7
+018,UP Los Banos,BS Nutrition,IV,Google Classroom,6,6,6,4,7,2,6,3,2,4,5,6,6,6,3,7,4,5,4,5,1,7,3,5,3,4,4
+019,UP Diliman,BS Statistics ,II,UVLê;Google Classroom,7,7,7,7,7,7,7,7,4,7,7,1,1,7,6,7,4,3,4,4,7,4,4,4,4,4,7
+020,UP Diliman,B Public Administration,II,UVLê;Google Classroom,5,6,5,4,4,4,3,5,3,3,4,2,2,7,1,2,1,1,1,1,7,5,4,6,6,5,7
+021,UP Diliman,BS Statistics ,II,UVLê;Google Classroom,6,6,6,7,7,7,6,7,5,6,7,1,1,7,6,7,6,6,4,5,7,5,6,6,6,5,4
+022,UP Diliman,BS Statistics,III,UVLê;Moodle,7,7,5,6,7,6,6,6,7,7,6,4,2,7,4,5,5,4,5,6,5,4,6,6,5,3,2
+023,UP Diliman,BS Business Administration and Accountancy,II,UVLê;Google Classroom,7,7,7,6,7,5,6,4,6,7,5,4,2,7,6,4,1,1,4,4,7,5,5,6,5,4,5
+024,UP Diliman,BS Statistics ,II,UVLê;Google Classroom;Moodle,6,6,7,7,6,5,5,6,2,4,5,4,4,6,5,3,4,2,4,3,5,3,2,2,5,2,3
+025,UP Los Banos,BS Agriculture,II,Google Classroom;Canvas;Moodle,6,6,5,6,6,2,3,5,2,5,6,1,1,7,5,1,1,4,3,3,5,4,2,1,3,7,4
+026,UP Los Banos,BS Biology,II,Google Classroom;Canvas,6,7,7,7,7,5,5,5,3,5,6,7,7,7,7,2,1,1,1,2,2,3,6,7,5,2,7
+027,UP Los Banos,BS AGRIBUSINESS MANAGEMENT AND ENTREPRENEURSHIP,IV,Google Classroom,6,7,5,7,7,7,7,7,6,7,7,7,7,7,5,7,4,1,1,4,6,3,5,4,3,1,7
+028,UP Los Banos,BS Biology,III,Google Classroom;Canvas,5,7,5,7,6,4,5,4,2,5,4,1,1,7,2,7,3,3,3,4,5,4,3,2,5,5,7
+029,UP Diliman,BS Geodetic Engineering,III,UVLê;Google Classroom,6,5,6,7,6,6,6,6,5,6,6,4,4,7,6,6,4,3,4,2,5,5,5,5,5,4,4
+030,UP Los Banos,BS Agricultural Chemistry,II,eLBI;Google Classroom;Canvas;Moodle,5,6,6,6,4,3,7,5,1,5,5,3,2,7,1,1,2,1,1,2,6,1,1,1,1,1,1
+031,UP Diliman,BS Statistics,III,UVLê,6,3,1,7,5,2,3,2,2,6,3,1,1,1,1,1,1,2,2,1,2,2,4,3,4,2,1
+032,UP Visayas,BS Computer Science,II,Moodle,5,5,5,3,3,2,3,4,3,1,4,1,1,7,3,5,2,1,2,2,3,2,3,4,4,4,3
+033,UP Diliman,BS Statistics ,IV,UVLê;Google Classroom,7,7,6,7,6,5,6,6,5,4,6,3,4,7,5,6,5,2,3,4,5,4,5,4,4,5,5
+034,UP Diliman,BS Statistics,III,UVLê;Google Classroom,5,4,3,7,6,5,6,4,2,5,7,6,4,7,1,2,1,1,2,3,5,4,5,6,3,3,6
+035,UP Diliman,BS Statistics,IV,UVLê,7,5,4,6,6,7,3,7,4,4,6,1,1,7,3,7,1,1,1,1,4,6,3,4,1,2,3
+036,UP Diliman,BS Geodetic Engineering,III,UVLê;Google Classroom,6,6,6,7,6,5,5,6,4,5,5,1,1,7,6,7,4,3,4,3,6,5,5,5,5,5,5
+037,UP Diliman,BS Statistics,IV,UVLê;Google Classroom,6,6,6,5,6,5,5,5,3,4,5,3,3,7,6,7,2,2,1,3,4,5,3,4,4,2,4
+038,UP Visayas,BS Statistics,II,Moodle,5,5,4,2,3,5,4,5,1,3,5,4,4,6,3,7,3,3,1,1,6,3,1,1,2,4,4
+039,UP Diliman,BS Geodetic Engineering,III,UVLê;Google Classroom,6,7,7,7,7,4,6,6,3,5,4,1,1,7,4,7,1,2,6,7,6,7,3,5,7,7,6
+040,UP Diliman,BS Geodetic Engineering,III,UVLê;Google Classroom,6,7,5,7,5,5,6,5,4,6,7,1,1,7,5,2,1,1,1,2,3,3,2,3,3,5,5
+041,UP Los Banos,BS Civil Engineering,III,Google Classroom;Canvas,4,7,7,4,3,3,7,7,1,3,3,7,7,7,1,7,3,3,4,3,7,4,4,6,6,5,7
+042,UP Diliman,BS Business Economics,IV,UVLê;Google Classroom,7,5,7,6,6,5,6,6,6,6,6,2,2,7,6,6,6,5,5,6,5,5,7,6,6,5,2
+043,UP Diliman,BS Physics,IV,UVLê;Google Classroom,6,6,6,7,6,5,6,6,5,5,5,6,6,7,7,4,1,2,4,4,1,3,5,3,3,4,1
+044,UP Diliman,B Secondary Education,IV,UVLê;Google Classroom,5,5,5,4,4,3,5,4,3,3,3,3,3,6,3,3,1,2,2,3,2,3,3,4,3,4,2
+045,UP Diliman,BS Statistics,II,"UVLê;Google Sites, UP ROTC Learning Management Systems",5,3,7,6,5,5,5,5,3,3,6,4,4,7,3,5,2,2,4,3,7,5,5,4,5,4,6
+046,UP Diliman,BS Statistics,III,UVLê;Google Classroom,5,5,4,6,5,5,6,5,2,5,3,6,6,7,5,3,1,1,1,1,2,1,2,2,3,5,2
+047,UP Diliman,BS Statistics ,III,UVLê;Google Classroom,5,5,6,6,5,4,6,7,5,5,5,3,3,7,6,4,1,2,2,1,2,3,3,4,3,1,1
+048,UP Diliman,B Secondary Education ,IV,UVLê;Google Classroom,7,7,7,5,4,3,4,5,4,5,6,6,6,7,5,7,4,2,3,4,4,4,4,4,5,4,5
+049,UP Los Banos,BS Statistics,III,Google Classroom;Canvas,6,6,5,6,5,6,6,5,3,4,5,2,2,3,1,2,3,2,3,3,6,4,3,3,4,2,5
+050,UP Los Banos,BS Statistics,III,Google Classroom;Canvas,4,7,5,3,3,5,6,5,1,2,4,1,1,7,1,3,4,4,4,2,3,1,1,1,3,2,7
+051,UP Los Banos,BS Statistics,III,Google Classroom;Canvas,7,7,7,7,7,6,5,6,4,5,6,7,7,6,4,4,5,4,5,5,3,3,5,5,5,4,7
+052,UP Diliman,Bachelor of Science in Statistics,III,UVLê;FB Messenger,6,6,6,6,5,3,3,4,2,3,4,2,2,6,3,5,1,1,1,1,3,1,3,2,2,1,1
+053,UP Diliman,BS Statistics,III,UVLê;Google Classroom,6,7,5,7,6,6,5,5,5,6,7,5,5,7,3,3,4,4,4,4,6,4,5,4,4,4,4
+054,UP Diliman,BS Statistics,IV,UVLê;Google Classroom,7,7,5,7,7,7,6,6,3,5,7,7,7,7,6,7,1,3,4,5,6,5,5,5,5,3,4
+055,UP Los Banos,BS Development Communication,IV,Google Classroom;Canvas,7,7,7,7,7,4,7,4,4,7,4,7,7,7,4,7,7,4,4,4,4,4,4,4,4,4,4
+056,UP Diliman,BS Statistics,IV,UVLê,6,6,6,6,6,6,6,6,6,6,6,1,1,6,5,7,3,2,4,5,6,5,6,6,5,3,5
+057,UP Diliman,BS Civil Engineering,IV,UVLê;Google Classroom;Moodle,6,6,5,6,4,2,6,4,4,5,6,1,1,5,4,7,3,1,3,4,7,5,4,4,4,1,7
+058,UP Diliman,BS Statistics,II,UVLê,7,7,6,6,7,6,6,6,5,6,6,4,4,6,5,5,3,1,3,1,6,5,3,3,3,5,5
+059,UP Diliman,BS Statistics,IV,UVLê,7,4,5,6,6,6,6,6,2,5,7,5,1,6,5,7,1,1,4,3,7,4,2,3,4,3,4
+060,UP Diliman,BS Statistics,IV,UVLê;Google Classroom,5,5,6,5,6,5,2,5,3,5,5,4,2,5,5,5,2,2,2,4,6,6,4,3,3,1,6
+061,UP Diliman,BS Statistics,III,UVLê;Google Classroom,6,6,7,7,7,6,6,6,6,5,7,4,4,7,6,7,4,2,4,5,6,7,7,7,6,6,6
+062,UP Manila,Bachelor of Science in Nursing,IV,UVLê,6,5,6,6,5,6,7,5,4,5,7,7,7,6,6,7,5,6,6,6,6,6,7,7,7,5,5
+063,UP Diliman,BS Applied Physics,V,UVLê;Google Classroom,7,7,5,5,5,7,7,7,2,6,6,7,7,7,7,7,7,5,5,5,6,6,3,4,5,2,7
+064,UP Diliman,BS Tourism,III,UVLê;Google Classroom,7,6,6,7,6,1,6,5,5,5,7,6,6,6,7,2,5,1,1,2,4,5,5,6,6,4,3
+065,UP Cebu,BFA Product Design,IV,UVLê;Google Classroom,6,4,5,3,3,6,1,4,1,3,5,2,2,7,5,6,2,1,1,1,6,4,2,3,5,2,7
+066,UP Diliman,BS Statistics,IV,UVLê;Google Classroom,6,6,6,6,6,4,5,5,3,7,6,3,3,7,6,5,1,1,1,2,4,4,2,2,3,4,3
+067,UP Diliman,BS Statistics,IV,UVLê;Google Classroom;Canvas,7,7,7,7,7,5,7,7,5,5,5,7,7,7,7,7,1,1,7,1,3,2,7,7,7,2,1
+068,UP Diliman,BS Statistics,IV,UVLê;Google Classroom,6,6,6,6,6,5,5,5,5,6,6,3,3,7,3,7,5,3,3,4,5,6,5,5,5,5,5
+069,UP Diliman,B Secondary Education,IV,UVLê;Google Classroom,7,7,7,4,5,3,6,4,5,5,5,3,3,4,4,6,1,1,2,1,3,3,3,4,4,3,5
+070,UP Diliman,BS Statistics,III,UVLê;Google Classroom,7,6,4,6,7,4,6,3,5,6,6,3,3,6,2,5,1,1,1,1,6,3,5,3,2,5,4
+071,UP Diliman,BS Statistics,IV,UVLê,6,1,2,7,4,2,5,3,2,5,3,1,1,7,5,7,1,1,1,1,7,4,1,1,1,6,4
+072,UP Manila,BS Basic Medical Sciences,IV,Canvas;Moodle,6,6,6,5,5,3,6,2,2,4,5,5,5,7,6,7,1,4,4,1,5,1,4,1,4,5,1
+073,UP Los Banos,BS Economics,I,Google Classroom;Canvas,6,6,6,5,6,6,7,6,5,7,7,4,4,5,4,7,2,6,3,5,5,5,3,5,5,6,7
+074,UP Diliman,BS Statistics,IV,UVLê,6,2,6,6,6,5,5,6,2,5,7,5,4,7,6,6,3,3,2,2,5,3,3,3,4,3,4
+075,UP Los Banos,BS Statistics,III,Google Classroom;Canvas,6,7,7,6,6,6,6,5,4,5,6,7,7,7,7,2,3,2,4,3,6,4,4,6,6,5,3
+076,UP Diliman,BS Psychology,II,UVLê;Google Classroom,6,6,7,6,3,2,6,4,2,5,5,2,1,7,1,1,1,1,1,1,6,3,2,4,3,1,3
+077,UP Los Banos,BS Statistics,II,Google Classroom,7,7,7,6,6,3,5,5,3,4,6,2,2,6,2,2,2,3,2,2,4,3,2,2,3,2,7
+078,UP Diliman,BS Statistics,IV,UVLê;Discord,7,7,7,7,7,3,5,5,3,5,7,2,2,7,4,4,1,1,2,2,6,4,3,6,5,2,6
+079,UP Diliman,BA European Languages,IV,UVLê;Google Classroom,6,7,7,5,5,6,7,5,6,5,7,7,7,7,6,7,3,4,4,4,3,5,6,5,4,4,6
+080,UP Los Banos,BS Statistics,II,Google Classroom,5,5,4,3,4,5,5,5,2,4,5,2,2,7,5,5,2,3,3,3,5,4,3,3,3,2,7
+081,UP Diliman,B Public Administration,IV,UVLê;Google Classroom,7,7,7,7,7,6,7,7,4,7,7,4,5,7,6,5,1,1,3,3,7,6,3,5,4,3,5
+082,UP Diliman,BS Statistics,III,UVLê;Google Classroom,6,6,6,7,7,6,5,6,5,6,7,5,5,5,7,6,4,4,5,5,6,7,6,7,6,1,7
+083,UP Diliman,BS Business Economics,III,UVLê;Google Classroom;Canvas;Moodle,7,6,6,6,6,4,6,6,2,5,5,4,4,7,4,7,2,1,3,3,5,5,2,3,5,5,2
+084,UP Diliman,B Secondary Education Major in Filipino ,III,UVLê;Google Classroom;Canvas,5,5,6,4,5,3,6,5,2,3,5,6,6,3,6,6,3,1,4,4,7,5,3,5,5,5,6
+085,UP Diliman,BS Statistics,I,UVLê;Google Classroom,6,6,6,7,7,6,7,7,7,7,7,5,6,7,7,6,3,1,1,1,7,5,5,6,5,4,7
+086,UP Diliman,BS Business Economics,I,UVLê;Google Classroom,6,7,7,5,5,6,5,7,4,5,5,1,1,7,2,7,3,2,4,4,5,5,4,6,5,4,4
+087,UP Diliman,BA Applied Psychology,II,UVLê;Google Classroom,7,7,6,6,5,4,6,6,2,5,5,1,1,7,5,7,6,1,2,4,6,6,4,4,4,3,2
+088,UP Diliman,BS Statistics,III,UVLê;Google Classroom,7,7,7,7,7,5,7,7,7,7,6,4,4,7,6,5,3,1,4,3,6,6,6,6,6,1,6
+089,UP Diliman,BS Statistics,I,UVLê;Google Classroom;Moodle,5,7,6,6,5,5,6,5,4,6,6,2,2,7,5,6,2,1,1,1,5,7,5,7,6,4,5
+090,UP Diliman,BS Civil Engineering,IV,UVLê;Google Classroom,6,6,5,6,6,5,7,3,3,6,6,5,5,7,7,6,1,2,3,2,3,2,5,1,4,6,4
+091,UP Los Banos,BS Statistics,III,Google Classroom;Canvas,5,5,6,3,4,2,4,2,1,3,3,3,3,6,1,7,4,1,1,2,4,3,2,2,2,3,7
+092,UP Diliman,BS Statistics,III,UVLê;Google Classroom,6,6,7,7,5,4,7,6,4,6,4,1,1,7,6,5,1,1,1,4,5,5,5,7,5,6,4
+093,UP Open University,BA Multimedia Studies,I,Moodle,6,6,7,7,6,3,6,3,2,4,1,2,2,6,5,6,2,1,3,4,2,1,2,3,2,3,1
+094,UP Los Banos,BS Civil Engineering,II,Google Classroom;Moodle,7,6,7,4,7,6,5,7,3,4,6,6,6,7,6,7,5,4,5,4,1,4,3,3,3,2,4
+095,UP Diliman,BS Statistics,I,UVLê;Google Classroom,5,7,4,5,4,5,5,6,4,4,5,1,1,7,5,6,3,2,3,2,7,4,3,3,6,6,6
+096,UP Diliman,BS Statistics,III,UVLê;Google Classroom,6,5,5,6,6,5,6,3,6,3,5,6,5,6,3,2,1,1,2,3,5,4,6,5,4,5,1
+097,UP Diliman,B Secondary Education,IV,Google Classroom,6,7,6,7,7,6,7,7,6,6,7,1,1,7,6,7,6,5,5,6,6,6,6,6,7,3,7
+098,UP Diliman,BS Economics,I,UVLê;Google Classroom,6,5,5,5,6,5,6,5,4,5,5,4,4,5,6,5,5,3,5,5,5,4,5,5,6,5,2
+099,UP Manila,BS Pharmaceutical Sciences,II,Canvas,5,7,7,5,5,6,3,6,1,7,7,7,7,7,5,7,4,2,4,5,6,5,2,3,5,5,3
+100,UP Los Banos,BS Statistics,IV,Google Classroom;Canvas,5,6,5,6,6,3,5,4,2,3,5,7,6,7,3,7,1,1,1,1,5,5,5,5,6,5,5
+101,UP Diliman,BA Philosophy,III,UVLê;Google Classroom,6,5,5,5,3,5,4,3,3,3,6,5,4,6,3,2,2,3,2,2,5,3,3,3,4,2,4
+102,UP Diliman,BS Architecture,V,Google Classroom;Facebook,5,5,5,4,5,3,4,5,4,4,4,3,3,6,6,7,3,1,2,2,2,3,4,3,4,1,1
+103,UP Open University,Bachelor of Education Studies,I,Moodle,6,7,7,5,6,6,6,6,3,1,5,6,5,7,7,7,6,4,6,6,6,6,4,6,6,7,7
+104,UP Los Banos,BS Development Communication,III,Google Classroom;Canvas,7,7,5,6,6,5,3,5,1,6,6,2,3,7,3,7,2,1,1,2,5,5,1,2,5,4,7
+105,UP Diliman,BS Mechanical Engineering,I,UVLê;Google Classroom,7,7,7,7,6,4,7,7,7,7,7,2,2,7,6,7,4,1,4,3,7,5,6,5,6,2,4
+106,UP Diliman,BS Statistics,IV,UVLê,7,6,5,7,7,7,6,7,5,6,7,7,3,7,5,3,5,4,5,5,7,7,7,6,5,4,6
+107,UP Diliman,BS Computer Science,I,UVLê,6,6,6,7,6,6,5,6,1,5,6,4,4,7,5,7,4,1,5,5,7,5,5,4,2,2,5
+108,UP Diliman,BS Industrial Engineering,II,UVLê,6,2,3,3,4,2,5,4,2,5,3,1,1,7,3,1,1,1,2,1,6,3,4,3,4,2,1
+109,UP Diliman,BS Statistics,III,UVLê;Google Classroom;Discord,5,6,6,7,6,5,6,5,6,6,4,3,4,5,3,3,1,1,2,1,5,3,6,4,3,3,2
+110,UP Los Banos,BS Statistics,II,Google Classroom;Canvas,7,6,6,6,6,5,5,5,3,5,5,3,3,6,3,4,4,4,4,5,2,3,3,4,5,3,1
+111,UP Los Banos,BS Agricultural Biotechnology,IV,eLBI;Google Classroom;Canvas,6,6,7,6,6,5,6,6,3,5,6,7,6,7,4,6,5,6,5,4,4,5,3,3,5,4,5
+112,UP Diliman,BS Statistics,IV,UVLê;Google Classroom,6,6,6,5,6,5,5,6,6,6,6,5,5,6,7,6,3,2,4,4,4,4,5,5,4,4,4
+113,UP Los Banos,BS Agribusiness Management and Entrepreneurship,IV,Google Classroom,7,7,7,5,6,4,6,5,3,6,7,7,6,7,3,5,5,5,5,6,6,5,4,5,7,7,7
+114,UP Diliman,BS Statistics,IV,UVLê,6,6,6,6,6,6,6,6,5,6,6,6,6,6,6,6,5,4,5,4,5,5,4,4,4,3,1
+115,UP Diliman,BS Materials Engineering,V,UVLê;Google Classroom,6,6,5,5,6,2,3,3,2,5,5,6,6,6,4,7,3,3,3,4,3,3,5,5,5,7,3
+116,UP Open University,Bachelor of Education Studies,I,Moodle,7,7,7,7,7,6,7,6,1,4,5,7,6,7,7,7,3,5,6,6,1,1,1,5,4,5,4
+117,UP Diliman,B Secondary Education (Chem),III,UVLê;Google Classroom;Canvas,7,6,7,6,6,4,6,5,5,5,6,5,5,7,3,5,1,1,1,3,5,5,5,4,4,5,6
+118,UP Diliman,"BS Hotel, Restaurant, and Institution Management",III,UVLê;Google Classroom,5,5,6,5,5,3,6,6,5,6,6,1,1,7,3,6,2,1,2,3,3,2,5,5,3,2,5
+119,UP Diliman,BS Business Administration ,IV,UVLê;Google Classroom,5,7,5,5,4,2,3,4,4,3,1,1,1,6,3,6,3,1,1,1,1,1,3,4,2,1,4
+120,UP Diliman,BFA Visual Communication,II,UVLê;Google Classroom;Edmodo,6,6,5,7,4,5,4,5,2,4,7,4,3,7,3,3,1,1,2,2,3,5,5,3,3,7,5
+121,UP Los Banos,BS Food Science and Technology,II,eLBI;Google Classroom;Moodle,6,7,7,4,6,5,5,6,3,4,6,2,3,7,2,1,4,4,6,5,6,5,2,6,6,5,3
+122,UP Diliman,BS Statistics,IV,UVLê,7,7,6,7,7,6,6,6,5,6,7,5,5,7,5,7,4,4,4,6,6,7,5,6,6,6,4
+123,UP Los Banos,BS Development Communication,III,Google Classroom;Canvas,6,6,6,6,7,4,6,5,5,5,5,5,5,7,6,2,3,6,1,1,3,2,6,3,4,2,4
+124,UP Visayas,BS Computer Science,I,UVLê,7,6,7,2,3,5,6,6,5,1,3,3,3,6,6,7,6,3,4,4,6,5,5,5,5,6,5
+125,UP Los Banos,BS Civil Engineering,II,Google Classroom;Canvas,7,5,4,6,6,6,6,5,2,6,7,1,1,7,2,7,3,1,4,4,3,5,3,3,5,3,7
+126,UP Diliman,BS Statistics,III,UVLê;Google Classroom,6,6,7,5,5,5,5,6,5,6,6,5,5,7,5,6,2,1,3,3,3,4,5,5,4,4,5
+127,UP Diliman,BS Statistics,IV,UVLê;Google Classroom,7,5,6,6,7,7,5,6,2,7,7,7,7,7,7,7,7,7,5,6,7,5,2,2,5,2,7
+128,UP Diliman,BS Statistics,IV,UVLê;Google Classroom,7,6,7,6,5,5,6,6,3,5,5,5,3,6,4,7,4,2,3,3,6,5,2,2,5,3,6
+129,UP Diliman,BA Linguistics ,III,UVLê;Google Classroom,7,6,7,5,6,2,5,2,5,6,6,7,6,7,6,7,1,1,3,1,5,5,5,6,4,1,6
+130,UP Diliman,BS Statistics,I,UVLê;Google Classroom,6,6,6,6,6,6,6,6,6,5,6,4,4,7,5,6,4,4,5,6,6,6,6,6,5,4,4
+131,UP Diliman,VS Computer Engineering ,II,UVLê;Google Classroom,7,7,7,7,6,7,6,6,6,6,7,1,1,7,5,1,3,1,3,2,6,4,6,6,3,2,7
+132,UP Diliman,BS Computer Engineering,I,UVLê;Google Classroom,7,7,7,7,7,2,5,2,2,2,2,7,7,7,3,3,4,1,2,2,3,4,2,2,5,5,1
+133,UP Los Banos,BS Agricultural Biotechnology,I,Google Classroom;Canvas,7,6,6,6,6,5,6,6,3,4,7,4,4,7,6,6,5,4,3,4,6,2,5,2,1,2,3
+134,UP Diliman,BS Statistics,III,UVLê;Google Classroom;Canvas;Moodle,5,3,3,5,3,2,3,4,2,7,5,7,7,7,1,2,1,1,1,1,5,2,3,3,4,5,3
+135,UP Los Banos,BS Statistics,IV,Google Classroom;Canvas,6,6,6,5,6,3,5,5,2,4,2,5,4,7,1,3,3,1,2,1,4,3,3,6,4,4,6
+136,UP Los Banos,BS Statistics ,I,Google Classroom;Canvas,6,7,6,5,6,6,6,7,5,5,7,6,6,7,6,7,7,6,5,5,5,5,3,3,5,5,5
+137,UP Diliman,BA Broadcast Media Arts and Studies,III,Google Classroom;Canvas,1,4,3,3,2,3,5,5,1,4,3,4,4,7,3,6,1,1,1,1,2,3,1,3,3,5,3
+138,UP Baguio,BA Social Sciences (Economics),III,UVLê;Moodle,6,6,5,5,5,4,4,5,2,4,6,5,5,6,6,4,2,4,2,3,1,3,2,2,3,4,4
+139,UP Baguio,BS Biology major in General Biology,III,UVLê;Google Classroom;Moodle;Edmodo,6,7,5,5,5,6,7,7,6,5,7,1,1,7,5,4,3,6,5,5,4,4,5,4,6,5,7
+140,UP Baguio,BS Biology ,III,UVLê;Google Classroom;Moodle;Edmodo,6,6,7,5,6,5,6,6,4,4,6,1,1,6,1,5,5,5,5,4,4,5,4,4,5,4,5
+141,UP Baguio,BA Social Science Economics-Political Science,III,UVLê;Google Classroom,7,7,7,7,7,4,7,5,7,6,7,4,4,6,5,1,7,6,4,3,4,4,3,5,4,2,1
+142,UP Diliman,BS Economics,IV,UVLê;Discord,5,6,3,7,5,5,6,6,5,6,5,6,6,7,7,7,5,5,3,3,2,6,5,6,4,6,4
+143,UP Los Banos,BS Biology,II,Google Classroom;Canvas,7,5,6,7,7,7,7,7,6,7,7,4,4,7,6,7,5,5,5,6,6,7,5,6,6,6,7
+144,UP Cebu,BS Computer Science,I,Google Classroom;Virtual Learning Environment (now University Virtual Education Commons),7,7,7,6,6,3,5,4,3,4,4,5,4,7,5,7,5,5,5,5,6,5,3,6,5,5,7
+145,UP Diliman,BS Statistics,III,UVLê,6,6,6,6,6,5,4,5,5,5,5,6,5,7,6,5,5,5,5,5,3,6,5,5,4,4,4
+146,UP Diliman,BS Mechanical Engineering,III,UVLê;Google Classroom,7,7,7,5,5,4,4,4,4,6,7,1,1,5,6,7,2,3,2,2,2,4,3,5,1,4,3
+147,UP Los Banos,BS Biology,II,eLBI;Google Classroom;Canvas;Moodle,7,7,7,7,7,7,7,5,1,4,7,5,5,7,1,2,1,1,2,1,1,3,2,1,3,1,7
+148,UP Diliman,BS Computer Science,II,UVLê;Google Classroom,6,7,6,7,7,3,5,4,4,6,5,2,2,7,5,5,3,2,4,4,6,6,6,5,4,5,5
+149,UP Diliman,BS Statistics,IV,UVLê;Google Classroom,7,7,6,7,7,7,7,7,2,6,7,1,1,6,7,7,1,1,5,3,6,7,5,7,5,2,7
+150,UP Diliman,BS Business Administration and Accountancy,IV,UVLê;Google Classroom,5,5,6,5,4,3,5,3,3,6,4,1,1,6,6,7,2,1,2,2,7,6,2,2,4,2,1

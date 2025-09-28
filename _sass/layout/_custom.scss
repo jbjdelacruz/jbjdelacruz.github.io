@@ -196,15 +196,15 @@
   display: flex;
   justify-content: center;
   margin: 0 auto;
-  padding-top: 2rem;
-  max-width: 600px;
+  padding-top: 1rem;
+  padding-bottom: 1rem;  
   width: 100%;
 }
 
 .tableauPlaceholder {
   position: relative;
   width: 100%;
-  padding-top: 78%; /* maintain aspect ratio */
+  padding-top: 60%;
   overflow: hidden;
   border-radius: 6px;
 
