@@ -3,7 +3,7 @@ title: "Manhattan's Urban Forestry Report, 2015"
 collection: portfolio
 permalink: /portfolio/manhattans-urban-forestry-report-2015
 date: 2023-01-01
-last_updated: 2025-09-29
+last_updated: 2025-07-30
 excerpt: 'This analysis of census data on more than 60,000 street trees across Manhattan won first place in [Which Tree Species Should the City Plant?](https://www.datacamp.com/competitions/city-tree-species?entry=ba331d65-5607-4c69-adb4-406663585edc) competition. It evaluates spatial distribution, biological characteristics, and biodiversity while ranking species by median trunk diameter and health index, presenting evidence-based recommendations for future tree planting.'
 venue: 'DataCamp'
 categories:
@@ -72,8 +72,6 @@ The main objective of this report is to profile Manhattan's tree population and 
 ### 1.3. Libraries
 
 ```R
-# ---------- Packages & Datasets
-
 # Load required packages
 library(tidyverse)
 library(dplyr)
@@ -108,34 +106,59 @@ merged_trees_and_neighborhoods <- trees %>%
 
 Based on the *TreesCount! 2015 Street Tree Census*, this [dataset](https://data.cityofnewyork.us/Environment/2015-Street-Tree-Census-Tree-Data/uvpi-gqnh) was collected by volunteers and staff organized by NYC Parks & Recreation, along with partner organizations. It includes information on tree species, diameter, and perceived health. Accompanying blockface data indicate the status of data collection and release across the city.
 
-![Variables and Descriptions of Trees Dataset](/files/manhattans-urban-forestry-report-2015/images/tbl-of-vars-desc1.jpg)
+| Variable     | Description |
+|:-------------|:------------|
+| tree_id      | Unique id of each tree |
+| tree_dbh     | The diameter of the tree in inches measured at 54 inches above the ground |
+| curb_loc     | Location of the tree bed in relation to the curb Either along the curb (OnCurb) or offset from the curb (OffsetFromCurb) |
+| spc_common   | Common name for the species |
+| status       | Indicates whether the tree is alive or standing dead |
+| health       | Indication of the tree's health (Good, Fair, and Poor) |
+| root_stone   | Indicates the presence of a root problem caused by paving stones in the tree bed |
+| root_grate   | Indicates the presence of a root problem caused by metal grates in the tree bed |
+| root_other   | Indicates the presence of other root problems |
+| trunk_wire   | Indicates the presence of a trunk problem caused by wires or rope wrapped around the trunk |
+| trnk_light   | Indicates the presence of a trunk problem caused by lighting installed on the tree |
+| trnk_other   | Indicates the presence of other trunk problems |
+| brch_light   | Indicates the presence of a branch problem caused by lights or wires in the branches |
+| brch_shoe    | Indicates the presence of a branch problem caused by shoes in the branches |
+| brch_other   | Indicates the presence of other branch problems |
+| postcode     | Five-digit zip code where the tree is located |
+| nta          | Neighborhood Tabulation Area (NTA) code from the 2010 US Census for the tree |
+| nta_name     | Neighborhood name |
+| latitude     | Latitude of the tree in decimal degrees |
+| longitude    | Longitude of the tree in decimal degrees |
 
 #### 1.4.2. Neighborhoods
 
 This [dataset](https://data.cityofnewyork.us/City-Government/NTA-map/d3qk-pfyz) is based on the boundaries of Neighborhood Tabulation Areas (NTAs), created by the NYC Department of City Planning using whole census tracts from the 2010 Census as building blocks. These aggregations of census tracts form subsets of New York City’s 55 Public Use Microdata Areas (PUMAs).
 
-![Variables and Descriptions of Neighborhoods Dataset](/files/manhattans-urban-forestry-report-2015/images/tbl-of-vars-desc2.jpg)
+| Variable     | Description |
+|:-------------|:------------|
+| ntacode      | NTA code    |
+| ntaname      | Neighborhood name |
+| geometry     | Polygon that defines the neighborhood |
 
 ## 2. Results & Discussion
 
 ### 2.1. Tree Population
 
-Using descriptive and spatial analyses, the following information outlines the location and physical attributes of all Manhattan trees in $2015$ with a population size ($N$) of $64,229$:
+Using descriptive and spatial analyses, the following information outlines the location and physical attributes of all Manhattan trees in 2015 with a population size ($$N$$) of 64,229:
 
 #### 2.1.1. Spatial
 
-##### 2.1.1.1. Tree Locations by Neighborhood
+##### 2.1.1.1. Tree Location by Neighborhood
 
-While trees seem to cover much each of Manhattan's $28$ neighborhoods, some of the southern ones, including MN13, MN17, MN24, MN25, MN27, MN28, and MN50, have empty areas. Interestingly, four of these aforementioned neighborhoods (indicated by *) are among the top ten in terms of land size, which are:
+While trees seem to cover much each of Manhattan's 28 neighborhoods, some of the southern ones, including MN13, MN17, MN24, MN25, MN27, MN28, and MN50, have empty areas. Interestingly, four of these aforementioned neighborhoods (indicated by *) are among the top ten in terms of land size, which are:
 
- 1. *Hudson Yards-Chelsea-Flatiron-Union Square (MN13)
+ 1. Hudson Yards-Chelsea-Flatiron-Union Square (MN13)*
  2. Upper West Side (MN12)
- 3. *Midtown-Midtown South (MN17)
+ 3. Midtown-Midtown South (MN17)*
  4. Central Harlem North-Polo Grounds (MN03)
  5. West Village (MN23)
- 6. *SoHo-TriBeCa-Civic Center-Little Italy (MN24)
+ 6. SoHo-TriBeCa-Civic Center-Little Italy (MN24)*
  7. East Harlem North (MN34)
- 8. *Lower East Side (MN28)
+ 8. Lower East Side (MN28)*
  9. Washington Heights South (MN36)
 10. Washington Heights North (MN35)
 
@@ -269,16 +292,16 @@ tree_locs_map_plot <- ggplot() +
 
 The top ten neighborhoods by tree counts are:
  
- 1. *Upper West Side (MN12)<br/>
- 2. Upper East Side-Carnegie Hill (MN40)<br/>
- 3. *West Village (MN23) <br/>
- 4. *Central Harlem North-Polo Grounds (MN03) <br/>
- 5. *Hudson Yards-Chelsea-Flatiron-Union Square (MN13) <br/>
- 6. *Washington Heights South (MN36)<br/>
- 7. Morningside Heights (MN09)<br/>
- 8. Central Harlem South (MN11)<br/>
- 9. *Washington Heights North (MN35) <br/>
-10. *East Harlem North (MN34)
+ 1. Upper West Side (MN12)*
+ 2. Upper East Side-Carnegie Hill (MN40)
+ 3. West Village (MN23)*
+ 4. Central Harlem North-Polo Grounds (MN03)*
+ 5. Hudson Yards-Chelsea-Flatiron-Union Square (MN13)*
+ 6. Washington Heights South (MN36)*
+ 7. Morningside Heights (MN09)
+ 8. Central Harlem South (MN11)
+ 9. Washington Heights North (MN35)*
+10. East Harlem North (MN34)*
 
 Seven of which (indicated by *\) are part of the ten largest.
 
@@ -420,7 +443,7 @@ nbh_tree_cnts %>%
 
 ##### 2.1.1.3. Trees by Curb Location
 
-Majority or $93.31\%$ ($59,932$) of the tree beds are located on curb, while the remaining $6.69\%$ $(4,297)$ are located offset from curb.
+Majority or 93.31% (59,932) of the tree beds are located on curb, while the remaining 6.69% (4,297) are located offset from curb.
 
 ```R
 # Tree count per location in relation to curb
@@ -499,7 +522,6 @@ curb_loc_stacked_bar_plot <- ggplot(number_of_trees_per_curb_loc) +
                             size=5, color="white", hjust=1)
 ```
 
-
 ```R
 # Export plot as PNG
 ggsave(
@@ -509,36 +531,33 @@ ggsave(
 )
 ```
 
-    [1m[22mSaving 7 x 7 in image
-
-
 <img src="documentation/curb_loc_stacked_bar_plot.png" alt="" title=""/>
 
-**Trees' Curb Location by Neigborhood:**
+##### 2.1.1.4. Tree Curb Location by Neigborhood
 
-Twenty neighborhoods have at least $90\%$ of their trees being on curb, while $27$ have at least $75\%$. The ten neighborhoods with the highest percentage of trees located on-curb are:
- 1. East Village (MN22)<br/>
- 2. Manhattanville (MN06)<br/>
- 3. Gramercy (MN21)<br/>
- 4. West Village (MN23)<br/>
- 5. Hudson Yards-Chelsea-Flatiron-Union Square (MN13)<br/>
- 6. Yorkville (MN32)<br/>
- 7. Clinton (MN15)<br/>
- 8. Washington Heights North (MN35)<br/>
- 9. Lenox Hill-Roosevelt Island (MN31)<br/>
+Twenty neighborhoods have at least 90% of their trees being on curb, while 27 have at least 75%. The ten neighborhoods with the highest percentage of trees located on-curb are:
+ 1. East Village (MN22)
+ 2. Manhattanville (MN06)
+ 3. Gramercy (MN21)
+ 4. West Village (MN23)
+ 5. Hudson Yards-Chelsea-Flatiron-Union Square (MN13)
+ 6. Yorkville (MN32)
+ 7. Clinton (MN15)
+ 8. Washington Heights North (MN35)
+ 9. Lenox Hill-Roosevelt Island (MN31)
 10. East Harlem North (MN34)
 
 Only Stuyvesant Town-Cooper Village has the majority of its trees being offset from curb. Including it, the neighborhoods with the highest percentage of trees located offset from curb are:
 
- 1. Stuyvesant Town-Cooper Village (MN50)<br/>
- 2. Battery Park City-Lower Manhattan (MN25)<br/>
- 3. Chinatown (MN27)<br/>
- 4. Morningside Heights (MN09)<br/>
- 5. East Harlem South (MN33)<br/>
- 6. Lower East Side (MN28)<br/>
- 7. SoHo-TriBeCa-Civic Center-Little Italy (MN24)<br/>
- 8. Upper West Side (MN12)<br/>
- 9. Lincoln Square (MN14)<br/>
+ 1. Stuyvesant Town-Cooper Village (MN50)
+ 2. Battery Park City-Lower Manhattan (MN25)
+ 3. Chinatown (MN27)
+ 4. Morningside Heights (MN09)
+ 5. East Harlem South (MN33)
+ 6. Lower East Side (MN28)
+ 7. SoHo-TriBeCa-Civic Center-Little Italy (MN24)
+ 8. Upper West Side (MN12)
+ 9. Lincoln Square (MN14)
 10. Upper East Side-Carnegie Hill (MN40)
 
 
@@ -715,7 +734,7 @@ curb_loc_per_nbh_stacked_bar_plot <- ggplot(curb_loc_per_nbh) +
 <img src="documentation/curb_loc_per_nbh_stacked_bar_plot.png" alt="" title=""/>
 
 #### Biological
-**Size:** In terms of trunk diameter, the mean size of the tree population (red line in Fig. 5) is $8.6312$ inches, with a standard deviation of $5.5906$. Furthermore, its distribution is positively skewed, implying that the majority of trees have trunk diameters closer to the lower bound. In this case, we can use the median (blue line) of $8$ inches (with an IQR of $7$) as a better measure of central tendency (and spread).
+**Size:** In terms of trunk diameter, the mean size of the tree population (red line in Fig. 5) is 8.6312 inches, with a standard deviation of 5.5906. Furthermore, its distribution is positively skewed, implying that the majority of trees have trunk diameters closer to the lower bound. In this case, we can use the median (blue line) of 8 inches (with an IQR of 7) as a better measure of central tendency (and spread).
 
 
 ```R
@@ -965,348 +984,10 @@ pop_attributes_stacked_bar_plot <- ggplot(pop_attributes) +
                                  x = attribute,
                                  y = 100*proportion-20),
                              size=3, color="white", hjust=1)
-
-#pop_attributes %>%
-#	mutate(number_of_trees = prettyNum(number_of_trees, big.mark=",")) %>%
-#	select(-proportion)
 ```
-
-
-```R
-pop_attributes_stacked_bar_plot
-```
-
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)):
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-    Warning message in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-    “font family 'sans serif' not found in PostScript font database”
-
-
-
     
 ![png](notebook_files/notebook_27_1.png)
     
-
-
-
 ```R
 trees %>%
   summarize(total_number_of_censused_trees = n())
@@ -1325,10 +1006,10 @@ trees %>%
 
 
 <table class="dataframe">
-<caption>A tibble: 1 × 1</caption>
+<!-- <caption>A tibble: 1 × 1</caption> -->
 <thead>
   <tr><th scope=col>total_number_of_censused_trees</th></tr>
-  <tr><th scope=col>&lt;int&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;int&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>64229</td></tr>
@@ -1339,10 +1020,10 @@ trees %>%
 
 
 <table class="dataframe">
-<caption>A tibble: 1 × 1</caption>
+<!-- <caption>A tibble: 1 × 1</caption> -->
 <thead>
   <tr><th scope=col>number_of_identified_species</th></tr>
-  <tr><th scope=col>&lt;int&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;int&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>128</td></tr>
@@ -1353,10 +1034,10 @@ trees %>%
 
 
 <table class="dataframe">
-<caption>A tibble: 1 × 2</caption>
+<!-- <caption>A tibble: 1 × 2</caption> -->
 <thead>
   <tr><th scope=col>number_of_trees_with_unidentified_species</th><th scope=col>number_of_trees_with_identified_species</th></tr>
-  <tr><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>1801</td><td>62428</td></tr>
@@ -1465,10 +1146,10 @@ trees %>% group_by(spc_common) %>% filter(spc_common != 'null') %>% count() %>% 
 
 
 <table class="dataframe">
-<caption>A tibble: 128 × 3</caption>
+<!-- <caption>A tibble: 128 × 3</caption> -->
 <thead>
   <tr><th scope=col>spc_common</th><th scope=col>n</th><th scope=col>perc</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>Honeylocust        </td><td>13176</td><td>21.11</td></tr>
@@ -1535,27 +1216,25 @@ trees %>% group_by(spc_common) %>% filter(spc_common != 'null') %>% count() %>% 
 </tbody>
 </table>
 
-
-
 <img src="documentation/pop_attributes_stacked_bar_plot.png" alt="" title=""/>
 
 ### Tree Species
 Using spatial, descriptive, and correlation analyses, the following information outlines the biodiversity, biology, and ranking in terms of desirable traits of the tree species in Manhattan:
+
 #### Biodiversity
 ##### Richness
-Richness is referred to as the number of species within a defined region. With respect to Manhattan, ${128}$ species were identified among ${N_{I} =62,428}$ trees, while the remaining ${N_{U} = 1,801}$ have species which are unidentified in the census. In terms of the neighborhoods, the ten with the highest richness (of identified species) are:
+Richness is referred to as the number of species within a defined region. With respect to Manhattan, 128 species were identified among $${N_{I} =}$$ 62,428 trees, while the remaining $${N_{U} =}$$ 1,801 have species which are unidentified in the census. In terms of the neighborhoods, the ten with the highest richness (of identified species) are:
 
- 1. Washington Heights North (MN35)<br/>
- 2. Lower East Side (MN28)<br/>
- 3. Washington Heights South (MN36)<br/>
- 4. West Village (MN23)<br/>
- 5. Central Harlem North-Polo Grounds (MN03)<br/>
- 6. Hamilton Heights (MN04)<br/>
- 7. Upper West Side (MN12)<br/>
- 8. Upper East Side-Carnegie Hill (MN40)<br/>
- 9. Central Harlem South (MN11)<br/>
+ 1. Washington Heights North (MN35)
+ 2. Lower East Side (MN28)
+ 3. Washington Heights South (MN36)
+ 4. West Village (MN23)
+ 5. Central Harlem North-Polo Grounds (MN03)
+ 6. Hamilton Heights (MN04)
+ 7. Upper West Side (MN12)
+ 8. Upper East Side-Carnegie Hill (MN40)
+ 9. Central Harlem South (MN11)
 10. East Village (MN22)
-
 
 ```R
 defaultW <- getOption("warn")
@@ -1672,10 +1351,10 @@ top_ten_nbh_rchns
 
 
 <table class="dataframe">
-<caption>A tibble: 10 × 4</caption>
+<!-- <caption>A tibble: 10 × 4</caption> -->
 <thead>
   <tr><th scope=col>rank</th><th scope=col>nta</th><th scope=col>nta_name</th><th scope=col>richness</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>1 </td><td>MN35</td><td>Washington Heights North         </td><td>81</td></tr>
@@ -1697,40 +1376,17 @@ top_ten_nbh_rchns
 
 ##### Abundance
 
-In this context, abundance is defined as the number of Manhattan trees per species, while relative abundance is the share of trees a certain species has in relation to the total number of trees in Manhattan. Among the $128$ and other unidentified tree species in Manhattan, the ten most abundant are:
- 1. Honeylocust<br/>
- 2. Callery pea<br/>
- 3. Ginkgo<br/>
- 4. Pin oak<br/>
- 5. Sophora<br/>
- 6. London planetree<br/>
- 7. Japanese zelkova<br/>
- 8. Littleleaf linden<br/>
- 9. American elm<br/>
+In this context, abundance is defined as the number of Manhattan trees per species, while relative abundance is the share of trees a certain species has in relation to the total number of trees in Manhattan. Among the 128 and other unidentified tree species in Manhattan, the ten most abundant are:
+ 1. Honeylocust
+ 2. Callery pea
+ 3. Ginkgo
+ 4. Pin oak
+ 5. Sophora
+ 6. London planetree
+ 7. Japanese zelkova
+ 8. Littleleaf linden
+ 9. American elm
 10. American linden
-
-
-```R
-spc_abd %>% mutate(round(relative_abundance*100,2))
-```
-
-
-    Error: object 'spc_abd' not found
-    Traceback:
-
-
-    1. mutate(., round(relative_abundance * 100, 2))
-
-    2. .handleSimpleError(function (cnd) 
-     . {
-     .     watcher$capture_plot_and_output()
-     .     cnd <- sanitize_call(cnd)
-     .     watcher$push(cnd)
-     .     switch(on_error, continue = invokeRestart("eval_continue"), 
-     .         stop = invokeRestart("eval_stop"), error = NULL)
-     . }, "object 'spc_abd' not found", base::quote(eval(expr, envir)))
-
-
 
 ```R
 # Species abundance and relative abundance
@@ -1801,16 +1457,11 @@ top_species_bar_plot <- ggplot(spc_abd %>% slice(1:25)) +
                                            "#65707C")),
               size = 2) +
 scale_color_manual(values=c("#65707C","white"))
-
-#spc_abd %>%
-#mutate(abundance = prettyNum(abundance,big.mark=","),
-#         perc_relative_abundance = label_percent(accuracy=0.01)(relative_abundance)) %>%select(-relative_abundance)
 ```
 
 <img src="documentation/top_species_bar_plot.png" alt="" title=""/>
 
 You can see in more details using the table below the species and their abundances (and relative abundances) with respect to the neighborhoods they belong to:
-
 
 ```R
 spc_abd_nbh <- nbh_spc_long %>%
@@ -1825,12 +1476,11 @@ spc_abd_nbh <- nbh_spc_long %>%
 spc_abd_nbh
 ```
 
-
 <table class="dataframe">
-<caption>A tibble: 1664 × 5</caption>
+<!-- <caption>A tibble: 1664 × 5</caption> -->
 <thead>
   <tr><th scope=col>nta</th><th scope=col>nta_name</th><th scope=col>spc_common</th><th scope=col>abundance_wrt_nta</th><th scope=col>relative_abundance_wrt_nta</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Japanese zelkova    </td><td>225</td><td>15.65%</td></tr>
@@ -1900,20 +1550,19 @@ spc_abd_nbh
 
 
 ##### Diversity
-To describe the overall species diversity in Manhattan, a quantitative measure called Simpson's Diversity Index $(SDI)$ is used, which takes into account the species richness and evenness (or the distribution of abundance across the tree species in a community). The formula is given by:
+To describe the overall species diversity in Manhattan, a quantitative measure called Simpson's Diversity Index (SDI) is used, which takes into account the species richness and evenness (or the distribution of abundance across the tree species in a community). The formula is given by:
 
 <div align="center">
     
-${D} = {1- \frac{\sum \limits _{i=1} ^{128} n_{i}({n_{i}-1})} {N_{I}({N_{I}-1})} } $
+$$ {D} = {1- \frac{\sum \limits _{i=1} ^{128} n_{i}({n_{i}-1})} {N_{I}({N_{I}-1})} } $$
 
 </div>
-<br/>
 
-where ${D}$ = Simpson's Diversity Index $(SDI)$;<br/>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${n_{i}}$ = ${i^{th}}$ species abundance;<br/>
-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${N_{I}}$ = number of trees with identified species = ${62,428}$ 
+where $${D} =$$ Simpson's Diversity Index (SDI);<br/>
+           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $${n_{i} = i^{th}}$$ species abundance;<br/>
+           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $${N_{I} =}$$ number of trees with identified species = 62,428
            
-With that, the computed $SDI$ value is $0.909$. This means that there is a very high diversity of tree species in Manhattan, and the chance of distinct species among two randomly selected trees from a sample is $90.9\%$. 
+With that, the computed SDI value is 0.909. This means that there is a very high diversity of tree species in Manhattan, and the chance of distinct species among two randomly selected trees from a sample is 90.9%. 
 
 
 ```R
@@ -2008,7 +1657,7 @@ top_spc_dbh_plot <- ggplot(top_spc_tree_dbh_stats %>% slice(1:25)) +
 
 <img src="documentation/top_spc_dbh_plot.png" alt="" title=""/>
 
-**Health-Related**: Out of the $128$ species that have been identified, $127$ have $100\%$ of their trees being alive, while the remaining one, honeylocust, has $99.99\%$. As for the health, a numerical value called health index $(HI)$ was computed for each species. This was done by assigning a number, ${j} ∈ \{1,2,3\}$, to the categories of "$Poor$", "$Fair$", and "$Good$" health, respectively, and then using the formula:
+**Health-Related**: Out of the 128 species that have been identified, 127 have 100% of their trees being alive, while the remaining one, honeylocust, has $99.99%$. As for the health, a numerical value called health index ($$HI$$) was computed for each species. This was done by assigning a number, $${j} ∈ \{1,2,3\}$$, to the categories of "$Poor$", "$Fair$", and "$Good$" health, respectively, and then using the formula:
 
 <div align="center">
     
@@ -2017,7 +1666,7 @@ ${HI_{i}} =  \frac {\sum \limits _{j=1} ^{3} j{a}_{j}}{3 n_{i}} $
 </div>
 <br/>
     
-where ${HI_{i}}$ = health index of the $i^{th}$ species;<br/>
+where $${HI_{i}} =$$ health index of the $i^{th}$ species;<br/>
                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${a_{j}}$ = species abundance with respect to the $j^{th}$ health category;<br/>
            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${n_{i}}$ =  ${i^{th}}$ species abundance
  
@@ -2199,10 +1848,10 @@ spc_root_problems
 
 
 <table class="dataframe">
-<caption>A tibble: 69 × 4</caption>
+<!-- <caption>A tibble: 69 × 4</caption> -->
 <thead>
   <tr><th scope=col>Common name of the species</th><th scope=col>none</th><th scope=col>Root problem</th><th scope=col>% of trees</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>White pine       </td><td> 0.00</td><td>''Paving stones</td><td>100.00</td></tr>
@@ -2303,10 +1952,10 @@ spc_trunk_problems
 
 
 <table class="dataframe">
-<caption>A tibble: 75 × 4</caption>
+<!-- <caption>A tibble: 75 × 4</caption> -->
 <thead>
   <tr><th scope=col>Common name of the species</th><th scope=col>none</th><th scope=col>Trunk problem</th><th scope=col>% of trees</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>Tartar maple      </td><td>41.67</td><td>''Wires or rope    </td><td> 0.00</td></tr>
@@ -2407,10 +2056,10 @@ brch_trunk_problems
 
 
 <table class="dataframe">
-<caption>A tibble: 75 × 4</caption>
+<!-- <caption>A tibble: 75 × 4</caption> -->
 <thead>
   <tr><th scope=col>Common name of the species</th><th scope=col>none</th><th scope=col>Branch problem</th><th scope=col>% of trees</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>Boxelder          </td><td>50.00</td><td>''Lights or wires </td><td> 0.00</td></tr>
@@ -2662,10 +2311,10 @@ spc_first_ranking_long %>%
 
 
 <table class="dataframe">
-<caption>A tibble: 256 × 7</caption>
+<!-- <caption>A tibble: 256 × 7</caption> -->
 <thead>
   <tr><th scope=col>Common name of the species</th><th scope=col>abundance</th><th scope=col>hi_rank</th><th scope=col>dbh_rank</th><th scope=col>rank_sum</th><th scope=col>Measurement</th><th scope=col>Value</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>Smoketree         </td><td>    1</td><td> 6.5</td><td> 8.0</td><td> 7.25</td><td>Health index    </td><td> 1.0000000</td></tr>
@@ -2736,8 +2385,7 @@ spc_first_ranking_long %>%
 
 **Fig. 14: Dashboard Results Using 'Rank All Species, by Size & Health' System**
 <img src="documentation/Dashboard1.png"/>
-</br>
-</br>
+
 **Fig. 15: Dashboard Results Using 'Rank Species with Abundance ≥ 29, by Size & Health'**
 <img src="documentation/Dashboard2.png"/>
 
@@ -2775,7 +2423,6 @@ The following are some potential courses of action for Manhattan's urban plannin
      - Median trunk diameter: $9$ $(12$th$)$
      - Heath index: $0.9282$ $(9$th$)$
   
-  </br>
 - Trees of species *Smoketree*, *Black maple*, *Amur cork tree*, *Pitch pine*, and *Red horse chestnut* from the first ranking can also be considered as they have shown superior sizes and health. However, it is also suggested looking into related literature and/or more adequate data about them. 
 
 ## Appendix
@@ -2844,10 +2491,10 @@ nbh_tree_cnts %>%
 
 
 <table class="dataframe">
-<caption>A tibble: 28 × 4</caption>
+<!-- <caption>A tibble: 28 × 4</caption> -->
 <thead>
   <tr><th scope=col>nta</th><th scope=col>nta_name</th><th scope=col>number_of_trees</th><th scope=col>Percentage</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>MN12</td><td>Upper West Side                           </td><td>5807</td><td>9.04%</td></tr>
@@ -2892,10 +2539,10 @@ number_of_trees_per_curb_loc
 
 
 <table class="dataframe">
-<caption>A tibble: 2 × 3</caption>
+<!-- <caption>A tibble: 2 × 3</caption> -->
 <thead>
   <tr><th scope=col>curb_loc</th><th scope=col>number_of_trees</th><th scope=col>percentage</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>OnCurb        </td><td>59932</td><td>93.07%</td></tr>
@@ -2917,10 +2564,10 @@ curb_loc_per_nbh %>%
 
 
 <table class="dataframe">
-<caption>A tibble: 56 × 5</caption>
+<!-- <caption>A tibble: 56 × 5</caption> -->
 <thead>
   <tr><th scope=col>nta</th><th scope=col>nta_name</th><th scope=col>curb_loc</th><th scope=col>number_of_trees</th><th scope=col>percentage</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;ord&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;ord&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>MN22</td><td>East Village                              </td><td>OnCurb        </td><td>1533</td><td>99.42%</td></tr>
@@ -3038,10 +2685,10 @@ nbh_rchns
 
 
 <table class="dataframe">
-<caption>A tibble: 28 × 3</caption>
+<!-- <caption>A tibble: 28 × 3</caption> -->
 <thead>
   <tr><th scope=col>nta</th><th scope=col>nta_name</th><th scope=col>richness</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>MN35</td><td>Washington Heights North                  </td><td>81</td></tr>
@@ -3190,10 +2837,10 @@ spc_tree_dbh_stats
 
 
 <table class="dataframe">
-<caption>A tibble: 128 × 9</caption>
+<!-- <caption>A tibble: 128 × 9</caption> -->
 <thead>
   <tr><th scope=col>spc_common</th><th scope=col>abundance</th><th scope=col>mean_tree_dbh</th><th scope=col>sd_tree_dbh</th><th scope=col>min_tree_dbh</th><th scope=col>first_quartile_tree_dbh</th><th scope=col>median_tree_dbh</th><th scope=col>third_quartile_tree_dbh</th><th scope=col>max_tree_dbh</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>Weeping willow      </td><td>   12</td><td>13.500000</td><td>7.317476</td><td> 4</td><td> 8.00</td><td>14.0</td><td>19.00</td><td> 26</td></tr>
@@ -3272,10 +2919,10 @@ spc_status
 
 
 <table class="dataframe">
-<caption>A tibble: 129 × 4</caption>
+<!-- <caption>A tibble: 129 × 4</caption> -->
 <thead>
   <tr><th scope=col>spc_common</th><th scope=col>status</th><th scope=col>number_of_trees</th><th scope=col>percentage_wrt_spc</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>Honeylocust           </td><td>Dead </td><td>    1</td><td>0.01%  </td></tr>
@@ -3355,10 +3002,10 @@ spc_health %>%
 
 
 <table class="dataframe">
-<caption>A tibble: 332 × 4</caption>
+<!-- <caption>A tibble: 332 × 4</caption> -->
 <thead>
   <tr><th scope=col>spc_common</th><th scope=col>health</th><th scope=col>number_of_trees</th><th scope=col>percentage</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>'Schubert' chokecherry</td><td>Good</td><td> 111</td><td>68.10% </td></tr>
@@ -3437,10 +3084,10 @@ spc_health_index %>%
 
 
 <table class="dataframe">
-<caption>A tibble: 128 × 2</caption>
+<!-- <caption>A tibble: 128 × 2</caption> -->
 <thead>
   <tr><th scope=col>spc_common</th><th scope=col>health_index</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>Arborvitae         </td><td>1.0000000</td></tr>
@@ -3532,10 +3179,10 @@ trees %>%
 
 
 <table class="dataframe">
-<caption>A tibble: 128 × 5</caption>
+<!-- <caption>A tibble: 128 × 5</caption> -->
 <thead>
   <tr><th scope=col>spc_common</th><th scope=col>no_problem</th><th scope=col>root_stone</th><th scope=col>root_grate</th><th scope=col>root_other</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>White pine         </td><td> 0.00</td><td>100.00</td><td> 0.00</td><td> 0.00</td></tr>
@@ -3627,10 +3274,10 @@ trees %>%
 
 
 <table class="dataframe">
-<caption>A tibble: 128 × 5</caption>
+<!-- <caption>A tibble: 128 × 5</caption> -->
 <thead>
   <tr><th scope=col>spc_common</th><th scope=col>no_problem</th><th scope=col>trunk_wire</th><th scope=col>trnk_light</th><th scope=col>trnk_other</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>Tartar maple      </td><td>41.67</td><td> 0.00</td><td> 0.00</td><td>58.33</td></tr>
@@ -3722,10 +3369,10 @@ trees %>%
 
 
 <table class="dataframe">
-<caption>A tibble: 128 × 5</caption>
+<!-- <caption>A tibble: 128 × 5</caption> -->
 <thead>
   <tr><th scope=col>spc_common</th><th scope=col>no_problem</th><th scope=col>brch_light</th><th scope=col>brch_shoe</th><th scope=col>brch_other</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>Boxelder           </td><td>50.00</td><td> 0.00</td><td>0.00</td><td>50.00</td></tr>
@@ -3804,10 +3451,10 @@ spc_first_ranking %>%
 
 
 <table class="dataframe">
-<caption>A tibble: 128 × 7</caption>
+<!-- <caption>A tibble: 128 × 7</caption> -->
 <thead>
   <tr><th scope=col>spc_common</th><th scope=col>abundance</th><th scope=col>health_index</th><th scope=col>median_tree_dbh</th><th scope=col>hi_rank</th><th scope=col>dbh_rank</th><th scope=col>rank_sum</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>Smoketree         </td><td>    1</td><td>1.0000000</td><td>11.0</td><td> 6.5</td><td> 8.0</td><td> 7.25</td></tr>
@@ -3886,10 +3533,10 @@ spc_second_ranking %>%
 
 
 <table class="dataframe">
-<caption>A tibble: 64 × 7</caption>
+<!-- <caption>A tibble: 64 × 7</caption> -->
 <thead>
   <tr><th scope=col>spc_common</th><th scope=col>abundance</th><th scope=col>health_index</th><th scope=col>median_tree_dbh</th><th scope=col>hi_rank</th><th scope=col>dbh_rank</th><th scope=col>rank_sum</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>Siberian elm        </td><td>  156</td><td>0.9316239</td><td>11.0</td><td> 6</td><td> 3.5</td><td> 9.5</td></tr>
@@ -3955,4 +3602,3 @@ spc_second_ranking %>%
   <tr><td>Common hackberry      </td><td> 170</td><td>0.8352941</td><td>3</td><td>55</td><td>62.5</td><td>117.5</td></tr>
 </tbody>
 </table>
-
