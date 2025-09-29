@@ -3,7 +3,7 @@ title: 'Student Satisfaction and Academic Performance in Remote Learning'
 collection: portfolio
 permalink: /portfolio/student-satisfaction-and-academic-performance-in-remote-learning
 date: 2025-08-04
-last_updated: 2025-08-10
+last_updated: 2025-09-29
 excerpt: 'This report analyzes the remote learning experiences of University of the Philippines students using survey-scale data collected more than a year after the onset of the COVID-19 pandemic. It examines respondent demographics, summarizes satisfaction and academic performance scale ratings, and explores the correlations among scale items. The findings highlight patterns that can inform strategies for enhancing online instruction.'
 venue: 'Kaggle'
 categories:
@@ -1037,3 +1037,4 @@ DOI: https://doi.org/10.58729/1941-6679.1486.
 - Lontoc, J. F. B. (2021). UP students and admin meet to assess remote learning and teaching experience. University of the Philippines. Retrieved January 18, 2022, from https://up.edu.ph/up-students-and-admin-meet-to-assess-remote-learning-and-teaching-experience.
 
 - Santos, A. P., By, Shewakramani, J., Zhou, B., & Tsang, C. (2020). “In the Philippines, Distance Learning reveals the digital divide”: Heinrich Böll stiftung: Brussels Office - European Union. Heinrich-Böll-Stiftung. Retrieved January 18, 2022, from https://eu.boell.org/en/2020/10/06/philippines-distance-learning-reveals-digital-divide.
+
