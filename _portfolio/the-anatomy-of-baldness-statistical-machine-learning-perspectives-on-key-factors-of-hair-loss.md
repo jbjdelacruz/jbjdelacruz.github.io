@@ -3,7 +3,7 @@ title: 'The Anatomy of Baldness: Statistical and Machine Learning Perspectives o
 collection: portfolio
 permalink: /portfolio/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss
 date: 2024-11-29
-last_updated: 2024-12-13
+last_updated: 2025-09-30
 excerpt: 'In this [Crack the Code of Hair Loss](https://www.datacamp.com/competitions/why-hair-loss?entry=05f354fb-dd89-4631-a682-00499eab8fb2) first-place entry, survey responses from 999 patients were analyzed to identify factors contributing to hair loss. The report integrates association measures, machine learning models, and feature importance analysis to uncover links between baldness and age, medical history, stress, and lifestyle, offering actionable insights for health management and medical intervention.'
 venue: 'DataCamp'
 categories:
@@ -2945,3 +2945,4 @@ summarize_variable(
     <tr><td>NutritionalDeficienciesSeleniumdeficiency</td><td>0</td><td>0.06</td><td>4.82</td></tr>
   </tbody>
 </table>
+
