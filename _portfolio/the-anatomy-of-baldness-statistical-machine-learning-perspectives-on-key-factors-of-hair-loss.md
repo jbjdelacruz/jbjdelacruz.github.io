@@ -48,8 +48,11 @@ library(scales)
 library(readr)
 library(DT)
 library(ggthemes)
-library(moments) # used to calculate skewness
+library(moments)
+```
+See [Appendix](#appendix-functions) for a comprehensive list of the functions used.
 
+<!-- ```R
 # Function to install missing packages
 install_if_missing <- function(p) {
   if (!require(p, character.only = TRUE)) {
@@ -502,7 +505,7 @@ is.num <- sapply(output, is.numeric)
 output[is.num] <- lapply(output[is.num], round, 2)
 output
 }			  		  
-```
+``` -->
 
 ### 1.4. Dataset
 The dataset contains a total of 999 rows of observations, each of which represents a single respondent. The table below provides a list of variables and their corresponding descriptions:
@@ -2233,7 +2236,6 @@ combined_plotly
 - The silhouette width, which measures the quality of clustering, drops significantly after 2 clusters.
 - It remains relatively constant between 3 and 4 clusters and gradually approaches near zero at 6 clusters, remaining stable beyond this point.
 - The highest average silhouette width occurs at 2 clusters; this is considered the optimal number for further analysis.
-<br><br>
 
 #### 4.2.2. Cluster Visualization
 
@@ -2356,9 +2358,75 @@ clus_heatmap <- plot_ly(
       )
     )
   )
-
-clus_heatmap
 ```
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<div id="clus_heatmap" style="width:100%; margin-bottom:1rem;"></div>
+<script>
+// Example data: replace with your actual summaries
+var clusters = ["1", "2"]; // Cluster labels on x-axis
+var variables = ["FeatureA", "FeatureB", "FeatureC", "FeatureD"]; // Feature labels on y-axis
+
+// Z-matrix: rows are variables (features), columns are clusters; percent values in decimals (e.g. 0.25 = 25%)
+var zData = [
+  [0.28, 0.19],
+  [0.18, 0.24],
+  [0.12, 0.08],
+  [0.33, 0.26]
+];
+
+// Generate hovertext matrix matching above dimensions
+var hovertext = [];
+for (var i = 0; i < variables.length; i++) {
+  hovertext[i] = [];
+  for (var j = 0; j < clusters.length; j++) {
+    hovertext[i][j] =
+      "<b>Cluster:</b> " + clusters[j] +
+      "<br><b>Feature:</b> " + variables[i] +
+      "<br><b>Percentage of individuals with feature and baldness:</b> " +
+      (zData[i][j]*100).toFixed(2) + "%";
+  }
+}
+
+var trace = {
+  x: clusters,
+  y: variables,
+  z: zData,
+  type: "heatmap",
+  colorscale: [
+    [0, 'white'],
+    [1, '#FF6347']
+  ],
+  text: hovertext,
+  hoverinfo: "text"
+};
+
+var layout = {
+  title: {
+    text: "<br><b>𝗙𝗜𝗚. 𝟭𝟰﹕𝗖𝗟𝗨𝗦𝗧𝗘𝗥 𝗩𝗦. 𝗙𝗘𝗔𝗧𝗨𝗥𝗘</b>",
+    font: { size: 18 }
+  },
+  xaxis: {
+    title: {
+      text: "<br>Cluster",
+      font: { family: "ITC Officina Sans", size: 18 }
+    },
+    tickfont: { family: "ITC Officina Sans" }
+  },
+  yaxis: {
+    title: {
+      text: "Feature",
+      font: { family: "ITC Officina Sans", size: 18 }
+    },
+    tickfont: { family: "ITC Officina Sans", size: 10 },
+    automargin: true
+  },
+  paper_bgcolor: "#D5E4EB",
+  margin: { l: 70, r: 30, b: 25, t: 70 }
+};
+
+Plotly.newPlot("clus_heatmap", [trace], layout, {responsive: true, displayModeBar: false});
+</script>
 
 - Both clusters exhibit similar patterns for features associated with medical conditions, including scalp infection, psoriasis, and androgenetic alopecia, as well as hormonal changes and medications and treatments such as immunomodulators.
 
@@ -2703,8 +2771,466 @@ Prajapati, Jignesh, Patel, Ankit, & Raninga, Punit. (2014). _Facial Age Group Cl
 Reusova, A. (2018). _Hierarchical Clustering on Categorical Data in R_. Towards Data Science. Retrieved from https://towardsdatascience.com/hierarchical-clustering-on-categorical-data-in-r-a27e578f2995
 
 ## 6. Appendix
-### 6.1. Tables
-#### 6.1.1. Summary Statistics by Factor
+
+### 6.1. Functions {#appendix-functions}
+
+```R
+# Function to install missing packages
+install_if_missing <- function(p) {
+  if (!require(p, character.only = TRUE)) {
+    suppressWarnings(suppressMessages(install.packages(p, dependencies = TRUE)))
+    suppressPackageStartupMessages(library(p, character.only = TRUE))
+  }
+}
+
+# Function to tabularize summary statistics of a given variable in the dataset
+summarize_variable <- function(data, variable=NULL, caption=NULL, dom="t", searching=FALSE, rownames=FALSE, pageLength=10) {
+  if (is.null(variable)) {
+    datatable(data, 
+                  class="cell-border stripe", 
+                  options = list(dom=dom, searching=searching, pageLength=pageLength),
+                  rownames=rownames,
+                  caption=if (!is.null(caption)) htmltools::tags$caption(
+                    style = 'caption-side: top; text-align: center;',
+                    caption
+                  ) else NULL)
+  } else {
+  summarized_data <- data %>%
+      filter(!!sym(variable) != "No Data") %>%
+      group_by(!!sym(variable)) %>%
+      summarise(Count = n(), .groups="drop") %>%
+      {
+        if (is.ordered(data[[variable]])) {
+          arrange(., desc(!!sym(variable)))
+        } else {
+          arrange(., desc(Count))
+        }
+      } %>%
+      mutate(Percentage = label_percent(accuracy=0.01)(Count/sum(Count)))
+    
+    datatable(summarized_data %>% rename(!!variable := !!sym(variable)),
+                  class="cell-border stripe", 
+                  options = list(dom=dom, searching=searching, pageLength=pageLength),
+            rownames=rownames,
+                  caption=if (!is.null(caption)) htmltools::tags$caption(
+                    style = 'caption-side: top; text-align: center;',
+                    caption
+                  ) else NULL)
+  }
+}
+        
+# Function to check if a package is installed, and install it if not
+install_if_missing <- function(package) {
+  if (!require(package, character.only = TRUE)) {
+    install.packages(package, dependencies = TRUE)
+    library(package, character.only = TRUE)
+  }
+}
+        
+# Function to create a propotional stack bar plot (used for subplots of multiple variables)
+create_plotly_stackbar <- function(data = data, var, showlegend=FALSE, yaxis_text=NULL, yaxis_titleSize=11.5, yaxis_tickSize=10, tickangle=0) {
+  yaxis_title <- ifelse(is.null(yaxis_text), var, yaxis_text)
+  
+  plot_data <- as.data.frame(table(data %>% filter(!!sym(var) != "No Data") %>%
+                      select(`Hair Loss`, all_of(var)))) %>%
+    rename_with(~ gsub("\\.", " ", .)) %>%
+  group_by(!!sym(var)) %>%
+    mutate(Percentage = 100*Freq/sum(Freq),
+           `Hair Loss` = ifelse(`Hair Loss` == 1, "With baldness", "Without baldness")
+          ) %>%
+    rename(Count = Freq)
+  
+  plot <- plot_ly(
+    data = plot_data,
+    x = ~Percentage,
+    y = as.formula(paste0("~`", var, "`")),
+    type = "bar",
+    color = ~`Hair Loss`,
+    colors = c("#FF6347", "#8c8c8c"),
+    showlegend = showlegend,
+    text = ~paste0("<b>Percentage:</b> ", label_percent(accuracy=0.01)(Percentage/100), "\n<b>Count:</b> ", Count),
+    hoverinfo = "text"
+  ) %>%
+    layout(
+      xaxis = list(title = list(text="Percentage (%)", font = list(family="ITC Officina Sans", size=18))),
+      yaxis = list(title = list(text = paste("\n<b>", yaxis_title, "</b>"),
+                font = list(family="ITC Officina Sans", size = yaxis_titleSize), 
+                standoff=43),
+                   tickfont = list(family="ITC Officina Sans", size = yaxis_tickSize), tickangle=tickangle
+          ),
+      barmode="stack",
+      legend = list(orientation="h", xanchor="center", x=0.438, y=1.11, traceorder="normal",
+          font = list(family="ITC Officina Sans", size=15)),
+    font = list(size = 14),
+    hoverlabel = list(font = list(family="ITC Officina Sans", size=15))
+    )
+  
+  return(plot)
+}			  
+        
+# Function to create a data frame for contingency table of a variable			  
+create_contingency_data <- function(data, var) {
+  
+  # Select relevant columns and filter out "No Data" values
+  selected_data <- data %>% 
+    select(`Hair Loss`, all_of(var)) %>%
+    filter(!!sym(var) != "No Data")
+  
+  # Create contingency table
+  contingency_data <- data.frame(matrix(
+    with(selected_data, table(selected_data[[var]], `Hair Loss`)),
+    nrow = dim(with(selected_data, table(selected_data[[var]], `Hair Loss`)))[1], 
+    dimnames = dimnames(with(selected_data, table(selected_data[[var]], `Hair Loss`)))
+  ))
+  
+  return(contingency_data)
+}
+        
+# Function to create stack bar plot for a variable
+create_stackbar_plot1 <- function(data, var, yaxis_title, yaxis_text=NULL, plot_title=NULL, tickangle=45) {
+  stackbar_data <- data %>% filter(!!sym(var) != "No Data") %>%
+    mutate(!!sym(var) := factor(!!sym(var),
+                levels = rownames(create_contingency_data(data, var) %>% 
+                                                    mutate(X01 = X0+X1, X0 = X0/X01, X1 = X1/X01) %>%
+                          arrange(X1, desc(rownames(.)))
+                         )
+    ))
+  
+  plot <- create_plotly_stackbar(data = stackbar_data, 
+                 var = var, 
+                 showlegend=TRUE,
+                 yaxis_text = yaxis_text,
+                 yaxis_titleSize=20,
+                 yaxis_tickSize=15,
+                 tickangle = tickangle)
+  
+  plot %>%
+    layout(
+      plot_bgcolor = "#D5E4EB",
+      paper_bgcolor = "#D5E4EB",
+      title = list(text = plot_title, 
+                   font = list(family = "ITC Officina Sans", size = 18), 
+                   y = 0.93),
+      margin = list(t = 95),
+      xaxis = list(tickfont = list(family = "ITC Officina Sans", size = 15))
+    )
+}			  
+
+# Function to create a contingency table of a variable				  
+create_contingency_table <- function(data, var, first_colname=var) {
+  # Append the proportion to each value in the dataframe
+  data <- as.data.frame(
+    apply(data %>% arrange(desc(X1)), c(1, 2), function(x) {
+      percentage <- label_percent(accuracy=0.01)(x / sum(data))
+      sprintf("%d (%s)", x, percentage)
+    })
+  ) %>%
+    rownames_to_column(var=first_colname) 
+  
+  # Rename rows and columns
+  colnames(data) <- c(first_colname, "Without baldness", "With baldness")
+  
+  # Reorder columns
+  data <- data[,c(first_colname, "With baldness", "Without baldness")]								
+  
+  return(data)
+}
+        
+# Function to compute Point-Biserial Correlation
+compute_point_biserial <- function(data, x, y, conf=0.95) {
+  # Ensure the x and y are in the data
+  if (!(x %in% colnames(data)) | !(y %in% colnames(data))) {
+    stop("The variable x or y not found in the data.")
+  }
+  
+  # Ensure the y contains only the specified values
+  unique_y <- unique(data[[y]])
+  if (length(unique_y) != 2) {
+    stop("The variable y is not binary.")
+  }
+  
+  # Extract values for individuals with and without the binary outcome
+  with_group <- data[[x]][data[[y]] == 1]
+  without_group <- data[[x]][data[[y]] == 0]
+  
+  # Calculate means
+  X1 <- mean(with_group)
+  X0 <- mean(without_group)
+  
+  # Calculate standard deviation of the entire x data
+  sn <- sd(data[[x]])
+  
+  # Calculate sample sizes
+  n1 <- length(with_group)
+  n0 <- length(without_group)
+  n <- n1 + n0
+  
+  # Compute the point biserial correlation coefficient
+  rpb <- (X1 - X0) / sn * sqrt((n1 * n0) / (n^2))
+  
+  # Compute confidence intervals using cor.test
+  rpb_cortest <- cor.test(data[[x]], data[[y]], conf.level=conf)
+  lower_ci <- rpb_cortest$conf.int[1]
+  upper_ci <- rpb_cortest$conf.int[2]
+  
+  rpb_df <- data.frame(x=x, y=y, X1=X1, X0=X0, rpb=rpb, lower_ci=lower_ci, upper_ci=upper_ci
+                      ) %>%
+    mutate(across(where(is.numeric) & !where(is.integer), ~ ifelse(abs(.) >= 0.01, 
+                                          label_number(accuracy = 0.01)(.), 
+                                          label_scientific(digits = 3)(.)))
+    ) %>%
+    rename(`Correlation coefficient` = rpb) %>%
+  mutate(!!paste0(conf * 100, "% CI") := paste0("[", lower_ci, ", ", upper_ci, "]"),
+       Method="Point-biserial") %>%
+  select(-c("lower_ci", "upper_ci"))
+  
+  return(rpb_df)
+}			
+
+# Function to compute Rank-Biserial Correlation
+compute_rank_biserial <- function(data, x, y, o=0, l=1, conf=0.95) {
+  # Install and load the 'rcompanion' package if not already installed
+  if (!requireNamespace("rcompanion", quietly = TRUE)) {
+    suppressWarnings(suppressMessages(install.packages("rcompanion", quiet=TRUE)))
+  }
+  suppressPackageStartupMessages(library(rcompanion))
+  
+  # Ensure the x and y are in the data
+  if (!(x %in% colnames(data)) | !(y %in% colnames(data))) {
+    stop("The variable x or y not found in the data.")
+  }
+  
+  # Ensure the y contains only the specified values
+  unique_y <- unique(data[[y]])
+  if (length(unique_y) != 2) {
+    stop("The variable y is not binary.")
+  }
+    
+  # Rank the predictor variable
+  data$ranked_factor <- rank(data[[x]], ties.method = "average") 
+  with_group <- data$ranked_factor[data[[y]] == 1]
+  without_group <- data$ranked_factor[data[[y]] == 0]	
+  
+  # Calculate mean ranks for individuals with and without the binary outcome
+  R1 <- mean(with_group)
+  R0 <- mean(without_group)
+ 
+  # Compute outputs using the wilcoxonRG function
+  group <- factor(c(rep("With group", length(with_group)), rep("Without group", length(without_group))))	
+  rrb_wilcoxonRG <- wilcoxonRG(x = c(with_group, without_group), g = group, ci=TRUE, conf=conf)
+  
+  # Extract coefficient and confidence intervals
+  rrb <- rrb_wilcoxonRG[[1]]
+  lower_ci <- rrb_wilcoxonRG[[2]]
+  upper_ci <- rrb_wilcoxonRG[[3]]
+  
+  rrb_df <- data.frame(x=x, y=y, R1=R1, R0=R0, rrb=rrb, lower_ci=lower_ci, upper_ci=upper_ci
+            ) %>%
+    mutate(across(where(is.numeric) & !where(is.integer), ~ ifelse(abs(.) >= 0.01, 
+                                          label_number(accuracy = 0.01)(.), 
+                                          label_scientific(digits = 3)(.)))
+    ) %>%
+    rename(`Correlation coefficient` = rrb) %>%
+  mutate(!!paste0(conf * 100, "% CI") := paste0("[", lower_ci, ", ", upper_ci, "]"),
+       Method="Rank-biserial") %>%
+  select(-c("lower_ci", "upper_ci")) 
+  
+  return(rrb_df)
+}
+
+# Function to compute Phi Coefficient
+compute_phi <- function(data, x, y, o=0, l=1, u, t, conf=0.95) {
+  # Install and load the 'statpsych' package if not already installed
+  if (!requireNamespace("statpsych", quietly = TRUE)) {
+    suppressWarnings(suppressMessages(install.packages("statpsych", quiet=TRUE)))
+  }
+  suppressPackageStartupMessages(library(statpsych))
+  
+  # Ensure the x and y are in the data
+  if (!(x %in% colnames(data)) | !(y %in% colnames(data))) {
+    stop("The variable x or y not found in the data.")
+  }
+  
+  # Ensure the x and y contain only binary values
+  unique_x <- unique(data[[x]])
+  unique_y <- unique(data[[y]])
+  if (length(unique_x) != 2 | length(unique_y) != 2) {
+    stop("The variables x and y must be binary.")
+  }
+  
+  # Create contingency table
+  contingency_table <- table(data[[x]], data[[y]])
+  
+  # Convert o, l, u, t to character
+  o <- as.character(o)
+  l <- as.character(l)
+  u <- as.character(u)
+  t <- as.character(t)
+  
+  # Extract counts from the contingency table using provided levels
+  a <- contingency_table[t, l]
+  b <- contingency_table[t, o]
+  c <- contingency_table[u, l]
+  d <- contingency_table[u, o]
+  
+  # Compute outputs using the function ci.phi
+  ci_phi <- ci.phi(alpha = 1-conf, d, c, b, a)
+  
+  # Compute confidence interval limits
+  phi <- ci_phi[[1]]
+  ci_lower <- ci_phi[[3]]
+  ci_upper <- ci_phi[[4]]
+  
+  # Create a dataframe to return the results
+  phi_df <- data.frame(x = x, y = y, counts=paste(a,b,c,d, sep=", "), phi = phi, 
+                       ci = paste0("[", round(ci_lower, 2), ", ", round(ci_upper, 2), "]")) %>%
+    mutate(across(where(is.numeric) & !where(is.integer), ~ ifelse(abs(.) > 0.01, 
+                                                                  label_number(accuracy = 0.01)(.), 
+                                                                  label_scientific(digits = 3)(.)))
+    ) %>%
+    rename(`a, b, c, d` = counts,
+           `Phi coefficient` = phi,
+       !!paste0(conf * 100, "% CI") := ci)
+  
+  return(phi_df)
+}		
+
+# Function to compute Cramer's V
+compute_cramersV <- function(data, x, y, conf=0.95) {
+  # Ensure the x and y are in the data
+  if (!(x %in% colnames(data)) | !(y %in% colnames(data))) {
+    stop("The variable x or y not found in the data.")
+  }
+  
+  # Create contingency table
+  contingency_table <- table(data[[x]], data[[y]])
+  
+  # Compute chi-square statistic
+  chi2 <- chisq.test(contingency_table, simulate.p.value = TRUE)$statistic
+  
+  # Get the number of rows and columns in the contingency table
+  n <- sum(contingency_table)
+  r <- nrow(contingency_table)
+  c <- ncol(contingency_table)
+  rc <- paste(r, c, sep=", ")	
+  
+  # Compute outputs using the cramerV function
+  cramersV <- cramerV(contingency_table, ci=TRUE, conf=conf)
+  
+  # Extract coefficient and confidence intervals
+  cramers_v <- cramersV[[1]]
+  lower_ci <- cramersV[[2]]
+  upper_ci <- cramersV[[3]]
+  
+  # Create a dataframe to return the results
+  cramers_v_df <- data.frame(
+    n = n, 
+    rc = rc, 
+    x = x, 
+    y = y, 
+    chi2 = chi2, 
+    cramers_v = cramers_v, 
+    lower_ci = lower_ci, 
+    upper_ci = upper_ci
+  ) %>%
+    mutate(across(
+      where(is.numeric) & !where(is.integer), 
+      ~ ifelse(abs(.) > 0.01, label_number(accuracy = 0.01)(.), label_scientific(digits = 3)(.))
+    )) %>%
+    rename(
+      `Chi-square statistic` = chi2,
+      `r, c` = rc,
+      `Cramer's V` = cramers_v
+    ) %>%
+    mutate(!!paste0(conf * 100, "% CI") := paste0("[", lower_ci, ", ", upper_ci, "]")) %>%
+    select(-c("lower_ci", "upper_ci"))
+  
+  rownames(cramers_v_df) <- c(1:nrow(cramers_v_df))
+  
+  return(cramers_v_df)
+}
+      
+# Function for evaluating model performance
+evaluate_model <- function(model, test, y, model_name) {
+  
+  # Check if pROC package is installed, if not, install it
+  if (!requireNamespace("pROC", quietly = TRUE)) {
+    install.packages("pROC")
+  }
+  suppressPackageStartupMessages(library(pROC))
+  
+  # Perform predictions using the model and test data
+  prob <- predict(model, test, type = "prob")[, 2]
+  predicted <- predict(model, test)
+  
+  # Create a confusion matrix to evaluate the model's performance
+  conf_matrix <- confusionMatrix(predicted, test[[y]])
+  
+  # Compute model metrics
+  roc <- roc(test[[y]], prob)
+  auc <- auc(roc)
+  accuracy <- conf_matrix$overall['Accuracy']
+  precision <- conf_matrix$byClass['Pos Pred Value']
+  recall <- conf_matrix$byClass['Sensitivity']
+  f1 <- 2 * (precision * recall) / (precision + recall)
+  
+  # Return performance metrics as a dataframe
+  results <- data.frame(
+    AUC = round(auc, 4),
+    Accuracy = round(accuracy, 4),
+    Precision = round(precision, 4),
+    Recall = round(recall, 4),
+    f1 = round(f1, 4)
+  ) %>%
+  rename(`F1 Score` = f1)
+  
+  rownames(results) <- model_name
+  return(results)
+}			  
+              
+# Function for cluster statistics
+cstats.table <- function(dist, tree, k) {
+clust.assess <- c("cluster.number","n","within.cluster.ss","average.within","average.between",
+                  "wb.ratio","dunn2","avg.silwidth")
+clust.size <- c("cluster.size")
+stats.names <- c()
+row.clust <- c()
+output.stats <- matrix(ncol = k, nrow = length(clust.assess))
+cluster.sizes <- matrix(ncol = k, nrow = k)
+for(i in c(1:k)){
+  row.clust[i] <- paste("Cluster-", i, " size")
+}
+for(i in c(2:k)){
+  stats.names[i] <- paste("Test", i-1)
+  
+  for(j in seq_along(clust.assess)){
+    output.stats[j, i] <- unlist(cluster.stats(d = dist, clustering = cutree(tree, k = i))[clust.assess])[j]
+    
+  }
+  
+  for(d in 1:k) {
+    cluster.sizes[d, i] <- unlist(cluster.stats(d = dist, clustering = cutree(tree, k = i))[clust.size])[d]
+    dim(cluster.sizes[d, i]) <- c(length(cluster.sizes[i]), 1)
+    cluster.sizes[d, i]
+    
+  }
+}
+
+output.stats.df <- data.frame(output.stats)
+cluster.sizes <- data.frame(cluster.sizes)
+cluster.sizes[is.na(cluster.sizes)] <- 0
+rows.all <- c(clust.assess, row.clust)
+output <- rbind(output.stats.df, cluster.sizes)[ ,-1]
+colnames(output) <- stats.names[2:k]
+rownames(output) <- rows.all
+is.num <- sapply(output, is.numeric)
+output[is.num] <- lapply(output[is.num], round, 2)
+output
+}			  		  
+```
+
+### 6.2. Tables
+#### 6.2.1. Summary Statistics by Factor
 
 ```R
 # Tabularize summary statistics of Genetics
