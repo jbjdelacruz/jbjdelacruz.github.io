@@ -24,6 +24,17 @@ doc_type: 'Full Report'
 
 # The Anatomy of Baldness: Statistical and Machine Learning Perspectives on Key Factors of Hair Loss
 
+## 0. Executive Summary  
+- The surveyed individuals are, on average, **34 years old**, with their **ages evenly distributed** between 18 to 50 years.  
+- **Alopecia areata** emerges as the most common medical condition associated with baldness, consistent with its established medical background. Other notable conditions include **psoriasis, thyroid problems, androgenetic alopecia, and dermatitis**, each reported by approximately **one-third of the 889 individuals** with documented medical conditions.  
+- Among the **919 respondents** with data on nutritional deficiencies, **zinc and vitamin D** deficiencies are the most prevalent. **Biotin, omega-3 fatty acids, and vitamin A** deficiencies also rank in the top five, each reported by **at least 10% of these respondents**.  
+- **Middle-aged** individuals, aged **31–45 years**, constitute the **largest proportion** of those who have **experienced baldness**.  
+- Hair loss exhibits **near-zero associations** with all factors, indicating that it results from a **combination of multiple factors rather than a single one**.  
+- **Stress levels**—categorized as low, moderate, and high—are found to be **evenly distributed** among individuals **with and without baldness**.  
+- Among the three classification models evaluated, a **random forest** model, which demonstrates an initial **AUC score of ~0.58** and an **accuracy of ~0.59**, is recommended for **further tuning and optimization**.  
+- **Cluster analysis** identifies **two groups** of individuals with **shared key underlying features** related to hair loss, including **scalp infection, psoriasis, androgenetic alopecia, hormonal changes**, and the use of **immunomodulators**.  
+- Through the importance analysis of the model, **stress, age, and smoking** are identified as major predictors of hair loss, while several features related to **lifestyle and medical history** are found to have **considerable influence** on the model's predictive performance.
+
 ## 1. Background
 
 ### 1.1. Introduction
@@ -642,17 +653,6 @@ summarize_variable(slice(data, 1:5), dom="t")
     </tr>
   </tbody>
 </table>
-
-### 1.5. Executive Summary  
-- The surveyed individuals are, on average, **34 years old**, with their **ages evenly distributed** between 18 to 50 years.  
-- **Alopecia areata** emerges as the most common medical condition associated with baldness, consistent with its established medical background. Other notable conditions include **psoriasis, thyroid problems, androgenetic alopecia, and dermatitis**, each reported by approximately **one-third of the 889 individuals** with documented medical conditions.  
-- Among the **919 respondents** with data on nutritional deficiencies, **zinc and vitamin D** deficiencies are the most prevalent. **Biotin, omega-3 fatty acids, and vitamin A** deficiencies also rank in the top five, each reported by **at least 10% of these respondents**.  
-- **Middle-aged** individuals, aged **31–45 years**, constitute the **largest proportion** of those who have **experienced baldness**.  
-- Hair loss exhibits **near-zero associations** with all factors, indicating that it results from a **combination of multiple factors rather than a single one**.  
-- **Stress levels**—categorized as low, moderate, and high—are found to be **evenly distributed** among individuals **with and without baldness**.  
-- Among the three classification models evaluated, a **random forest** model, which demonstrates an initial **AUC score of ~0.58** and an **accuracy of ~0.59**, is recommended for **further tuning and optimization**.  
-- **Cluster analysis** identifies **two groups** of individuals with **shared key underlying features** related to hair loss, including **scalp infection, psoriasis, androgenetic alopecia, hormonal changes**, and the use of **immunomodulators**.  
-- Through the importance analysis of the model, **stress, age, and smoking** are identified as major predictors of hair loss, while several features related to **lifestyle and medical history** are found to have **considerable influence** on the model's predictive performance.
 
 ## 2. Descriptive Analysis  
 This section provides an overview of the characteristics of the surveyed individuals using summary statistics, focusing on age, medical history, stress, and lifestyle factors.  
