@@ -3,7 +3,7 @@ title: "Manhattan's Urban Forestry Report, 2015"
 collection: portfolio
 permalink: /portfolio/manhattans-urban-forestry-report-2015
 date: 2023-01-01
-last_updated: 2025-07-30
+last_updated: 2025-09-29
 excerpt: 'This analysis of census data on more than 60,000 street trees across Manhattan won first place in [Which Tree Species Should the City Plant?](https://www.datacamp.com/competitions/city-tree-species?entry=ba331d65-5607-4c69-adb4-406663585edc) competition. It evaluates spatial distribution, biological characteristics, and biodiversity while ranking species by median trunk diameter and health index, presenting evidence-based recommendations for future tree planting.'
 venue: 'DataCamp'
 categories:
@@ -3955,3 +3955,4 @@ spc_second_ranking %>%
   <tr><td>Common hackberry      </td><td> 170</td><td>0.8352941</td><td>3</td><td>55</td><td>62.5</td><td>117.5</td></tr>
 </tbody>
 </table>
+
