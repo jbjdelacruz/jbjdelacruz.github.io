@@ -3,7 +3,7 @@ title: 'Patient Characteristics and Readmission Modeling'
 collection: portfolio
 permalink: /portfolio/patient-characteristics-and-readmission-modeling
 date: 2023-03-06
-last_updated: 2024-11-06
+last_updated: 2025-09-29
 excerpt: 'This report analyzes ten years of hospital data (n ≈ 25,000) from 130 US hospitals to identify high-risk groups for readmission. Using multivariate logistic regression, it measures the effects of variables such as age, diabetes diagnosis or medication, and length of stay on patient readmission, supporting targeted follow-up care after discharge.'
 venue: 'DataCamp'
 categories:
@@ -21,64 +21,42 @@ doc_type: 'Full Report'
 
 # Patient Characteristics and Readmission Modeling
 
-## Introduction
-Hospital X seeks our expertise in comprehensively analyzing a decade's worth of data on patient readmissions following discharge. The medical staff is seeking our assistance in determining whether initial diagnoses, number of procedures, or other factors can help better predict the probability of readmission. They hope to use the findings to target follow-up calls and attention to patients who are more likely to be readmitted.
+## 1.0 Background
+### 1.1. Introduction
+A healthcare organization has engaged our team to conduct a comprehensive analysis of ten years of patient readmission data following discharge. The objective is to evaluate whether factors such as initial diagnoses, number of procedures, and other clinical variables can improve the prediction of readmission likelihood. The insights from this analysis will support more proactive patient care strategies, enabling targeted follow-up and resource allocation for individuals at higher risk of readmission.
 
-### Objectives
+### 1.2. Objectives
 The main objective of this report is to explore patient characteristics and readmissions. It specifically aims to:
 
-1. Describe the overall and by age characteristics of the patients.
-3. Investigate and model the patient readmissions by their representing features.
-5. Identify patient groups with the best readmission rates.
+- Describe the overall and by age characteristics of the patients.
+- Investigate and model the patient readmissions by their representing features.
+- Identify patient groups with the best readmission rates.
 
-### Data Used
+### 1.3. Libraries
 
-The [hospital information](https://archive.ics.uci.edu/ml/datasets/Diabetes+130-US+hospitals+for+years+1999-2008) used in this report is part of the clinical care at 130 US hospitals and integrated delivery networks. Below is a list of variables and their descriptions:
+```R
+# Load required packages
+library(tidyverse) 
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(ggfun) # for round rectangle borders and backgrounds in ggplots
+library(ggchicklet) # for bar charts with rounded corners
+library(ggthemes) # for using the look of a plot theme
+library(patchwork) # for combining ggplots into the same graphic		
+library(ggpubr) # for boxplots
+
+# Install and load the "mlbench" package							   
+#suppressWarnings(suppressMessages(install.packages("mlbench")))
+#suppressPackageStartupMessages(library(mlbench))
+```
+
+### 1.4. Dataset
+The [dataset](https://archive.ics.uci.edu/ml/datasets/Diabetes+130-US+hospitals+for+years+1999-2008) referenced was part of the clinical care system at 130 hospitals and integrated delivery networks in the United States ([Strack et al., 2014](#reference)).
 
 <img src="https://i.ibb.co/pbk1JXM/vars-desc.png" alt="vars-desc" border="0">
 
-***Acknowledgments***: Beata Strack, Jonathan P. DeShazo, Chris Gennings, Juan L. Olmo, Sebastian Ventura, Krzysztof J. Cios, and John N. Clore, "Impact of HbA1c Measurement on Hospital Readmission Rates: Analysis of 70,000 Clinical Database Patient Records," BioMed Research International, vol. 2014, Article ID 781670, 11 pages, 2014.
-
-
-```R
-# ---------- Packages & Datasets
-
-# Load pre-installed, required packages
-suppressPackageStartupMessages(library(tidyverse)) 
-suppressPackageStartupMessages(library(dplyr)) 
-suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(scales))
-
-# Install and load the 'ggfun' package
-# For round rectangle borders and backgrounds in ggplots
-suppressWarnings(suppressMessages(install.packages("ggfun", verbose=TRUE, quiet=TRUE)))
-suppressPackageStartupMessages(library(ggfun))
-
-# Install and load the 'ggchicklet' package
-# For bar charts with rounded corners
-suppressWarnings(suppressMessages(remotes::install_github("hrbrmstr/ggchicklet", auth_token = "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")))
-suppressPackageStartupMessages(library("ggchicklet"))
-
-# Install and load the 'ggthemes' package
-# For using the look of a plot theme
-suppressWarnings(suppressMessages(install.packages("ggthemes")))
-suppressPackageStartupMessages(library(ggthemes))
-
-# Install and load the 'patchwork' package
-# For combining ggplots into the same graphic					   
-suppressWarnings(suppressMessages(install.packages("patchwork", verbose=TRUE, quiet=TRUE))) 
-suppressPackageStartupMessages(library(patchwork))
-
-# Install and load the "mlbench" package
-#									   
-#suppressWarnings(suppressMessages(install.packages("mlbench")))
-#suppressPackageStartupMessages(library(mlbench))
-
-# Install and load the "ggpubr" package
-# For boxplots
-suppressWarnings(suppressMessages(install.packages("ggpubr")))
-suppressPackageStartupMessages(library("ggpubr"))
-                     
+```R                     
 # Read 'readmissions' dataset
 readmissions <- readr::read_csv('data/hospital_readmissions.csv', show_col_types = FALSE) %>%
   mutate_if(is.character,as.factor) %>%
@@ -662,7 +640,7 @@ diag_tbl <- readmissions %>%
 # Install and load the 'rwantshue' package
 # For generating random color scheme
 suppressWarnings(suppressMessages(install.packages("remotes")))
-suppressWarnings(suppressMessages(remotes::install_github("hoesler/rwantshue", auth_token = "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")))
+suppressWarnings(suppressMessages(remotes::install_github("hoesler/rwantshue", auth_token = "")))
 suppressPackageStartupMessages(library(rwantshue))
 
 # Colorize the Physician's Specialty
@@ -2625,3 +2603,6 @@ Using the odds ratios of the multivariate logistic model, the following groups s
 
 Nevertheless, it is also advised to explore for additional characteristics that can help better predict the probability of readmission among patients, as the data used may be insufficient to reliably identify patient groups with the best readmission rates.
 
+## Reference
+
+Strack, B., DeShazo, J. P., Gennings, C., Olmo, J. L., Ventura, S., Cios, K. J., & Clore, J. N. (2014). *Impact of HbA1c measurement on hospital readmission rates: Analysis of 70,000 clinical database patient records.* *BioMed Research International, 2014,* 781670, 11 pages. [https://doi.org/10.1155/2014/781670](https://doi.org/10.1155/2014/781670)
