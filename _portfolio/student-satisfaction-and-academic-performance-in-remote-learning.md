@@ -22,7 +22,7 @@ doc_type: 'Full Report'
 # Student Satisfaction and Academic Performance in Remote Learning
 
 ## 1. Background
-### 1.1 Introduction 
+### 1.1. Introduction 
 
 As we reflected on the challenges faced by students during the COVID-19 pandemic, several key issues emerged. These included unreliable internet connectivity and the absence of appropriate learning devices, which hindered participation in synchronous classes and the submission of course requirements (Baticulon et al., 2020; Santos, 2020). Negative experiences such as limited engagement in synchronous lectures, increased distractions, difficulties in comprehending lessons, and delays in the exchange of responses and feedback also significantly impacted their overall learning experience (Bai et al., 2021). Furthermore, two surveys conducted by the University of the Philippines (UP) System Committee on Remote Teaching and Learning (SCRL) in November 2020 and July 2021 revealed that 80% of students felt academically overwhelmed, while only 30% expressed satisfaction with their learning experiences (Lontoc, 2021).
 
@@ -361,58 +361,25 @@ spaps_long <- melt(
     inner_join(studentInfo_wide, "id")
 ```
 
+| id   | constituent | program       | year_standing | lms                   | upsss1 | upsss2 | ⋯ | spaps6 | spaps7 |
+|------|-------------|---------------|---------------|-----------------------|--------|--------|---|--------|--------|
+| 001  | UP Diliman  | BS Statistics | III           | UVLê                  | 6      | 5      | ⋯ | 3      | 5      |
+| 002  | UP Diliman  | BS Geology    | IV            | UVLê;Google Classroom | 5      | 4      | ⋯ | 1      | 1      |
+| 003  | UP Diliman  | B Music       | V             | UVLê;Google Classroom | 6      | 6      | ⋯ | 4      | 7      |
+| 004  | UP Diliman  | BS Statistics | IV            | UVLê                  | 6      | 7      | ⋯ | 4      | 5      |
+| 005  | UP Diliman  | BS Biology    | II            | UVLê                  | 7      | 7      | ⋯ | 4      | 7      |
 
-<table class="dataframe">
-<caption>A tibble: 6 × 32</caption>
-<thead>
-  <tr><th scope=col>id</th><th scope=col>constituent</th><th scope=col>program</th><th scope=col>year_standing</th><th scope=col>lms</th><th scope=col>upsss1</th><th scope=col>upsss2</th><th scope=col>upsss3</th><th scope=col>upsss4</th><th scope=col>upsss5</th><th scope=col>⋯</th><th scope=col>upsss18</th><th scope=col>upsss19</th><th scope=col>upsss20</th><th scope=col>spaps1</th><th scope=col>spaps2</th><th scope=col>spaps3</th><th scope=col>spaps4</th><th scope=col>spaps5</th><th scope=col>spaps6</th><th scope=col>spaps7</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>⋯</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>001</td><td>UP Diliman</td><td>BS Statistics</td><td>III</td><td>UVLê                 </td><td>6</td><td>5</td><td>6</td><td>6</td><td>6</td><td>⋯</td><td>1</td><td>3</td><td>3</td><td>5</td><td>3</td><td>4</td><td>3</td><td>2</td><td>3</td><td>5</td></tr>
-  <tr><td>002</td><td>UP Diliman</td><td>BS Geology   </td><td>IV </td><td>UVLê;Google Classroom</td><td>5</td><td>4</td><td>6</td><td>2</td><td>4</td><td>⋯</td><td>1</td><td>1</td><td>2</td><td>2</td><td>3</td><td>3</td><td>4</td><td>3</td><td>1</td><td>1</td></tr>
-  <tr><td>003</td><td>UP Diliman</td><td>B Music      </td><td>V  </td><td>UVLê;Google Classroom</td><td>6</td><td>6</td><td>6</td><td>7</td><td>7</td><td>⋯</td><td>1</td><td>5</td><td>6</td><td>5</td><td>7</td><td>7</td><td>7</td><td>7</td><td>4</td><td>7</td></tr>
-  <tr><td>004</td><td>UP Diliman</td><td>BS Statistics</td><td>IV </td><td>UVLê                 </td><td>6</td><td>7</td><td>7</td><td>5</td><td>6</td><td>⋯</td><td>1</td><td>2</td><td>1</td><td>4</td><td>5</td><td>5</td><td>5</td><td>5</td><td>4</td><td>5</td></tr>
-  <tr><td>005</td><td>UP Diliman</td><td>BS Biology   </td><td>II </td><td>UVLê                 </td><td>7</td><td>7</td><td>7</td><td>7</td><td>7</td><td>⋯</td><td>2</td><td>3</td><td>4</td><td>4</td><td>6</td><td>6</td><td>6</td><td>5</td><td>4</td><td>7</td></tr>
-  <tr><td>006</td><td>UP Diliman</td><td>BS Statistics</td><td>IV </td><td>UVLê;Google Classroom</td><td>7</td><td>7</td><td>7</td><td>6</td><td>5</td><td>⋯</td><td>3</td><td>4</td><td>5</td><td>5</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>4</td></tr>
-</tbody>
-</table>
+| id  | constituent  | program                                     | year_standing | lms                                | upsss1 | upsss2 | ⋯ | spaps6 | spaps7 |
+|-----|--------------|---------------------------------------------|---------------|------------------------------------|--------|--------|---|--------|--------|
+| 146 | UP Diliman   | BS Mechanical Engineering                   | III           | UVLê;Google Classroom              | 7      | 7      | ⋯ | 4      | 3      |
+| 147 | UP Los Banos | BS Biology                                  | II            | eLBI;Google Classroom;Canvas;Moodle| 7      | 7      | ⋯ | 1      | 7      |
+| 148 | UP Diliman   | BS Computer Science                         | II            | UVLê;Google Classroom              | 6      | 7      | ⋯ | 5      | 5      |
+| 149 | UP Diliman   | BS Statistics                               | IV            | UVLê;Google Classroom              | 7      | 7      | ⋯ | 2      | 7      |
+| 150 | UP Diliman   | BS Business Administration and Accountancy  | IV            | UVLê;Google Classroom              | 5      | 5      | ⋯ | 2      | 1      |
 
-
-
-
-<table class="dataframe">
-<caption>A tibble: 6 × 32</caption>
-<thead>
-  <tr><th scope=col>id</th><th scope=col>constituent</th><th scope=col>program</th><th scope=col>year_standing</th><th scope=col>lms</th><th scope=col>upsss1</th><th scope=col>upsss2</th><th scope=col>upsss3</th><th scope=col>upsss4</th><th scope=col>upsss5</th><th scope=col>⋯</th><th scope=col>upsss18</th><th scope=col>upsss19</th><th scope=col>upsss20</th><th scope=col>spaps1</th><th scope=col>spaps2</th><th scope=col>spaps3</th><th scope=col>spaps4</th><th scope=col>spaps5</th><th scope=col>spaps6</th><th scope=col>spaps7</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>⋯</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>145</td><td>UP Diliman  </td><td>BS Statistics                             </td><td>III</td><td>UVLê                               </td><td>6</td><td>6</td><td>6</td><td>6</td><td>6</td><td>⋯</td><td>5</td><td>5</td><td>5</td><td>3</td><td>6</td><td>5</td><td>5</td><td>4</td><td>4</td><td>4</td></tr>
-  <tr><td>146</td><td>UP Diliman  </td><td>BS Mechanical Engineering                 </td><td>III</td><td>UVLê;Google Classroom              </td><td>7</td><td>7</td><td>7</td><td>5</td><td>5</td><td>⋯</td><td>3</td><td>2</td><td>2</td><td>2</td><td>4</td><td>3</td><td>5</td><td>1</td><td>4</td><td>3</td></tr>
-  <tr><td>147</td><td>UP Los Banos</td><td>BS Biology                                </td><td>II </td><td>eLBI;Google Classroom;Canvas;Moodle</td><td>7</td><td>7</td><td>7</td><td>7</td><td>7</td><td>⋯</td><td>1</td><td>2</td><td>1</td><td>1</td><td>3</td><td>2</td><td>1</td><td>3</td><td>1</td><td>7</td></tr>
-  <tr><td>148</td><td>UP Diliman  </td><td>BS Computer Science                       </td><td>II </td><td>UVLê;Google Classroom              </td><td>6</td><td>7</td><td>6</td><td>7</td><td>7</td><td>⋯</td><td>2</td><td>4</td><td>4</td><td>6</td><td>6</td><td>6</td><td>5</td><td>4</td><td>5</td><td>5</td></tr>
-  <tr><td>149</td><td>UP Diliman  </td><td>BS Statistics                             </td><td>IV </td><td>UVLê;Google Classroom              </td><td>7</td><td>7</td><td>6</td><td>7</td><td>7</td><td>⋯</td><td>1</td><td>5</td><td>3</td><td>6</td><td>7</td><td>5</td><td>7</td><td>5</td><td>2</td><td>7</td></tr>
-  <tr><td>150</td><td>UP Diliman  </td><td>BS Business Administration and Accountancy</td><td>IV </td><td>UVLê;Google Classroom              </td><td>5</td><td>5</td><td>6</td><td>5</td><td>4</td><td>⋯</td><td>1</td><td>2</td><td>2</td><td>7</td><td>6</td><td>2</td><td>2</td><td>4</td><td>2</td><td>1</td></tr>
-</tbody>
-</table>
-
-
-
-
-<style>
-.list-inline {list-style: none; margin:0; padding: 0}
-.list-inline>li {display: inline-block}
-.list-inline>li:not(:last-child)::after {content: "\00b7"; padding: 0 .5ex}
-</style>
-
-<ol class=list-inline><li>'id'</li><li>'constituent'</li><li>'program'</li><li>'year_standing'</li><li>'lms'</li><li>'upsss1'</li><li>'upsss2'</li><li>'upsss3'</li><li>'upsss4'</li><li>'upsss5'</li><li>'upsss6'</li><li>'upsss7'</li><li>'upsss8'</li><li>'upsss9'</li><li>'upsss10'</li><li>'upsss11'</li><li>'upsss12'</li><li>'upsss13'</li><li>'upsss14'</li><li>'upsss15'</li><li>'upsss16'</li><li>'upsss17'</li><li>'upsss18'</li><li>'upsss19'</li><li>'upsss20'</li><li>'spaps1'</li><li>'spaps2'</li><li>'spaps3'</li><li>'spaps4'</li><li>'spaps5'</li><li>'spaps6'</li><li>'spaps7'</li></ol>
-
-
-
+'id', 'constituent', 'program', 'year_standing', 'lms', 'upsss1', 'upsss2', 'upsss3', 'upsss4', 'upsss5', 'upsss6', 'upsss7', 'upsss8', 'upsss9', 'upsss10', 'upsss11', 'upsss12', 'upsss13', 'upsss14', 'upsss15', 'upsss16', 'upsss17', 'upsss18', 'upsss19', 'upsss20', 'spaps1', 'spaps2', 'spaps3', 'spaps4', 'spaps5', 'spaps6', 'spaps7'
 
 '𝗡𝘂𝗺𝗯𝗲𝗿 𝗼𝗳 𝗡𝗔 𝘃𝗮𝗹𝘂𝗲𝘀: 0'
-
 
 ### 2.1. Descriptive Statistics
 #### 2.1.1. Demographics
