@@ -243,91 +243,118 @@ age_dist_plotly <- ggplotly(age_dist_plot, tooltip=c("text")) %>%
   )
 ```
 
-{% raw %}
-<!-- Load Plotly.js -->
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<div id="age_dist_plot" style="width:100%; margin-bottom:1rem;"></div>
-
-<script>
-// Replace with your real age vector
-var ages = [18, 20, 22, 23, 26, 28, 32, 34, 36, 37, 40, 43, 45, 47, 50]; // Example
-
-// Summary statistics (replace if needed)
-var ageMean = 34.19;
-var ageMedian = 34;
-var ageStd = 9.38;
-var ageSkew = -0.03;
-
-// Histogram bin edges (matching "FD" breaks, use your own as needed)
-var binStart = 15, binEnd = 55, binSize = 5;
-
-// Histogram trace
-var histTrace = {
-  x: ages,
-  type: 'histogram',
-  xbins: {
-    start: binStart,
-    end: binEnd,
-    size: binSize
-  },
-  marker: {color: '#4C6DB4'},
-  name: "Age",
-  hoverinfo: 'x+y',
-  autobinx: false
-};
-
-// Mean vertical line
-var meanLine = {
-  type: 'line',
-  x0: ageMean, x1: ageMean,
-  y0: 0, y1: 1,
-  xref: 'x', yref: 'paper',
-  line: {color: "#FFA53E", width: 2, dash: 'dot'}
-};
-
-// Median vertical line
-var medianLine = {
-  type: 'line',
-  x0: ageMedian, x1: ageMedian,
-  y0: 0, y1: 1,
-  xref: 'x', yref: 'paper',
-  line: {color: "#4C6DB4", width: 2, dash: 'dot'}
-};
-
-var layout = {
-  title: {
-    text: "<b>𝗙𝗜𝗚. 𝟭﹕𝗔𝗚𝗘 𝗗𝗜𝗦𝗧𝗥𝗜𝗕𝗨𝗧𝗜𝗢𝗡 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<b>",
-    font: { size: 14 },
-    xref: "paper",
-    x: 0.5
-  },
-  xaxis: {
-    title: { text: "Age", font: { family: "ITC Officina Sans", size: 13 } },
-    tickfont: { family: "ITC Officina Sans", size: 13 },
-    dtick: 5,
-    range: [15, 55]
-  },
-  yaxis: {
-    title: { text: "Count", font: { family: "ITC Officina Sans", size: 13 } },
-    tickfont: { family: "ITC Officina Sans", size: 13 }
-  },
-  shapes: [meanLine, medianLine],
-  annotations: [{
-    text: `<b>Std. Deviation (<i>\u03c3</i>):</b> ${ageStd}; <b>Skewness (<i>Sk\u209a</i>):</b> ${ageSkew}`,
-    xref: 'paper', yref: 'paper',
-    x: 0.037, y: 1.0,
-    showarrow: false,
-    font: { family: "ITC Officina Sans", size: 13.5 },
-    align: "left"
-  }],
-  paper_bgcolor: "#D5E4EB",
-  plot_bgcolor: "#D5E4EB",
-  margin: { t: 60, l: 40, b: 40, r: 20 }
-};
-
-Plotly.newPlot("age_dist_plot", [histTrace], layout, {responsive: true, displayModeBar: false});
-</script>
-{% endraw %}
+```plotly
+{
+  "data": [
+    {
+      "x": [18, 20, 22, 23, 26, 28, 32, 34, 36, 37, 40, 43, 45, 47, 50],
+      "type": "histogram",
+      "xbins": {
+        "start": 15,
+        "end": 55,
+        "size": 5
+      },
+      "marker": {
+        "color": "#4C6DB4"
+      },
+      "name": "Age",
+      "hoverinfo": "x+y",
+      "autobinx": false
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "<b>𝗙𝗜𝗚. 𝟭﹕𝗔𝗚𝗘 𝗗𝗜𝗦𝗧𝗥𝗜𝗕𝗨𝗧𝗜𝗢𝗡 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<b>",
+      "font": {
+        "size": 14
+      },
+      "xref": "paper",
+      "x": 0.5
+    },
+    "xaxis": {
+      "title": {
+        "text": "Age",
+        "font": {
+          "family": "ITC Officina Sans",
+          "size": 13
+        }
+      },
+      "tickfont": {
+        "family": "ITC Officina Sans",
+        "size": 13
+      },
+      "dtick": 5,
+      "range": [15, 55]
+    },
+    "yaxis": {
+      "title": {
+        "text": "Count",
+        "font": {
+          "family": "ITC Officina Sans",
+          "size": 13
+        }
+      },
+      "tickfont": {
+        "family": "ITC Officina Sans",
+        "size": 13
+      }
+    },
+    "shapes": [
+      {
+        "type": "line",
+        "x0": 34.19,
+        "x1": 34.19,
+        "y0": 0,
+        "y1": 1,
+        "xref": "x",
+        "yref": "paper",
+        "line": {
+          "color": "#FFA53E",
+          "width": 2,
+          "dash": "dot"
+        }
+      },
+      {
+        "type": "line",
+        "x0": 34,
+        "x1": 34,
+        "y0": 0,
+        "y1": 1,
+        "xref": "x",
+        "yref": "paper",
+        "line": {
+          "color": "#4C6DB4",
+          "width": 2,
+          "dash": "dot"
+        }
+      }
+    ],
+    "annotations": [
+      {
+        "text": "<b>Std. Deviation (\u03c3):</b> 9.38; <b>Skewness (S\u209a):</b> -0.03",
+        "xref": "paper",
+        "yref": "paper",
+        "x": 0.037,
+        "y": 1.0,
+        "showarrow": false,
+        "font": {
+          "family": "ITC Officina Sans",
+          "size": 13.5
+        },
+        "align": "left"
+      }
+    ],
+    "paper_bgcolor": "#D5E4EB",
+    "plot_bgcolor": "#D5E4EB",
+    "margin": {
+      "t": 60,
+      "l": 40,
+      "b": 40,
+      "r": 20
+    }
+  }
+}
+```
 
 - **Range**: The youngest individual in the survey is 18 years old, and the oldest is 50 years old.  
 - **1st Quartile (Q1)**: Twenty-five percent of respondents are younger than 26 years.  
@@ -2947,5 +2974,6 @@ summarize_variable(
     <tr><td>NutritionalDeficienciesSeleniumdeficiency</td><td>0</td><td>0.06</td><td>4.82</td></tr>
   </tbody>
 </table>
+
 
 
