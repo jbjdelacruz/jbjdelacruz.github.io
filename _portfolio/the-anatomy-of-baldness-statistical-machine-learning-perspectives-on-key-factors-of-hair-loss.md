@@ -243,6 +243,7 @@ age_dist_plotly <- ggplotly(age_dist_plot, tooltip=c("text")) %>%
   )
 ```
 
+{% raw %}
 <!-- Load Plotly.js -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <div id="age_dist_plot" style="width:100%; margin-bottom:1rem;"></div>
@@ -326,6 +327,7 @@ var layout = {
 
 Plotly.newPlot("age_dist_plot", [histTrace], layout, {responsive: true, displayModeBar: false});
 </script>
+{% endraw %}
 
 - **Range**: The youngest individual in the survey is 18 years old, and the oldest is 50 years old.  
 - **1st Quartile (Q1)**: Twenty-five percent of respondents are younger than 26 years.  
@@ -2945,4 +2947,5 @@ summarize_variable(
     <tr><td>NutritionalDeficienciesSeleniumdeficiency</td><td>0</td><td>0.06</td><td>4.82</td></tr>
   </tbody>
 </table>
+
 
