@@ -3,7 +3,7 @@ title: 'The Anatomy of Baldness: Statistical and Machine Learning Perspectives o
 collection: portfolio
 permalink: /portfolio/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss
 date: 2024-11-29
-last_updated: 2025-09-30
+last_updated: 2024-12-13
 excerpt: 'In this [Crack the Code of Hair Loss](https://www.datacamp.com/competitions/why-hair-loss?entry=05f354fb-dd89-4631-a682-00499eab8fb2) first-place entry, survey responses from 999 patients were analyzed to identify factors contributing to hair loss. The report integrates association measures, machine learning models, and feature importance analysis to uncover links between baldness and age, medical history, stress, and lifestyle, offering actionable insights for health management and medical intervention.'
 venue: 'DataCamp'
 categories:
@@ -512,51 +512,41 @@ hair_loss_pie <- plot_ly(
   )
 ```
 
-<!-- Load Plotly.js -->
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-<!-- Pie chart container -->
-<div id="hair_loss_pie" style="width:100%; margin-bottom:1rem;"></div>
-
-<script>
-// Example data (replace these with your R summary/data)
-var hairLossLabels = ["<b>With baldness</b>", "<b>Without baldness</b>"];
-var hairLossCounts = [ /* replace with count for 1, count for 0 */ 312, 688 ];
-var hairLossProportions = hairLossCounts.map(x => x / hairLossCounts.reduce((a,b) => a+b));
-
-var data = [{
-  type: "pie",
-  labels: hairLossLabels,
-  values: hairLossCounts,
-  textinfo: "label",
-  textposition: "inside",
-  hoverinfo: "text",
-  hovertext: [
-    "<b>Percentage:</b> " + (hairLossProportions[0]*100).toFixed(2) + "%" + "<br><b>Count:</b> " + hairLossCounts[0],
-    "<b>Percentage:</b> " + (hairLossProportions[1]*100).toFixed(2) + "%" + "<br><b>Count:</b> " + hairLossCounts[1]
+```plotly
+{
+  "data": [
+    {
+      "type": "pie",
+      "labels": ["<b>With baldness</b>", "<b>Without baldness</b>"],
+      "values": [312, 688],
+      "textinfo": "label",
+      "textposition": "inside",
+      "hoverinfo": "text",
+      "hovertext": [
+        "<b>Percentage:</b> 31.20%<br><b>Count:</b> 312",
+        "<b>Percentage:</b> 68.80%<br><b>Count:</b> 688"
+      ],
+      "marker": {
+        "colors": ["#FF6347", "#8c8c8c"]
+      },
+      "textfont": {
+        "family": "ITC Officina Sans, Arial, sans-serif",
+        "size": 18,
+        "color": "white"
+      }
+    }
   ],
-  marker: {
-    colors: ["#FF6347", "#8c8c8c"]
-  },
-  textfont: {
-    family: "ITC Officina Sans, Arial, sans-serif",
-    size: 18,
-    color: "white"
+  "layout": {
+    "title": {
+      "text": "<b>𝗙𝗜𝗚. 𝟮﹕𝗣𝗜𝗘 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "font": { "size": 18 }
+    },
+    "paper_bgcolor": "#D5E4EB",
+    "margin": { "l": 0, "r": 0, "b": 20, "t": 80 },
+    "showlegend": false
   }
-}];
-
-var layout = {
-  title: {
-    text: "<b>𝗙𝗜𝗚. 𝟮﹕𝗣𝗜𝗘 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
-    font: {size: 18}
-  },
-  paper_bgcolor: "#D5E4EB",
-  margin: { l:0, r:0, b:20, t:80 },
-  showlegend: false
-};
-
-Plotly.newPlot('hair_loss_pie', data, layout, {displayModeBar: false});
-</script>
+}
+```
 
 The pie graph in Figure 2 illustrates that baldness affects nearly half of the respondents, indicating a balanced dataset in terms of hair loss outcomes. This section explores the distribution of individuals by hair loss outcome across various factor groups. Furthermore, it examines the relationships between hair loss and each specific factor by applying appropriate measures of association.  
 
@@ -665,78 +655,64 @@ age_hair_loss_boxplot <- plot_ly(
     )
   )
 ```
-<!-- Load Plotly.js -->
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-<!-- Boxplot container -->
-<div id="age_hair_loss_boxplot" style="width:100%;margin-bottom:1rem;"></div>
-
-<script>
-// Replace with your real Age arrays
-// Example: 
-var age_without_baldness = [21, 25, 28, 35, 40, 22]; // Age values for Hair Loss == 0
-var age_with_baldness = [30, 44, 48, 50, 60, 52];    // Age values for Hair Loss == 1
-
-var data = [
-  {
-    y: age_without_baldness,
-    type: 'box',
-    name: 'Without Baldness',
-    marker: {color: '#8c8c8c'},
-    boxpoints: 'outliers',
-    jitter: 0.3
-  },
-  {
-    y: age_with_baldness,
-    type: 'box',
-    name: 'With Baldness',
-    marker: {color: '#FF6347'},
-    boxpoints: 'outliers',
-    jitter: 0.3
-  }
-];
-
-var layout = {
-  title: {
-    text: "<br><b>𝗙𝗜𝗚. 𝟯﹕𝗔𝗚𝗘 𝗗𝗜𝗦𝗧𝗥𝗜𝗕𝗨𝗧𝗜𝗢𝗡 𝗕𝗬 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
-    font: {size: 18},
-    x: 0.5,
-    xanchor: "center",
-    y: 0.95,
-    yanchor: "top"
-  },
-  margin: {t: 100},
-  paper_bgcolor: '#D5E4EB',
-  plot_bgcolor: '#D5E4EB',
-  xaxis: {
-    title: {
-      text: "Hair Loss Outcome",
-      font: {family: "ITC Officina Sans", size: 18}
+```plotly
+{
+  "data": [
+    {
+      "y": [21, 25, 28, 35, 40, 22],
+      "type": "box",
+      "name": "Without Baldness",
+      "marker": { "color": "#8c8c8c" },
+      "boxpoints": "outliers",
+      "jitter": 0.3
     },
-    tickfont: {family: "ITC Officina Sans"},
-    showticklabels: false
-  },
-  yaxis: {
-    title: {
-      text: "Age",
-      font: {family: "ITC Officina Sans", size: 18}
+    {
+      "y": [30, 44, 48, 50, 60, 52],
+      "type": "box",
+      "name": "With Baldness",
+      "marker": { "color": "#FF6347" },
+      "boxpoints": "outliers",
+      "jitter": 0.3
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "<br><b>𝗙𝗜𝗚. 𝟯﹕𝗔𝗚𝗘 𝗗𝗜𝗦𝗧𝗥𝗜𝗕𝗨𝗧𝗜𝗢𝗡 𝗕𝗬 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "font": { "size": 18 },
+      "x": 0.5,
+      "xanchor": "center",
+      "y": 0.95,
+      "yanchor": "top"
     },
-    tickfont: {family: "ITC Officina Sans"}
-  },
-  legend: {
-    orientation: "h",
-    x: 0.5,
-    xanchor: "center",
-    y: 1.1,
-    yanchor: "top"
+    "margin": { "t": 100 },
+    "paper_bgcolor": "#D5E4EB",
+    "plot_bgcolor": "#D5E4EB",
+    "xaxis": {
+      "title": {
+        "text": "Hair Loss Outcome",
+        "font": { "family": "ITC Officina Sans", "size": 18 }
+      },
+      "tickfont": { "family": "ITC Officina Sans" },
+      "showticklabels": false
+    },
+    "yaxis": {
+      "title": {
+        "text": "Age",
+        "font": { "family": "ITC Officina Sans", "size": 18 }
+      },
+      "tickfont": { "family": "ITC Officina Sans" }
+    },
+    "legend": {
+      "orientation": "h",
+      "x": 0.5,
+      "xanchor": "center",
+      "y": 1.1,
+      "yanchor": "top"
+    }
   }
-};
-
-Plotly.newPlot("age_hair_loss_boxplot", data, layout, {
-  responsive: true,
-  displayModeBar: false
-});
-</script>
+}
+```
 
 Based on the boxplots in Figure 3, the age distributions of both groups (with and without baldness) are observed to be nearly symmetric, with no indications of outliers. A slight shift of two years between their median to upper quartile ranges is identified, suggesting subtle differences in age-related baldness patterns.
 
@@ -817,51 +793,48 @@ age_hair_loss_treemap <- plot_ly(
   )
 ```
 
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<div id="age_hair_loss_treemap" style="width:100%; margin-bottom:1rem;"></div>
-<script>
-// Example data: Replace with your real counts (in order: Hair Loss==1, Hair Loss==0 for each age group)
-var ageLabels = [
-  "<b>Young (17-30)<br>with baldness</b>",
-  "<b>Middle-aged (31-45)<br>with baldness</b>",
-  "<b>Old (>45)<br>with baldness</b>",
-  "<b>Young (17-30)<br>without baldness</b>",
-  "<b>Middle-aged (31-45)<br>without baldness</b>",
-  "<b>Old (>45)<br>without baldness</b>"
-];
-var ageCounts = [45, 52, 25, 110, 120, 57]; // Replace with your counts for each group
-
-var colors = [ "#175952", "#762127", "#0b385b", "#01877c", "#ae1726", "#005289" ];
-
-var totalN = ageCounts.reduce((a, b) => a + b, 0);
-
-var treemap = {
-  type: "treemap",
-  labels: ageLabels,
-  parents: ["", "", "", "", "", ""],
-  values: ageCounts,
-  marker: { colors: colors },
-  textfont: { family: "ITC Officina Sans", size: 15, color: "white" },
-  hoverinfo: "text",
-  hovertext: ageCounts.map((count, idx) =>
-    `<b>Percentage:</b> ${(100 * count / totalN).toFixed(2)}%<br><b>Count:</b> ${count}`
-  ),
-  textinfo: "label",
-  textposition: "middle center"
-};
-
-var layout = {
-  title: {
-    text: "<br><b>𝗙𝗜𝗚. 𝟰: 𝗧𝗥𝗘𝗘 𝗠𝗔𝗣 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗔𝗚𝗘 𝗚𝗥𝗢𝗨𝗣 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
-    font: { size: 18 }
-  },
-  paper_bgcolor: "#D5E4EB",
-  margin: { l: 30, r: 30, b: 25, t: 45 }
-};
-
-Plotly.newPlot("age_hair_loss_treemap", [treemap], layout, {responsive: true, displayModeBar: false});
-</script>
-
+```plotly
+{
+  "data": [
+    {
+      "type": "treemap",
+      "labels": [
+        "<b>Young (17-30)<br>with baldness</b>",
+        "<b>Middle-aged (31-45)<br>with baldness</b>",
+        "<b>Old (>45)<br>with baldness</b>",
+        "<b>Young (17-30)<br>without baldness</b>",
+        "<b>Middle-aged (31-45)<br>without baldness</b>",
+        "<b>Old (>45)<br>without baldness</b>"
+      ],
+      "parents": ["", "", "", "", "", ""],
+      "values": [45, 52, 25, 110, 120, 57],
+      "marker": { "colors": ["#175952", "#762127", "#0b385b", "#01877c", "#ae1726", "#005289"] },
+      "textfont": { "family": "ITC Officina Sans", "size": 15, "color": "white" },
+      "hoverinfo": "text",
+      "hovertext": [
+        "<b>Percentage:</b> 9.62%<br><b>Count:</b> 45",
+        "<b>Percentage:</b> 11.12%<br><b>Count:</b> 52",
+        "<b>Percentage:</b> 5.35%<br><b>Count:</b> 25",
+        "<b>Percentage:</b> 23.54%<br><b>Count:</b> 110",
+        "<b>Percentage:</b> 25.68%<br><b>Count:</b> 120",
+        "<b>Percentage:</b> 12.22%<br><b>Count:</b> 57"
+      ],
+      "textinfo": "label",
+      "textposition": "middle center"
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "<br><b>𝗙𝗜𝗚. 𝟰: 𝗧𝗥𝗘𝗘 𝗠𝗔𝗣 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗔𝗚𝗘 𝗚𝗥𝗢𝗨𝗣 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "font": { "size": 18 },
+    "x": 0.5,
+    "xanchor": "center"
+    },
+    "paper_bgcolor": "#D5E4EB",
+    "margin": { "l": 30, "r": 30, "b": 25, "t": 45 }
+  }
+}
+```
 
 Using the age groups defined by Prajapati et al. (2014), which categorize adults as `Young (17-30)`, `Middle-aged (31-45)`, or `Old (>45)`, it can be seen in Figure 4 that among individuals experiencing hair loss, middle-aged adults represent the largest proportion at 0.2412, followed by young adults at 0.1932. Similarly, among those without hair loss, 0.2322 are middle-aged adults, while 0.1842 are young adults.
 
@@ -991,51 +964,54 @@ stress_hair_loss_treemap <- plot_ly(
 
 ```
 
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<div id="stress_hair_loss_treemap" style="width:100%; margin-bottom:1rem;"></div>
-<script>
-// Example data; replace with your true proportions/counts for each Stress-Hair Loss combination
-var stressLabels = [
-  "<b>Low stress level<br>with baldness</b>",
-  "<b>Moderate stress level<br>with baldness</b>",
-  "<b>High stress level<br>with baldness</b>",
-  "<b>Low stress level<br>without baldness</b>",
-  "<b>Moderate stress level<br>without baldness</b>",
-  "<b>High stress level<br>without baldness</b>"
-];
-var stressCounts = [25, 50, 35, 70, 120, 90]; // Replace with your observed counts
+```plotly
+{
+  "data": [
+    {
+      "type": "treemap",
+      "labels": [
+        "<b>Low stress level<br>with baldness</b>",
+        "<b>Moderate stress level<br>with baldness</b>",
+        "<b>High stress level<br>with baldness</b>",
+        "<b>Low stress level<br>without baldness</b>",
+        "<b>Moderate stress level<br>without baldness</b>",
+        "<b>High stress level<br>without baldness</b>"
+      ],
+      "parents": ["", "", "", "", "", ""],
+      "values": [25, 50, 35, 70, 120, 90],
+      "marker": {
+        "colors": ["#567c07", "#996f00", "#a73735", "#77b200", "#e19c00", "#ec3330"]
+      },
+      "textfont": {
+        "family": "ITC Officina Sans",
+        "size": 15,
+        "color": "white"
+      },
+      "hoverinfo": "text",
+      "hovertext": [
+        "<b>Percentage:</b> 7.04%<br><b>Count:</b> 25",
+        "<b>Percentage:</b> 14.08%<br><b>Count:</b> 50",
+        "<b>Percentage:</b> 9.86%<br><b>Count:</b> 35",
+        "<b>Percentage:</b> 19.72%<br><b>Count:</b> 70",
+        "<b>Percentage:</b> 33.80%<br><b>Count:</b> 120",
+        "<b>Percentage:</b> 25.35%<br><b>Count:</b> 90"
+      ],
+      "textinfo": "label",
+      "textposition": "middle center"
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "<br><b>𝗙𝗜𝗚. 𝟱﹕𝗧𝗥𝗘𝗘𝗠𝗔𝗣 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗦𝗧𝗥𝗘𝗦𝗦 𝗟𝗘𝗩𝗘𝗟 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "font": { "size": 18 }
+    },
+    "paper_bgcolor": "#D5E4EB",
+    "margin": { "l": 30, "r": 30, "b": 25, "t": 45 }
+  }
+}
 
-// Use the same color mapping as defined in R
-var stressColors = [ "#567c07", "#996f00", "#a73735", "#77b200", "#e19c00", "#ec3330" ];
+```
 
-var totalN = stressCounts.reduce((a, b) => a + b, 0);
-
-var treemap = {
-  type: "treemap",
-  labels: stressLabels,
-  parents: stressLabels.map(() => ""), // No parent hierarchy, flat treemap
-  values: stressCounts,
-  marker: { colors: stressColors },
-  textfont: { family: "ITC Officina Sans", size: 15, color: "white" },
-  hoverinfo: "text",
-  hovertext: stressCounts.map((count, i) =>
-    `<b>Percentage:</b> ${(100 * count/totalN).toFixed(2)}%<br><b>Count:</b> ${count}`
-  ),
-  textinfo: "label",
-  textposition: "middle center"
-};
-
-var layout = {
-  title: {
-    text: "<br><b>𝗙𝗜𝗚. 𝟱﹕𝗧𝗥𝗘𝗘𝗠𝗔𝗣 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗦𝗧𝗥𝗘𝗦𝗦 𝗟𝗘𝗩𝗘𝗟 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
-    font: { size: 18 }
-  },
-  paper_bgcolor: "#D5E4EB",
-  margin: { l:30, r:30, b:25, t:45 }
-};
-
-Plotly.newPlot("stress_hair_loss_treemap", [treemap], layout, {responsive: true, displayModeBar: false});
-</script>
 
 The treemap shows that the distribution of individuals with and without hair loss is fairly balanced across all stress levels, which suggests that stress may not exhibit a strong association with hair loss.
 
@@ -1483,7 +1459,6 @@ summarize_variable(
 </table>
 
 The results suggest that hormonal changes have a negligible positive association with hair loss. In contrast, Genetics and Weight Loss show a weak positive relationship, while Poor Hair Care Habits, Environmental Factors, and Smoking exhibit a weak negative relationship with hair loss.
-<br><br>
 
 ## 4. Machine Learning
 
@@ -2074,8 +2049,6 @@ importance_plot_mda <- plot_ly(
       )
     )
   )
-
-importance_plot_mda
 ```
 
 - Stress in its linear form (represented by Stress.L) emerges as the most influential feature, closely followed by age and smoking.
@@ -2136,8 +2109,6 @@ style(
     )
   )
 )
-
-importance_plot_mdg
 ```
 
 - This time around, age emerges as the most influential feature, followed closely by the linear stress (Stress.L), underscoring their significant impact on the model's overall performance.
@@ -2153,136 +2124,18 @@ To rank the features in terms of importance, both the Mean Decrease Accuracy (MD
 
 Based on the results, the following features are the key predictors of hair loss:  
 
-- **Age** emerges as the most influential predictor of hair loss, with the highest composite importance score (92.25). Its substantial Mean Decrease Accuracy (MDA) and Mean Decrease Gini (MDG) underscore its critical role in the model.<br><br>  
+- **Age** emerges as the most influential predictor of hair loss, with the highest composite importance score (92.25). Its substantial Mean Decrease Accuracy (MDA) and Mean Decrease Gini (MDG) underscore its critical role in the model.
 - **Stress**  
    - **Linear Component**: Stress (59.76) ranks as the second most important predictor, showing a stronger influence on the model compared to its quadratic component.  
-   - **Quadratic Component**: The quadratic term (19.94) provides a smaller, though non-negligible, contribution, suggesting the presence of nonlinear effects in the stress-hair loss relationship.<br><br>  
+   - **Quadratic Component**: The quadratic term (19.94) provides a smaller, though non-negligible, contribution, suggesting the presence of nonlinear effects in the stress-hair loss relationship.
 - **Lifestyle Factors**  
    - **Smoking** (41.88) stands out as the most important lifestyle predictor.  
-   - **Environmental Factors** (28.89) and **Weight Loss** (18.66) make moderate contributions to the model's performance.<br><br>  
+   - **Environmental Factors** (28.89) and **Weight Loss** (18.66) make moderate contributions to the model's performance.
 - **Medical History**  
      - **Medications and Treatments**: **Immunomodulators** (30.67) and **Rogaine** (16.48) are notable treatments, with **Chemotherapy** (12.29) adding moderate strength. 
      - **Nutritional Deficiencies**: **Zinc Deficiency** (27.78) and **Protein Deficiency** (25.19) are the strongest predictors in this category, while **Magnesium Deficiency** (11.57) has a smaller, yet notable, influence.   
    - **Medical Conditions**: **Psoriasis** (21.50) and **Alopecia Areata** (16.43) are significant conditions associated with hair loss.  
    - **Hormonal Changes** (19.27) contribute moderately to the prediction model.
-
-
-```R
-# Rank the features based on the Compostive Importance
-rf_importance_ranked <- rf_importance %>%
-  filter(MeanDecreaseAccuracy > 0) %>%
-  mutate(across(where(is.numeric), \(x) round(x, digits = 4)),
-         scaled_mda = ((MeanDecreaseAccuracy - min(MeanDecreaseAccuracy)) /
-                       (max(MeanDecreaseAccuracy) - min(MeanDecreaseAccuracy))) * 100,
-         scaled_mdg = ((MeanDecreaseGini - min(MeanDecreaseGini)) / 
-                       (max(MeanDecreaseGini) - min(MeanDecreaseGini))) * 100,
-         CI = (scaled_mda + scaled_mdg) / 2,
-         comp_rank = rank(desc(CI))
-  ) %>%
-  arrange(desc(CI)) %>%
-  select(Feature, comp_rank, CI, everything()) %>%
-  mutate(across(where(is.numeric), \(x) round(x, digits = 2)))
-
-# Tabularize the summarized metrics of the models
-#summarize_variable(
-#  slice(rf_importance_ranked[, c(1, 3:5)], 1:15), 
-#  rownames = TRUE,
-#  dom = "tip",
-#  pageLength = 5
-#)
-
-## Select features through importance ranking
-# Determine the threshold for feature selection
-important_features_select <- rf_importance_ranked$Feature[rf_importance_ranked$CI > 10]
-
-# Subset the data based on selected features
-train_data_select <- train_data[, c("HairLoss", "Stress", setdiff(important_features_select, c("Stress.L", "Stress.Q")))]
-test_data_select <- test_data[, c("HairLoss", "Stress", setdiff(important_features_select, c("Stress.L", "Stress.Q")))]
-
-# Train the logistic regression model
-set.seed(123)
-logistic_model_select <- train(
-  HairLoss ~ ., 
-  data = train_data_select, 
-  method = "glm", 
-  family = "binomial", 
-  trControl = train_control, 
-  metric = "ROC",
-  trace = FALSE
-)
-
-# Train the SVM model
-set.seed(123)
-svm_model_select <- train(
-  HairLoss ~ .,
-  data = train_data_select,
-  method = "svmRadial",
-  trControl = train_control,
-  metric = "ROC",
-  trace = FALSE
-)
-
-# Train the random forest model
-set.seed(123)
-rf_model_select <- train(
-  HairLoss ~ ., 
-  data = train_data_select, 
-  method = "rf", 
-  trControl = train_control, 
-  metric = "ROC",
-  trace = FALSE,
-  importance = TRUE
-)
-
-# Evaluate models' performances
-class_metrics_select <- rbind(
-  evaluate_model(model = logistic_model_select, test = test_data_select, y = "HairLoss", model_name = "Logistic Regression"),
-  evaluate_model(model = svm_model_select, test = test_data_select, y = "HairLoss", model_name = "SVM"),
-  evaluate_model(model = rf_model_select, test = test_data_select, y = "HairLoss", model_name = "Random Forest")
-)
-
-# Tabularize the summarized metrics of the models
-summarize_variable(class_metrics_select, rownames = TRUE)
-```
-
-<table border="1" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr>
-      <th>Model</th>
-      <th>AUC</th>
-      <th>Accuracy</th>
-      <th>Precision</th>
-      <th>Recall</th>
-      <th>F1 Score</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Logistic Regression</td>
-      <td>0.4546</td>
-      <td>0.4959</td>
-      <td>0.4917</td>
-      <td>0.4917</td>
-      <td>0.4917</td>
-    </tr>
-    <tr>
-      <td>SVM</td>
-      <td>0.5298</td>
-      <td>0.5413</td>
-      <td>0.5405</td>
-      <td>0.5</td>
-      <td>0.5195</td>
-    </tr>
-    <tr>
-      <td>Random Forest</td>
-      <td>0.5643</td>
-      <td>0.5331</td>
-      <td>0.5289</td>
-      <td>0.5333</td>
-      <td>0.5311</td>
-    </tr>
-  </tbody>
-</table>
 
 ## 4. Conclusion
 
@@ -2938,6 +2791,17 @@ summarize_variable(
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 <table border="1" style="border-collapse: collapse; width: 100%;">
   <thead>
     <tr>
@@ -2974,6 +2838,3 @@ summarize_variable(
     <tr><td>NutritionalDeficienciesSeleniumdeficiency</td><td>0</td><td>0.06</td><td>4.82</td></tr>
   </tbody>
 </table>
-
-
-
