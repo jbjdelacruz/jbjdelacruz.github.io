@@ -3,11 +3,12 @@ title: 'Student Satisfaction and Academic Performance in Remote Learning'
 collection: portfolio
 permalink: /portfolio/student-satisfaction-and-academic-performance-in-remote-learning
 date: 2025-08-04
-last_updated: 2025-09-29
+last_updated: 2025-10-01
 excerpt: 'This report analyzes the remote learning experiences of University of the Philippines students using survey-scale data collected more than a year after the onset of the COVID-19 pandemic. It examines respondent demographics, summarizes satisfaction and academic performance scale ratings, and explores the correlations among scale items. The findings highlight patterns that can inform strategies for enhancing online instruction.'
 venue: 'Kaggle'
 categories:
   - R
+  - Exploratory
 slidesurl: []
 images:
   - '/files/student-satisfaction-and-academic-performance-in-remote-learning/images/page-1.png'
@@ -33,27 +34,27 @@ In response to this dilemma, it is crucial to evaluate the academic effectivenes
 This report aimed to analyze student experiences with the remote learning setup at the University of the Philippines (UP). It is guided by the following primary objectives:
              
 #### 1.2.1.	Describe the profile of the student respondents.
-- 1.2.1.1. Detail the demographic characteristics of the respondents, particularly their constituent university, year-level standing, and undergraduate programs.
-- 1.2.1.2. Determine the central tendency and dispersion of student satisfaction with remote learning using ratings from the UP Student Satisfaction Scale (UPSSS).
-- 1.2.1.3. Ascertain the central tendency and dispersion of students' self-perceived academic performance using ratings from the Student Perception on Academic Performance Scale (SPAPS).
+- Detail the demographic characteristics of the respondents, particularly their constituent university, year-level standing, and undergraduate programs.
+- Determine the central tendency and dispersion of student satisfaction with remote learning using ratings from the UP Student Satisfaction Scale (UPSSS).
+- Ascertain the central tendency and dispersion of students' self-perceived academic performance using ratings from the Student Perception on Academic Performance Scale (SPAPS).
 
 #### 1.2.2.	Examine the relationship between student satisfaction and perceived academic performance.
-- 1.2.2.1. Determine the strength and direction of the overall relationship between the sum ratings of the UPSSS and the SPAPS.
-- 1.2.2.2. Analyze the pairwise correlations between the individual variables of the UPSSS and the SPAPS.
+- Determine the strength and direction of the overall relationship between the sum ratings of the UPSSS and the SPAPS.
+- Analyze the pairwise correlations between the individual variables of the UPSSS and the SPAPS.
   
 ## 2. Exploratory Analysis
 
-
 ```R
-## Import data from CSV file
-suppressMessages(library(tidyverse)) # required library
+# Load required packages
+library(tidyverse)
+library(dplyr)
+library(rlang)
+
+# Import data from CSV file
 data <- read_csv("/kaggle/input/the-data-setlist/survey_data.csv", show_col_types = FALSE)
 
-# Required library
-library(dplyr)
 
 ## Create functions to be used
-
 # Create horizontal bar plot using base R graphics    
 suppressMessages(library(rlang, verbose=FALSE, quiet=TRUE)) # required library               
 horiz_barplot <- function(data,
@@ -383,10 +384,8 @@ spaps_long <- melt(
 
 ### 2.1. Descriptive Statistics
 #### 2.1.1. Demographics
-
 ##### 2.1.1.1. Constituent University
 Among the 150 surveyed UP students, 103 (68.7%) were from **Diliman** and 30 (20.0%) were from **Los Baños**. The remaining 17 respondents were from five other constituent universities: 5 (3.3%) from **Manila**, 4 (2.7%) from **Baguio**, 3 (2.0%) each from the **Open University** and **Visayas**, and 2 (1.3%) from **Cebu**. This means that analyses by constituent university must be interpreted with extreme caution due to highly skewed sample sizes and findings for campuses with few respondents are merely illustrative and not generalizable.
-
 
 ```R
 # Display bar plot
@@ -401,12 +400,8 @@ horiz_barplot(
 )
 ```
 
-
+![Number of Students by Constituent University](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_3_0.png)
     
-![png](notebook_files/notebook_3_0.png)
-    
-
-
 ##### 2.1.1.2. Undergraduate Program
 Most of the respondents, totaling 66 (44.0%), were **BS Statistics** majors. The remaining 84 respondents came from a variety of other programs, including:
 - 7 (4.7%) from **BS Biology**;
@@ -432,15 +427,10 @@ horiz_barplot(
 )
 ```
 
-
+![Number of Students by Undergraduate Program](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_5_0.png)
     
-![png](notebook_files/notebook_5_0.png)
-    
-
-
 ##### 2.1.1.3. Year-Level Standing
 **Seniors** made up the largest group with **52 (34.7%)** students, followed by **juniors** (46 or 30.7%), **sophomores** (31 or 20.7%), **freshmen** (17, 11.3%), and **fifth-year students** (4, 2.7%).
-
 
 ```R
 # Display bar plot
@@ -456,18 +446,12 @@ horiz_barplot(
   xlim_adj = 20
 )
 ```
-
-
     
-![png](notebook_files/notebook_7_0.png)
+![Number of Students by Year-Level Standing](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_7_0.png)
     
-
-
 #### 2.1.2. Student Satisfaction with Remote Learning
-
 ##### 2.1.2.1. Overall
 Based on data from student ratings on a scale of 1 (Strongly Disagree) to 7 (Strongly Agree) for statements in the **20-item UP Student Satisfaction Scale (UPSSS)**, the **overall median rating sum was 94 out of 140**, with an **average of 4.7 out of 7** per item. This shows that student satisfaction with remote learning ranges from neutral to somewhat positive.
-
 
 ```R
 # Aggregate student ratings
@@ -489,19 +473,16 @@ med_upsss_ratingSum <- median(agg_data$upsss_ratingSum)
 data.frame(med_ratingSum = med_upsss_ratingSum, avg_med_ratingSum = med_upsss_ratingSum/20)
 ```
 
-
 <table class="dataframe">
-<caption>A data.frame: 1 × 2</caption>
+<!-- <caption>A data.frame: 1 × 2</caption> -->
 <thead>
   <tr><th scope=col>med_ratingSum</th><th scope=col>avg_med_ratingSum</th></tr>
-  <tr><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>94</td><td>4.7</td></tr>
 </tbody>
 </table>
-
-
 
 ##### 2.1.2.2. Variables
 
@@ -540,12 +521,11 @@ horiz_barplot(
 )
 ```
 
-
 <table class="dataframe">
-<caption>A grouped_df: 20 × 8</caption>
+<!-- <caption>A grouped_df: 20 × 8</caption> -->
 <thead>
   <tr><th scope=col>item_code</th><th scope=col>variable</th><th scope=col>n_students</th><th scope=col>min_rating</th><th scope=col>med_rating</th><th scope=col>mode_rating</th><th scope=col>max_rating</th><th scope=col>iqr</th></tr>
-  <tr><th scope=col>&lt;ord&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;ord&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>upsss14</td><td>uni_services        </td><td>150</td><td>1</td><td>7</td><td>7</td><td>7</td><td>1.00</td></tr>
@@ -571,13 +551,7 @@ horiz_barplot(
 </tbody>
 </table>
 
-
-
-
-    
-![png](notebook_files/notebook_11_1.png)
-    
-
+![Median Rating by UPSSS Variable](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_11_1.png)
 
 ##### 2.1.2.2. Demographics
 ###### 2.1.2.2.1. Constituent University
@@ -614,10 +588,10 @@ horiz_barplot(
 
 
 <table class="dataframe">
-<caption>A grouped_df: 7 × 7</caption>
+<!-- <caption>A grouped_df: 7 × 7</caption> -->
 <thead>
   <tr><th scope=col>constituent</th><th scope=col>n_students</th><th scope=col>min_upsss_rating</th><th scope=col>med_upsss_rating</th><th scope=col>mode_upsss_rating</th><th scope=col>max_upsss_rating</th><th scope=col>iqr</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>UP Open University</td><td>  3</td><td>1</td><td>6</td><td>6</td><td>7</td><td>3.00</td></tr>
@@ -630,13 +604,7 @@ horiz_barplot(
 </tbody>
 </table>
 
-
-
-
-    
-![png](notebook_files/notebook_13_1.png)
-    
-
+![Median Rating by Constituent University](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_13_1.png)
 
 ###### 2.1.2.2.2. Year-Level Standing
 
@@ -671,10 +639,10 @@ horiz_barplot(
 
 
 <table class="dataframe">
-<caption>A grouped_df: 5 × 7</caption>
+<!-- <caption>A grouped_df: 5 × 7</caption> -->
 <thead>
   <tr><th scope=col>year_standing</th><th scope=col>n_students</th><th scope=col>min_upsss_rating</th><th scope=col>med_upsss_rating</th><th scope=col>mode_upsss_rating</th><th scope=col>max_upsss_rating</th><th scope=col>iqr</th></tr>
-  <tr><th scope=col>&lt;ord&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;ord&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>I  </td><td>17</td><td>1</td><td>6</td><td>6</td><td>7</td><td>2</td></tr>
@@ -685,13 +653,7 @@ horiz_barplot(
 </tbody>
 </table>
 
-
-
-
-    
-![png](notebook_files/notebook_15_1.png)
-    
-
+![Median Rating by Year Level Standing](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_15_1.png)
 
 #### 2.1.3. Perceived Academic Performance
 ##### 2.1.3.1. Overall
@@ -710,22 +672,19 @@ data.frame(med_ratingSum = med_spaps_ratingSum, avg_med_ratingSum = round(med_sp
 
 
 <table class="dataframe">
-<caption>A data.frame: 1 × 2</caption>
+<!-- <caption>A data.frame: 1 × 2</caption> -->
 <thead>
   <tr><th scope=col>med_ratingSum</th><th scope=col>avg_med_ratingSum</th></tr>
-  <tr><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>30</td><td>4.3</td></tr>
 </tbody>
 </table>
 
-
-
 ##### 2.1.3.2. Variables
 
 Students reported their most positive perception on academic performance with both the **timely submission of requirements** and the **achievement of a high GWA** receiving a **median rating of 5 (Somewhat Agree)**. However, a high **IQR of 3** for both items indicates this was not universal. For the majority of items, the **median rating was 4 (Neutral)**. The consistently high **IQRs (ranging from 2 to 3)** suggest that while students feel they are managing to produce final outputs, they are less certain about the **quality and consistency** of the related **academic processes, skills, and habits.**
-
 
 ```R
 # Display summary statistics
@@ -752,12 +711,11 @@ horiz_barplot(
 )
 ```
 
-
 <table class="dataframe">
-<caption>A grouped_df: 7 × 6</caption>
+<!-- <caption>A grouped_df: 7 × 6</caption> -->
 <thead>
   <tr><th scope=col>item_code</th><th scope=col>variable</th><th scope=col>min_rating</th><th scope=col>med_rating</th><th scope=col>max_rating</th><th scope=col>iqr</th></tr>
-  <tr><th scope=col>&lt;ord&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;ord&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>spaps7</td><td>gwa_expected      </td><td>1</td><td>5</td><td>7</td><td>3.00</td></tr>
@@ -770,13 +728,7 @@ horiz_barplot(
 </tbody>
 </table>
 
-
-
-
-    
-![png](notebook_files/notebook_19_1.png)
-    
-
+![Median Rating by SPAPS Variable](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_19_1.png)
 
 ##### 2.1.3.3. Demographics
 ###### 2.1.3.3.1. Constituent University
@@ -813,10 +765,10 @@ horiz_barplot(
 
 
 <table class="dataframe">
-<caption>A grouped_df: 7 × 7</caption>
+<!-- <caption>A grouped_df: 7 × 7</caption> -->
 <thead>
   <tr><th scope=col>constituent</th><th scope=col>n_students</th><th scope=col>min_spaps_rating</th><th scope=col>med_spaps_rating</th><th scope=col>mode_spaps_rating</th><th scope=col>max_spaps_rating</th><th scope=col>iqr</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>UP Cebu           </td><td>  2</td><td>2</td><td>5</td><td>5</td><td>7</td><td>2.75</td></tr>
@@ -829,17 +781,10 @@ horiz_barplot(
 </tbody>
 </table>
 
-
-
-
-    
-![png](notebook_files/notebook_21_1.png)
-    
-
+![Median SPAPS Rating by Constituent University](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_21_1.png)
 
 ###### 2.1.2.3.2. Year-Level Standing
 Perceived academic performance is highest among **first-year students**, who reported a **median rating of 5 (Somewhat Agree)**. This perception declines notably after the first year and then stabilizes, with **sophomore, junior, and senior students** all reporting a consistent, **neutral median of 4**. A slight uptick to a median of 4.5 was observed for **fifth-year students**, though this result must be interpreted with caution due to their much smaller sample size.
-
 
 ```R
 # Display summary statistics
@@ -867,12 +812,11 @@ horiz_barplot(
 )
 ```
 
-
 <table class="dataframe">
-<caption>A grouped_df: 5 × 7</caption>
+<!-- <caption>A grouped_df: 5 × 7</caption> -->
 <thead>
   <tr><th scope=col>year_standing</th><th scope=col>n_students</th><th scope=col>min_spaps_rating</th><th scope=col>med_spaps_rating</th><th scope=col>mode_spaps_rating</th><th scope=col>max_spaps_rating</th><th scope=col>iqr</th></tr>
-  <tr><th scope=col>&lt;ord&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;ord&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>I  </td><td>17</td><td>1</td><td>5.0</td><td>5</td><td>7</td><td>2.00</td></tr>
@@ -883,13 +827,7 @@ horiz_barplot(
 </tbody>
 </table>
 
-
-
-
-    
-![png](notebook_files/notebook_23_1.png)
-    
-
+![Median SPAPS Rating by Year Level Standing](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_23_1.png)
 
 ### 2.2. Correlation Analysis
 #### 2.2.1. Overall Correlation
@@ -915,8 +853,6 @@ cor.test(
 )
 ```
 
-
-    
       Spearman's rank correlation rho
     
     data:  agg_data$upsss_ratingSum and agg_data$spaps_ratingSum
@@ -926,10 +862,7 @@ cor.test(
           rho 
     0.5106947 
 
-
-
-
-    
+  
       Kendall's rank correlation tau
     
     data:  agg_data$upsss_ratingSum and agg_data$spaps_ratingSum
@@ -938,7 +871,6 @@ cor.test(
     sample estimates:
           tau 
     0.3702111 
-
 
 
 The accompanying scatterplot below visually represents this relationship, showing the data points forming a broad, elliptical cloud that trends upward from the bottom-left to the top-right. In practical terms, **students who reported higher satisfaction with remote learning tended to report a more positive perception of their own academic performance**.
@@ -957,11 +889,7 @@ plot(
 )
 ```
 
-
-    
-![png](notebook_files/notebook_27_0.png)
-    
-
+![Student Satisfaction vs. Perceived Academic Performance](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_27_0.png)
 
 #### 2.2.2. Pairwise Correlations
 
@@ -979,22 +907,14 @@ upsss_spaps_wide <- upsss_wide %>%
 # Rename columns
 colnames(upsss_spaps_wide) <- c(upsss_descr$variable, spaps_descr$variable)
 
-# Calculate the correlation matrices
+# Calculate correlation matrices
 
 # Spearman
 spearmanCor_matrix <- upsss_spaps_wide %>%
   select(all_of(spaps_descr$variable), all_of(upsss_descr$variable)) %>%
   cor(method="spearman") 
 
-# Kendall
-kendallCor_matrix <- upsss_spaps_wide %>%
-  select(all_of(spaps_descr$variable), all_of(upsss_descr$variable)) %>%
-  cor(method="kendall")
-
-# spearmanCor_matrix[c(8:27), c(1:7)]
-# kendallCor_matrix[c(8:27), c(1:7)]
-
-# Generate heatmaps
+## Generate a heatmap
 
 # Required library
 # install.packages("pheatmap")
@@ -1008,21 +928,9 @@ pheatmap(
   #cluster_cols = FALSE,
   display_numbers = TRUE
 )
-
-# # Kendall
-# pheatmap(
-#   kendallCor_matrix[c(8:27), c(1:7)],
-#   main = "\nKendall Rank Correlation Matrix\n(UPSSS vs. SPAPS)",
-#   #cluster_rows = FALSE,
-#   #cluster_cols = FALSE,
-#   display_numbers = TRUE
-# )
 ```
 
-
-    
-![png](notebook_files/notebook_29_0.png)
-    
+![nSpearman Rank Correlation Matrix (UPSSS vs. SPAPS)](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_29_0.png)
 
 
 ## 3. References
@@ -1037,4 +945,3 @@ DOI: https://doi.org/10.58729/1941-6679.1486.
 - Lontoc, J. F. B. (2021). UP students and admin meet to assess remote learning and teaching experience. University of the Philippines. Retrieved January 18, 2022, from https://up.edu.ph/up-students-and-admin-meet-to-assess-remote-learning-and-teaching-experience.
 
 - Santos, A. P., By, Shewakramani, J., Zhou, B., & Tsang, C. (2020). “In the Philippines, Distance Learning reveals the digital divide”: Heinrich Böll stiftung: Brussels Office - European Union. Heinrich-Böll-Stiftung. Retrieved January 18, 2022, from https://eu.boell.org/en/2020/10/06/philippines-distance-learning-reveals-digital-divide.
-
