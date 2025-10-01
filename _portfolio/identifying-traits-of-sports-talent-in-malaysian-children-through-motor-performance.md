@@ -3,7 +3,7 @@ title: 'Identifying Traits of Sports Talent in Malaysian Children Through Motor 
 collection: portfolio
 permalink: /portfolio/identifying-traits-of-sports-talent-in-malaysian-children-through-motor-performance
 date: 2022-12-18
-last_updated: 2024-11-01
+last_updated: 2025-10-01
 excerpt: 'This project—which earned first place in a [24-hour DataCamp challenge](https://www.datacamp.com/competitions/childrens-motor-performance?entry=7b91f332-e08a-41a0-9db4-a1c5c1ac5e28)—investigates how the Motor Performance Index (MPI), based on four essential motor skills (power, speed, flexibility, and coordination), relates to children’s attributes such as age, gender, weight, and height. Through multiple linear regression, it identifies the most significant predictors of motor performance, offering valuable insights for early sports talent identification.'
 venue: 'DataCamp'
 categories:
@@ -38,34 +38,31 @@ The dataset used in the analysis is a slightly cleaned version of a dataset desc
 
 Four properties of motor skills were recorded.
 
-- POWER ($cm$): Distance of a two-footed standing jump.
-- SPEED ($sec$): Time taken to sprint 20m.
-- FLEXIBILITY ($cm$): Distance reached forward in a sitting position.
+- POWER ($$cm$$): Distance of a two-footed standing jump.
+- SPEED ($$sec$$): Time taken to sprint 20m.
+- FLEXIBILITY ($$cm$$): Distance reached forward in a sitting position.
 - COORDINATION (no.): Number of catches of a ball, out of ten.
 
 Attributes of the children are included.
 
 - STATE: The Malaysian state where the child resides.
 - RESIDENTIAL: Whether the child lives in a rural or urban area.
-- GENDER: The child's gender, `F`emale or `M`ale.
+- GENDER: The child's gender, `Female` or `Male`.
 - AGE: The child's age in years.
-- WEIGHT ($kg$): The child's bodyweight in kg.
-- HEIGHT ($cm$): The child's height in cm.
-- BMI ($kg/m^{2}$): The child's body mass index (weight in kg divided by height in meters squared).
-- CLASS (BMI): Categorization of the BMI: "SEVERE THINNESS", "THINNESS", "NORMAL", "OVERWEIGHT", "OBESITY".
+- WEIGHT ($$kg$$): The child's bodyweight in kg.
+- HEIGHT ($$cm$$): The child's height in cm.
+- BMI ($$kg/m^{2}$$): The child's body mass index (weight in kg divided by height in meters squared).
+- CLASS (BMI): Categorization of the BMI: `SEVERE THINNESS`, `THINNESS`, `NORMAL`, `OVERWEIGHT`, `OBESITY`.
 
-(Full details of these metrics are described in sections 2.2 to 2.5 of the linked article.)
-
+Full details of these metrics are described in sections 2.2 to 2.5 of the linked article.
 
 ```R
-## ---------- Pre-installed Packages, Dataset, and Vectors for Variable Names
-
-# Load pre-installed, required packages
-suppressPackageStartupMessages(library(tidyverse)) 
-suppressPackageStartupMessages(library(dplyr)) 
-suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(scales))
-suppressPackageStartupMessages(library(readr))
+# Load required packages
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(readr)
 
 # Read the data set from the CSV file
 motor_performance <- read_csv("data/motor-performance.csv", show_col_types = FALSE)
@@ -103,6 +100,9 @@ num_vars <- c("AGE",
 The following information describe the demographic profile and characteristics of the sample composing of 1998 seven-year-old children who are in national primary regional school and participating in Malaysia's physical fitness test (SEGAK).
 
 #### Numerical Variables
+
+![Box Plots of the Numerical Attributes and Motor Skills](/files/identifying-traits-of-sports-talent-in-malaysian-children-through-motor-performance/images/final_boxplots.png)
+
 - As expected, the mean age of the children is around 7, with a standard deviation of 0.05.
 - The mean weight is 22.21 kg, with a standard deviation of 5.41.
 - The mean height is 118.26 cm, with a standard deviation of 5.97.
@@ -113,52 +113,7 @@ The following information describe the demographic profile and characteristics o
 - Out of ten, the mean number of ball catches is about 4, with a standard deviation of about 3.
 - We can see from the boxplots below that all numerical variables seem to be symmetrically distributed at their median.
 
-
 ```R
-# ----- For link's image thumbnail
-
-# Install and load the 'patchwork' package
-#suppressWarnings(suppressMessages(install.packages("patchwork", verbose=TRUE, quiet=TRUE))) 
-#suppressPackageStartupMessages(library(patchwork))
-
-# Install and load the 'png' package
-#suppressWarnings(suppressMessages(install.packages("png", verbose=TRUE, quiet=TRUE)))       
-#suppressPackageStartupMessages(library(png))
-
-# Create a data
-data <- data.frame(x = 1:3,
-                   y = 1:3)
-
-# Read the PNG file
-my_image <- readPNG("documentation/resid_plots.png", native = TRUE)
-
-# Create a plot and combine with the image
-ggplot(data, aes(x, y)) +
-  geom_point() +
-  theme_minimal() +
-  theme(axis.title = element_blank(),
-          axis.text = element_blank(),
-          axis.line = element_blank(),
-          axis.ticks = element_blank()) +
-  inset_element(p = my_image,
-                  left = -0.07,
-                  bottom = -0.5,
-                  right = 1.05,
-                  top = 1.5)
-```
-
-
-    
-![png](notebook_files/notebook_3_0.png)
-    
-
-
-
-```R
-## ---------- Descriptive Analysis
-
-## ----- Numerical Variables
-
 # Subset numerical variable columms
 stacked_num_vars <- stack(
     motor_performance %>% 
@@ -253,210 +208,66 @@ final_boxplots <- boxplots + geom_segment(data=dat, aes(x=xmin,
                         inherit.aes = FALSE)
 ```
 
-<img src="documentation/final_boxplots.png" alt="" title=""/>
-
 #### Categorical Variables
 
-- The five Malaysian states with the most number of children residing in are:</br>
-    ㅤ1. Selangor - 349 (17.5%)</br>
-    ㅤ2. Johor - 241 (12.1%)</br>
-    ㅤ3. Sabah - 202 (10.1%)</br>
-    ㅤ4. Sarawak - 199 (10.0%)</br>
-    ㅤ5. Perak - 166 (8.3%)</br>
+- The five states where most of the sampled children reside are Selangor, Johor, Sabah, Sarawak, and Perak.
 
-<img src="documentation/bar_graph1.jpg" alt="" title=""/>
+| STATE           | Number of Children | Percentage |
+|-----------------|--------------------|------------|
+| SELANGOR        | 349                | 17.47%     |
+| JOHOR           | 241                | 12.06%     |
+| SABAH           | 202                | 10.11%     |
+| SARAWAK         | 199                | 9.96%      |
+| PERAK           | 166                | 8.31%      |
+| KEDAH           | 133                | 6.66%      |
+| PAHANG          | 129                | 6.46%      |
+| KELANTAN        | 128                | 6.41%      |
+| PULAU PINANG    | 122                | 6.11%      |
+| KUALA LUMPUR    | 90                 | 4.50%      |
+| TERENGGANU      | 90                 | 4.50%      |
+| NEGERI SEMBILAN | 72                 | 3.60%      |
+| MELAKA          | 45                 | 2.25%      |
+| PERLIS          | 16                 | 0.80%      |
+| PUTRAJAYA       | 11                 | 0.55%      |
+| LABUAN          | 5                  | 0.25%      |
 
+- The distribution of sampled children is almost balanced, with 1,052 urban residents (53%) and 946 rural residents (47%). 
+- There is an equal distribution between male (999) and female (999) groups.
+- Majority or about 71% (1,419) of the sampled children have normal BMIs.
+
+| CLASS (BMI)     | Number of Children | Percentage |
+|-----------------|--------------------|------------|
+| NORMAL          | 1419               | 71.02%     |
+| OBESITY         | 218                | 10.91%     |
+| OVERWEIGHT      | 205                | 10.26%     |
+| THINNESS        | 108                | 5.41%      |
+| SEVERE THINNESS | 48                 | 2.40%      |
 
 ```R
-## ----- Categorical Variables
-
 # Count children per state
 state_counts <- motor_performance %>%
   count(STATE, sort = TRUE)  %>%
-  mutate(proportion = n/1998, Attribute = "STATE",
-           Percentage = label_percent(accuracy=0.01)(proportion)) %>%
-  rename(`Number of children` = n)
+  mutate(Percentage = label_percent(accuracy=0.01)(n/1998)) %>%
+  rename(`Number of Children` = n)      
 
-state_counts
-```
-
-
-<table class="dataframe">
-<caption>A tibble: 16 × 5</caption>
-<thead>
-  <tr><th scope=col>STATE</th><th scope=col>Number of children</th><th scope=col>proportion</th><th scope=col>Attribute</th><th scope=col>Percentage</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>SELANGOR       </td><td>349</td><td>0.174674675</td><td>STATE</td><td>17.47%</td></tr>
-  <tr><td>JOHOR          </td><td>241</td><td>0.120620621</td><td>STATE</td><td>12.06%</td></tr>
-  <tr><td>SABAH          </td><td>202</td><td>0.101101101</td><td>STATE</td><td>10.11%</td></tr>
-  <tr><td>SARAWAK        </td><td>199</td><td>0.099599600</td><td>STATE</td><td>9.96% </td></tr>
-  <tr><td>PERAK          </td><td>166</td><td>0.083083083</td><td>STATE</td><td>8.31% </td></tr>
-  <tr><td>KEDAH          </td><td>133</td><td>0.066566567</td><td>STATE</td><td>6.66% </td></tr>
-  <tr><td>PAHANG         </td><td>129</td><td>0.064564565</td><td>STATE</td><td>6.46% </td></tr>
-  <tr><td>KELANTAN       </td><td>128</td><td>0.064064064</td><td>STATE</td><td>6.41% </td></tr>
-  <tr><td>PULAU PINANG   </td><td>122</td><td>0.061061061</td><td>STATE</td><td>6.11% </td></tr>
-  <tr><td>KUALA LUMPUR   </td><td> 90</td><td>0.045045045</td><td>STATE</td><td>4.50% </td></tr>
-  <tr><td>TERENGGANU     </td><td> 90</td><td>0.045045045</td><td>STATE</td><td>4.50% </td></tr>
-  <tr><td>NEGERI SEMBILAN</td><td> 72</td><td>0.036036036</td><td>STATE</td><td>3.60% </td></tr>
-  <tr><td>MELAKA         </td><td> 45</td><td>0.022522523</td><td>STATE</td><td>2.25% </td></tr>
-  <tr><td>PERLIS         </td><td> 16</td><td>0.008008008</td><td>STATE</td><td>0.80% </td></tr>
-  <tr><td>PUTRAJAYA      </td><td> 11</td><td>0.005505506</td><td>STATE</td><td>0.55% </td></tr>
-  <tr><td>LABUAN         </td><td>  5</td><td>0.002502503</td><td>STATE</td><td>0.25% </td></tr>
-</tbody>
-</table>
-
-
-
-- Majority or 52.7% (1,052) of the sampled children are urban residents.
-
-
-```R
 # Count children per residential
 residential_counts <- motor_performance %>%
-  count(RESIDENTIAL, sort = TRUE) %>%
-  mutate(proportion = n/1998, Attribute = "RESIDENTIAL",
-           Percentage = label_percent(accuracy=0.01)(proportion),
-           lab.ypos = cumsum(proportion) - 0.6*proportion) %>%
-  rename(`Number of children` = n)
+	count(RESIDENTIAL, sort = TRUE) %>%
+  mutate(Percentage = label_percent(accuracy=0.01)(n/1998)) %>%
+  rename(`Number of Children` = n)      
 
-# Create a pie chart for the RESIDENTIAL variable
-pie_chart_for_residential <- ggplot(residential_counts, aes(x = "", y = proportion, fill = RESIDENTIAL)) +
-    geom_bar(width = 1, stat = "identity", color = "grey", linewidth=0.75) +
-    coord_polar("y", start = 0)+
-    geom_text(aes(y = lab.ypos, 
-                  label = paste(label_percent(accuracy=0.01)(proportion),
-                                "\n (", prettyNum(`Number of children`,
-                                                  big.mark=","),")",
-                                sep="")), color = "white",  size = 6)+
-    scale_fill_manual(values = c("#31688E", "#65C899")) +
-  ggtitle("\n Fig. 3: Pie Graph of the Distribution of Children per Residential Area  \n") +
-  theme(legend.position = "top",
-          legend.justification=0.48,
-          legend.direction="horizontal",
-          legend.key.size = unit(0, 'pt'),
-          legend.key = element_rect(fill = NA),
-          legend.text = element_text(margin = margin(r = 5, unit = "pt"),
-                                     color = "#65707C",
-                                     family="sans serif"),
-          legend.title = element_text(color = "#65707C",
-                                      size = 9,         
-                                      face = "bold",          
-                                      family="sans serif"),
-          axis.title = element_blank(),
-          axis.text = element_blank(),
-          axis.line = element_blank(),
-          axis.ticks = element_blank(),
-          panel.grid.major = element_line(color = "grey",
-                                          linetype="dashed",
-                                          linewidth=0.25),
-          panel.background = element_blank(),
-          plot.title = element_text(color = "#65707C",
-                                    hjust = 0.5,
-                                    face = "bold",
-                                    size= 11,
-                                    family = "sans serif")) +
-  labs(fill="RESIDENTIAL:  ")+
-    guides(fill = guide_legend(override.aes = list(
-                         shape = 15,
-                         size = 6)))
-```
-
-<img src="documentation/pie_chart_for_residential.png" alt="" title=""/>
-
-- There is an equal distribution between male and female gender groups.
-
-
-```R
 # Count children per gender
 gender_counts <- motor_performance %>%
   count(GENDER, sort = TRUE) %>%
-  mutate(proportion = n/1998, Attribute = "GENDER",
-           Percentage = label_percent(accuracy=0.01)(proportion),
-           lab.ypos = cumsum(proportion) - 0.6*proportion) %>%
-  rename(`Number of children` = n)
+  mutate(Percentage = label_percent(accuracy=0.01)(n/1998)) %>%
+  rename(`Number of Children` = n)      
 
-# Create a pie chart for the GENDER variable
-pie_chart_for_gender <- ggplot(gender_counts, aes(x = "", y = proportion, fill = GENDER)) +
-    geom_bar(width = 1, stat = "identity", color = "grey", linewidth=0.75) +
-    coord_polar("y", start = 0) +
-    geom_text(aes(y = lab.ypos, 
-                  label = paste(label_percent(accuracy=0.01)(proportion),
-                                "\n (", prettyNum(`Number of children`,
-                                                  big.mark=","),")",
-                                sep="")), color = "white",  size = 6) +
-    scale_fill_manual(values = c("#31688E", "#65C899")) +
-  ggtitle("\nFig. 4: Pie Graph of the Distribution of Children per Gender   \n") + 
-  theme(legend.position = "top",
-          legend.justification=0.48,
-          legend.direction="horizontal",
-          legend.key.size = unit(0, 'pt'),
-          legend.key = element_rect(fill = NA),
-          legend.text = element_text(margin = margin(r = 5, unit = "pt"),
-                                     color = "#65707C",
-                                     family="sans serif"),
-          legend.title = element_text(color = "#65707C",
-                                      size = 9,    
-                                      face = "bold",
-                                      family="sans serif"),
-          axis.title = element_blank(),
-          axis.text = element_blank(),
-          axis.line = element_blank(),
-          axis.ticks = element_blank(),
-          panel.grid.major = element_line(color = "grey",
-                                          linetype="dashed",
-                                          linewidth=0.25),
-          panel.background = element_blank(),
-          plot.title = element_text(color = "#65707C",
-                                    face = "bold",
-                                    hjust = 0.5,
-                                    size= 11,
-                                    family = "sans serif")) +
-  labs(fill="GENDER:  ") +
-    guides(fill = guide_legend(override.aes = list(
-                         shape = 15,
-                         size = 6)))
-```
-
-<img src="documentation/pie_chart_for_gender.png" alt="" title=""/>
-
-
-```R
 # Count children per BMI class
 bmi_class_counts <- motor_performance %>%
   count(`CLASS (BMI)`, sort = TRUE) %>%
-  mutate(proportion = n/1998, Attribute = "CLASS (BMI)",
-           Percentage = label_percent(accuracy=0.01)(proportion)) %>%
-  rename(`Number of children` = n)
+  mutate(Percentage = label_percent(accuracy=0.01)(n/1998)) %>%
+  rename(`Number of Children` = n)              
 ```
-
-- Majority or 71% (1,419) of the sampled children have normal BMIs.
-
-<img src="documentation/bar_graph2.jpg" alt="" title=""/>
-
-
-```R
-bmi_class_counts
-```
-
-
-<table class="dataframe">
-<caption>A tibble: 5 × 5</caption>
-<thead>
-  <tr><th scope=col>CLASS (BMI)</th><th scope=col>Number of children</th><th scope=col>proportion</th><th scope=col>Attribute</th><th scope=col>Percentage</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>NORMAL         </td><td>1419</td><td>0.71021021</td><td>CLASS (BMI)</td><td>71.02%</td></tr>
-  <tr><td>OBESITY        </td><td> 218</td><td>0.10910911</td><td>CLASS (BMI)</td><td>10.91%</td></tr>
-  <tr><td>OVERWEIGHT     </td><td> 205</td><td>0.10260260</td><td>CLASS (BMI)</td><td>10.26%</td></tr>
-  <tr><td>THINNESS       </td><td> 108</td><td>0.05405405</td><td>CLASS (BMI)</td><td>5.41% </td></tr>
-  <tr><td>SEVERE THINNESS</td><td>  48</td><td>0.02402402</td><td>CLASS (BMI)</td><td>2.40% </td></tr>
-</tbody>
-</table>
-
-
 
 ### Correlation Analysis
 Using the sample, the following observations can be said about the pairwise correlations of the four motor skills:
