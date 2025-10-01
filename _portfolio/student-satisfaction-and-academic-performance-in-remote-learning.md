@@ -42,21 +42,19 @@ This report aimed to analyze student experiences with the remote learning setup 
 - Determine the strength and direction of the overall relationship between the sum ratings of the UPSSS and the SPAPS.
 - Analyze the pairwise correlations between the individual variables of the UPSSS and the SPAPS.
   
-## 2. Exploratory Analysis
+### 1.3. Libraries & Functions
 
 ```R
 # Load required packages
 library(tidyverse)
 library(dplyr)
 library(rlang)
-
-# Import data from CSV file
-data <- read_csv("/kaggle/input/the-data-setlist/survey_data.csv", show_col_types = FALSE)
-
+library(tidyr)
+library(reshape2)
 
 ## Create functions to be used
-# Create horizontal bar plot using base R graphics    
-suppressMessages(library(rlang, verbose=FALSE, quiet=TRUE)) # required library               
+
+# Create horizontal bar plot using base R graphics                  
 horiz_barplot <- function(data,
                           variable,
                           summ_var = NULL,
@@ -163,20 +161,58 @@ mode <- function(x) {
   uniq_vals <- unique(x)
   uniq_vals[which.max(tabulate(match(x, uniq_vals)))]
 }
-              
-            
+```
+
+### 1.4. Dataset
+
+| Item Code | Variable          | Short Description                                    | Full Description |
+|-----------|-------------------|------------------------------------------------------|------------------|
+| id          | id              | Identification number                                | Unique identification number assigned to a student respondent                 |
+| constituent | constituent     | Constituent university                               | UP constituent university where a student was enrolled at the time of survey              |
+| program   | program           | Degree program                                       | Degree program of a student at the time of survey                 |
+| year_standing | year_standing | Year level standing                                  | Year level standing of a student at the time of survey|
+| lms        | lms              | Learning management system                           | Set of learning management system(s) used by a student in virtual classes at the time of survey                |
+| upsss1    | lms_org           | Organization of the LMS                              | *Most of my professors organized a platform (e.g. UVLe, Google Classroom, Canvas, etc.) in such a way that I can easily find the content that I need.* |
+| upsss2    | lms_stable        | Stability and reliability of the LMS                 | *Most of my professors used a platform (e.g. UVLe, Google Classroom, Canvas, etc.) that is reliable, stable, and secure.* |
+| upsss3    | lms_prog_track    | LMS capability for progress tracking                 | *Most of my professors used a platform (e.g. UVLe, Google Classroom, Canvas, etc.) for me to keep track of my learning progress.* |
+| upsss4    | prof_content      | Provision of necessary learning content              | *Most of my professors provided the content that I need to learn the lessons (e.g. lecture notes, zoom recordings, video lectures, etc.).* |
+| upsss5    | prof_tools_eff    | Instructors' effective use of tools                  | *In general, my professors utilized the available tools and platforms effectively.* |
+| upsss6    | course_workload   | Reasonableness of the course workload                | *Most of my professors assigned a reasonable amount of course requirements.* |
+| upsss7    | course_announce   | Timeliness of course announcements                   | *Most of my professors announced the details of requirements according to the date stated in the course schedule.* |
+| upsss8    | course_req_time   | Sufficient time to complete requirements             | *Most of my professors gave a sufficient amount of time to accomplish the course requirements.* |
+| upsss9    | course_feedback_time | Timeliness of feedback on submissions            | *Most of my professors provided feedback to my submissions in a justifiable time.* |
+| upsss10   | sync_stable       | Stability of synchronous classes                     | *Most of my professors carried out synchronous classes in a stable and smooth manner.* |
+| upsss11   | prof_compassion   | Instructors' compassion for student concerns         | *Most of my professors were compassionate in hearing the students' concerns about their courses and current well-being.* |
+| upsss12   | lib_content       | Availability of needed online library content        | *I accessed the university's online library which provides the content that I need (e.g. journals, references, etc.).* |
+| upsss13   | lib_update        | Timeliness of online library content                 | *I accessed the university's online library which provides up-to-date content.* |
+| upsss14   | uni_services      | Utility of university-provided services              | *I used the available services provided by the university in my study (e.g. UP mail can be used to access free Office, Canva for Education, unlimited Google Drive storage, etc.).* |
+| upsss15   | reg_smooth        | Smoothness of the registration process               | *The university's registration process was smooth and straightforward.* |
+| upsss16   | enlist_success    | Success in enlisting required courses                | *I enlisted all the subjects that I needed in this semester.* |
+| upsss17   | sem_length        | Adequacy of the semester's length                    | *The semester's length is adequate.* |
+| upsss18   | uni_response      | University's response to student concerns            | *The university hears the students' concerns when it comes to issues such as academic ease due to our current situation.* |
+| upsss19   | setup_conducive   | Conduciveness of the remote learning setup           | *I believe the university's remote learning setup was organized in a way that is conducive to learning.* |
+| upsss20   | sat_overall       | Overall satisfaction with remote learning setup      | As a whole, I am satisfied with the university's remote learning setup this semester. |
+| spaps1    | req_submit_time     | Timely submission of requirements          | *I was able to submit all my requirements this semester on time.* |
+| spaps2    | critical_thinking   | Application of critical thinking           | *I was able to think critically and logically while doing my requirements.* |
+| spaps3    | feedback_exchange   | Providing and receiving feedback           | *I was able to provide and receive feedback on my requirements.* |
+| spaps4    | feedback_apply      | Application of received feedback           | *I was able to apply the feedback that I received.* |
+| spaps5    | course_obj_achieve  | Achievement of course objectives           | *I was able to achieve all of my courses’ objectives.* |
+| spaps6    | study_daily         | Maintenance of a daily study habit         | *I made sure that I study for my courses every day.* |
+| spaps7    | gwa_expected        | Expectation of high GWA (1.75 or better)   | *I believe I can get a general weighted average (GWA) of at least 1.75 this semester.* |
+
+
+```R          
 ## Data Understanding
+
+# Import data from CSV file
+data <- read_csv("/kaggle/input/the-data-setlist/survey_data.csv", show_col_types = FALSE)
 
 # View the data
 head(data)
 tail(data)
 
-# View column names
-colnames(data)
-
 # Check for missing values
 paste("𝗡𝘂𝗺𝗯𝗲𝗿 𝗼𝗳 𝗡𝗔 𝘃𝗮𝗹𝘂𝗲𝘀:", sum(is.na(data)))
-
 
 ## Data Preparation
 
@@ -216,23 +252,10 @@ data <- data %>%
         year_standing = factor(year_standing, levels = c("I", "II", "III", "IV", "V"), ordered = TRUE)  
     )        
 
-
 ## Feature Understanding
 
-# Create a dataframe of descriptions for student information
-studentInfo_descr <- data.frame(
-    variable = c("id", "constituent", "program", "year_standing", "lms"),
-    description = c(
-        "Unique identification number assigned to a student participant",
-        "UP constituent university where a student was enrolled at the time of the survey",
-        "Degree program of a student at the time of the survey",
-        "Year level standing of a student at the time of the survey",
-        "Learning Management System/s used by a student in virtual classes at the time of the survey"
-    )
-)
-
 # Subset data of student information
-studentInfo_wide <- data[, studentInfo_descr$variable]
+studentInfo_wide <- data[, c("id", "constituent", "program", "year_standing", "lms")]
               
 # Create a dataframe of descriptions for UPSSS variables
 upsss_descr <- data.frame(
@@ -241,7 +264,6 @@ upsss_descr <- data.frame(
         "upsss9", "upsss10", "upsss11", "upsss12", "upsss13", "upsss14", "upsss15", 
         "upsss16", "upsss17", "upsss18", "upsss19", "upsss20"
     ),
-
     variable = c(
       "lms_org", "lms_stable", "lms_prog_track",
       "prof_content", "prof_tools_eff",
@@ -251,40 +273,6 @@ upsss_descr <- data.frame(
       "lib_content", "lib_update", "uni_services",
       "reg_smooth", "enlist_success", "sem_length",
       "uni_response", "setup_conducive", "sat_overall"
-    ),
-    
-    short_description = c(
-        "Organization of the LMS", "Stability and reliability of the LMS", "LMS capability for progress tracking",
-        "Provision of necessary learning content", "Instructors' effective use of tools",
-        "Reasonableness of the course workload", "Timeliness of course announcements",
-        "Sufficient time to complete requirements", "Timeliness of feedback on submissions",
-        "Stability of synchronous classes", "Instructors' compassion for student concerns",
-        "Availability of needed online library content", "Timeliness of online library content", "Utility of university-provided services", 
-        "Smoothness of the registration process", "Success in enlisting required courses", "Adequacy of the semester's length",
-        "University's response to student concerns", "Conduciveness of the remote learning setup", "Overall satisfaction with remote learning setup"
-    ),
-    
-    full_description = c(
-        "Most of my professors organized a platform (e.g. UVLe, Google Classroom, Canvas, etc.) in such a way that I can easily find the content that I need.",
-        "Most of my professors used a platform (e.g. UVLe, Google Classroom, Canvas, etc.) that is reliable, stable, and secure.",
-        "Most of my professors used a platform (e.g. UVLe, Google Classroom, Canvas, etc.) for me to keep track of my learning progress.",
-        "Most of my professors provided the content that I need to learn the lessons (e.g. lecture notes, zoom recordings, video lectures, etc.).",
-        "In general, my professors utilized the available tools and platforms effectively.",
-        "Most of my professors assigned a reasonable amount of course requirements.",
-        "Most of my professors announced the details of requirements according to the date stated in the course schedule.",
-        "Most of my professors gave a sufficient amount of time to accomplish the course requirements.",
-        "Most of my professors provided feedback to my submissions in a justifiable time.",
-        "Most of my professors carried out synchronous classes in a stable and smooth manner.",
-        "Most of my professors were compassionate in hearing the students' concerns about their courses and current well-being.",
-        "I accessed the university's online library which provides the content that I need (e.g. journals, references, etc.).",
-        "I accessed the university's online library which provides up-to-date content.",
-        "I used the available services provided by the university in my study (e.g. UP mail can be used to access free Office, Canva for Education, unlimited Google Drive storage, etc.).",
-        "The university's registration process was smooth and straightforward.",
-        "I enlisted all the subjects that I needed in this semester.",
-        "The semester's length is adequate.",
-        "The university hears the students' concerns when it comes to issues such as academic ease due to our current situation.",
-        "I believe the university's remote learning setup was organized in a way that is conducive to learning.",
-        "As a whole, I am satisfied with the university's remote learning setup this semester."
     )
 )
 
@@ -292,10 +280,6 @@ upsss_descr <- data.frame(
 upsss_wide <- data[, names(data) == "id" | grepl("upsss", names(data))]
 upsss_items <- (colnames(data))[grepl("upsss", colnames(data))]
               
-# Required libraries
-suppressMessages(library(tidyr, verbose=FALSE, quiet=TRUE))
-suppressMessages(library(reshape2, verbose=FALSE, quiet=TRUE))
-
 # Reshape data
 upsss_long <- melt(
         upsss_wide,
@@ -312,7 +296,6 @@ spaps_descr <- data.frame(
     item_code = c(
         "spaps1", "spaps2", "spaps3", "spaps4", "spaps5", "spaps6", "spaps7"
      ),
-
     variable = c(
         "req_submit_time",
         "critical_thinking",
@@ -321,28 +304,7 @@ spaps_descr <- data.frame(
         "course_obj_achieve",
         "study_daily",
         "gwa_expected"
-    ),
-    
-    short_description = c(
-        "Timely submission of requirements",
-        "Application of critical thinking",
-        "Providing and receiving feedback", 
-        "Application of received feedback", 
-        "Achievement of course objectives",        
-        "Maintenance of a daily study habit",
-        "Expectation of high GWA (1.75 or better)"        
-    ),
-    
-    full_description = c(
-        "I was able to submit all my requirements this semester on time.",
-        "I was able to think critically and logically while doing my requirements.",
-        "I was able to provide and receive feedback on my requirements.",
-        "I was able to apply the feedback that I received.",
-        "I was able to achieve all of my courses’ objectives.",
-        "I made sure that I study for my courses every day.",
-        "I believe I can get a general weighted average (GWA) of at least 1.75 this semester."
-    )
-        
+    )   
 )
 
 # Subset SPAPS data  
@@ -378,13 +340,11 @@ spaps_long <- melt(
 | 149 | UP Diliman   | BS Statistics                               | IV            | UVLê;Google Classroom              | 7      | 7      | ⋯ | 2      | 7      |
 | 150 | UP Diliman   | BS Business Administration and Accountancy  | IV            | UVLê;Google Classroom              | 5      | 5      | ⋯ | 2      | 1      |
 
-'id', 'constituent', 'program', 'year_standing', 'lms', 'upsss1', 'upsss2', 'upsss3', 'upsss4', 'upsss5', 'upsss6', 'upsss7', 'upsss8', 'upsss9', 'upsss10', 'upsss11', 'upsss12', 'upsss13', 'upsss14', 'upsss15', 'upsss16', 'upsss17', 'upsss18', 'upsss19', 'upsss20', 'spaps1', 'spaps2', 'spaps3', 'spaps4', 'spaps5', 'spaps6', 'spaps7'
-
-'𝗡𝘂𝗺𝗯𝗲𝗿 𝗼𝗳 𝗡𝗔 𝘃𝗮𝗹𝘂𝗲𝘀: 0'
-
-### 2.1. Descriptive Statistics
-#### 2.1.1. Demographics
-##### 2.1.1.1. Constituent University
+    '𝗡𝘂𝗺𝗯𝗲𝗿 𝗼𝗳 𝗡𝗔 𝘃𝗮𝗹𝘂𝗲𝘀: 0'
+    
+## 2. Descriptive Statistics
+### 2.1. Demographics
+#### 2.1.1. Constituent University
 Among the 150 surveyed UP students, 103 (68.7%) were from **Diliman** and 30 (20.0%) were from **Los Baños**. The remaining 17 respondents were from five other constituent universities: 5 (3.3%) from **Manila**, 4 (2.7%) from **Baguio**, 3 (2.0%) each from the **Open University** and **Visayas**, and 2 (1.3%) from **Cebu**. This means that analyses by constituent university must be interpreted with extreme caution due to highly skewed sample sizes and findings for campuses with few respondents are merely illustrative and not generalizable.
 
 ```R
@@ -402,7 +362,7 @@ horiz_barplot(
 
 ![Number of Students by Constituent University](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_3_0.png)
     
-##### 2.1.1.2. Undergraduate Program
+#### 2.1.2. Undergraduate Program
 Most of the respondents, totaling 66 (44.0%), were **BS Statistics** majors. The remaining 84 respondents came from a variety of other programs, including:
 - 7 (4.7%) from **BS Biology**;
 - 6 (4.0%) from **BS Secondary Education**;
@@ -429,7 +389,7 @@ horiz_barplot(
 
 ![Number of Students by Undergraduate Program](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_5_0.png)
     
-##### 2.1.1.3. Year-Level Standing
+#### 2.1.3. Year-Level Standing
 **Seniors** made up the largest group with **52 (34.7%)** students, followed by **juniors** (46 or 30.7%), **sophomores** (31 or 20.7%), **freshmen** (17, 11.3%), and **fifth-year students** (4, 2.7%).
 
 ```R
@@ -449,8 +409,8 @@ horiz_barplot(
     
 ![Number of Students by Year-Level Standing](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_7_0.png)
     
-#### 2.1.2. Student Satisfaction with Remote Learning
-##### 2.1.2.1. Overall
+### 2.2. Student Satisfaction with Remote Learning
+#### 2.2.1. Overall
 Based on data from student ratings on a scale of 1 (Strongly Disagree) to 7 (Strongly Agree) for statements in the **20-item UP Student Satisfaction Scale (UPSSS)**, the **overall median rating sum was 94 out of 140**, with an **average of 4.7 out of 7** per item. This shows that student satisfaction with remote learning ranges from neutral to somewhat positive.
 
 ```R
@@ -484,7 +444,7 @@ data.frame(med_ratingSum = med_upsss_ratingSum, avg_med_ratingSum = med_upsss_ra
 </tbody>
 </table>
 
-##### 2.1.2.2. Variables
+#### 2.2.2. Variables
 
 The most positively rated item was **access to university digital services** (e.g., Office 365, Canva for Education, Google Drive, etc.), with a **median and mode of 7 (Strongly Agree)**. The very low **IQR of 1** indicates a strong and widespread consensus on the value of these tools. Similarly, aspects of a **Learning Management System (LMS)** were rated highly with a **median of 6 (Agree)**, including its **organization, stability, and progress tracking capability**. **Instructor-related** items also received strong positive feedback; students generally agreed with a **median of 6 (Agree)** that their **professors were compassionate, provided necessary learning content, announced requirements on time, and used tools effectively**. The consensus on these points was relatively high, with **IQRs ranging from 1 to 2**.
 
@@ -553,8 +513,8 @@ horiz_barplot(
 
 ![Median Rating by UPSSS Variable](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_11_1.png)
 
-##### 2.1.2.2. Demographics
-###### 2.1.2.2.1. Constituent University
+#### 2.2.3. Demographics
+##### 2.2.3.1. Constituent University
 
 **UP Open University (UPOU)** students reported the highest satisfaction with a **median rating of 6 (Agree)**. As a long-standing distance education constituent, UPOU may have more established and effective systems for remote learning, which is reflected in this higher rating. Most other campuses, including the largest sample from **UP Diliman**, had a **median rating of 5 (Somewhat Agree)**. This indicates a generally positive but not enthusiastic level of satisfaction across the system. Notably, while their **medians were 5 (Somewhat Agree)**, both **UP Los Baños** and **UP Manila** had a **mode of 7 (Strongly Agree)**, suggesting a polarized experience where the most common response was highly positive, even if the central tendency was lower. In contrast, **UP Visayas** was the only campus with a neutral **median rating of 4 (Neutral)**, and its **mode was 3 (Somewhat Disagree)**. This indicates that students from UP Visayas may have experienced the most significant challenges and lowest satisfaction with the remote learning setup compared to their peers in other constituent universities.
 
@@ -606,7 +566,7 @@ horiz_barplot(
 
 ![Median Rating by Constituent University](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_13_1.png)
 
-###### 2.1.2.2.2. Year-Level Standing
+##### 2.2.3.2. Year-Level Standing
 
 Satisfaction was highest among **first-year students**, who reported a **median rating of 6 (Agree)**, indicating a more positive outlook on the remote learning experience compared to students in upper years, whose median ratings were consistently **5 (Somewhat Agree)**.
 
@@ -655,8 +615,8 @@ horiz_barplot(
 
 ![Median Rating by Year Level Standing](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_15_1.png)
 
-#### 2.1.3. Perceived Academic Performance
-##### 2.1.3.1. Overall
+### 2.3. Perceived Academic Performance
+#### 2.3.1. Overall
 Based on student ratings on a scale of 1 (Strongly Disagree) to 7 (Strongly Agree) for statements in the **7-item Student Perception on Academic Performance Scale (SPAPS)**, the **overall median rating sum was 30 out of 49** (or an **average of 4.3 out of 7** per item), indicating a neutral to slightly positive perception of academic performance.
 
 
@@ -682,7 +642,7 @@ data.frame(med_ratingSum = med_spaps_ratingSum, avg_med_ratingSum = round(med_sp
 </tbody>
 </table>
 
-##### 2.1.3.2. Variables
+#### 2.3.2. Variables
 
 Students reported their most positive perception on academic performance with both the **timely submission of requirements** and the **achievement of a high GWA** receiving a **median rating of 5 (Somewhat Agree)**. However, a high **IQR of 3** for both items indicates this was not universal. For the majority of items, the **median rating was 4 (Neutral)**. The consistently high **IQRs (ranging from 2 to 3)** suggest that while students feel they are managing to produce final outputs, they are less certain about the **quality and consistency** of the related **academic processes, skills, and habits.**
 
@@ -730,8 +690,8 @@ horiz_barplot(
 
 ![Median Rating by SPAPS Variable](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_19_1.png)
 
-##### 2.1.3.3. Demographics
-###### 2.1.3.3.1. Constituent University
+#### 2.3.3. Demographics
+##### 2.3.3.1. Constituent University
 
 Students from **UP Diliman and UP Los Baños**, which constituted the largest proportions of the sample, both reported a **median rating of 4 (Neutral)**, suggesting the typical student at these campuses felt uncertain about their academic achievement. However, while UP Los Baños had a neutral median of 4, its most frequent response was 5 (Somewhat Agree), indicating a slightly positive skew in perceptions. Conversely, **UP Open University** also had a neutral median but a **mode of 1 (Strongly Disagree)**, highlighting at least one student with a highly negative perception. This variation is underscored by the consistently high **IQRs (≥ 2)** across most campuses, confirming that a wide diversity of self-perceived performance is a characteristic feature within each university.
 
@@ -783,7 +743,7 @@ horiz_barplot(
 
 ![Median SPAPS Rating by Constituent University](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_21_1.png)
 
-###### 2.1.2.3.2. Year-Level Standing
+##### 2.3.3.2. Year-Level Standing
 Perceived academic performance is highest among **first-year students**, who reported a **median rating of 5 (Somewhat Agree)**. This perception declines notably after the first year and then stabilizes, with **sophomore, junior, and senior students** all reporting a consistent, **neutral median of 4**. A slight uptick to a median of 4.5 was observed for **fifth-year students**, though this result must be interpreted with caution due to their much smaller sample size.
 
 ```R
@@ -829,9 +789,9 @@ horiz_barplot(
 
 ![Median SPAPS Rating by Year Level Standing](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_23_1.png)
 
-### 2.2. Correlation Analysis
-#### 2.2.1. Overall Correlation
-A Spearman's rank-order correlation was used to assess the relationship between student satisfaction and perceived academic performance, with results showing a **statistically significant, moderate positive correlation** **$(p < .001$, $\rho = .51)$** between the two variables. The results of Kendall's rank correlation test **$(p < .001$, $\tau = .37)$** corroborate this finding.
+## 3. Correlation Analysis
+### 3.1. Overall
+A Spearman's rank-order correlation was used to assess the relationship between student satisfaction and perceived academic performance, with results showing a **statistically significant, moderate positive correlation** ($$p < .001$$, $$\rho = .51$$) between the two variables. The results of **Kendall's rank correlation test** ($$p < .001$$, $$\tau = .37$$) corroborate this finding.
 
 
 ```R
@@ -891,7 +851,7 @@ plot(
 
 ![Student Satisfaction vs. Perceived Academic Performance](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_27_0.png)
 
-#### 2.2.2. Pairwise Correlations
+### 3.2. Pairwise
 
 The Spearman's correlation matrix, visualized in the heatmaps below, reveals several key patterns regarding specific pairwise relationships of student satisfaction (UPSSS) and perceived academic performance (SPAPS) variables. **First, the analysis identifies a critical feedback loop.** A strong positive correlation exists between **feedback timeliness and the perceived ability to apply it**, which is supported by a high **Spearman's correlation coefficient $(\rho = .65)$** and the dendrograms that show a tight grouping of the two feedback-related variables. Additionally, **overall satisfaction** with the remote learning setup and its **conduciveness** were most strongly correlated with students' ability to **achieve course objectives and engage in critical thinking** (**Spearman's $\rho$ ranging from 0.39 to 0.48**). In contrast, the SPAPS item on **maintaining a daily study habit** appears to operate independently of institutional satisfaction. It exhibits some of the weakest correlations across the board, showing **near-zero relationships** with most areas.
 
@@ -930,10 +890,10 @@ pheatmap(
 )
 ```
 
-![nSpearman Rank Correlation Matrix (UPSSS vs. SPAPS)](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_29_0.png)
+![Spearman Rank Correlation Matrix (UPSSS vs. SPAPS)](/files/student-satisfaction-and-academic-performance-in-remote-learning/images/notebook_29_0.png)
 
 
-## 3. References
+## 4. References
 
 - Bai, X., Eyob, E., Ola, A., & Reese, S. (2021) "Factors Affecting Students’ Satisfaction with Synchronous Online Instruction During the COVID-19 Pandemic". Journal of International Technology and Information Management: Vol. 30: Iss. 3, Article 4.
 DOI: https://doi.org/10.58729/1941-6679.1486.
