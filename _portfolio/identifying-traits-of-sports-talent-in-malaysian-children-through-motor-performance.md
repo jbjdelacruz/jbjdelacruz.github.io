@@ -8,6 +8,7 @@ excerpt: 'This project—which earned first place in a [24-hour DataCamp challen
 venue: 'DataCamp'
 categories:
   - R
+  - Regression
 slidesurl: []
 images:
   - '/files/identifying-traits-of-sports-talent-in-malaysian-children-through-motor-performance/images/page-1.png'
@@ -278,11 +279,9 @@ Using the sample, the following observations can be said about the pairwise corr
 
 
 ```R
-## ---------- Correlation Analysis
-
 # Install & load the "corrplot" package for correlation plots
-suppressWarnings(suppressMessages(install.packages("corrplot", verbose = T, quiet=T)))
-suppressPackageStartupMessages(library(corrplot))
+#install.packages("corrplot")
+library(corrplot)
 
 # Subset motor skill columns
 motor_skills_df <- motor_performance %>%
@@ -378,10 +377,10 @@ summary_full
 
 
 <table class="dataframe">
-<caption>A data.frame: 26 × 5</caption>
+<!-- <caption>A data.frame: 26 × 5</caption> -->
 <thead>
   <tr><th></th><th scope=col>Variable</th><th scope=col>Estimate</th><th scope=col>Std. Error</th><th scope=col>t value</th><th scope=col>Pr(&gt;|t|)</th></tr>
-  <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><th scope=row>1</th><td>(Intercept)                 </td><td>65.0217354</td><td>69.1123732</td><td> 0.94081179</td><td>3.469165e-01</td></tr>
@@ -456,8 +455,8 @@ The following information describe the reduced model:
 
 ```R
 # Install & load the "MASS" package for backward stepwise regression
-suppressWarnings(suppressMessages(install.packages("MASS", verbose = T, quiet=T)))
-suppressPackageStartupMessages(library(MASS))
+# install.packages("MASS")
+library(MASS)
 
 # 1 here means the intercept 
 null <- lm(`POWER (cm)` ~ 1, data = data_for_regression)
@@ -535,10 +534,10 @@ summary_reduced1
 
 
 <table class="dataframe">
-<caption>A data.frame: 24 × 5</caption>
+<!-- <caption>A data.frame: 24 × 5</caption> -->
 <thead>
   <tr><th></th><th scope=col>Variable</th><th scope=col>Estimate</th><th scope=col>Std. Error</th><th scope=col>t value</th><th scope=col>Pr(&gt;|t|)</th></tr>
-  <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><th scope=row>1</th><td>(Intercept)                 </td><td>114.6837462</td><td>10.5498589</td><td>10.8706427</td><td>8.972322e-27</td></tr>
@@ -578,11 +577,9 @@ Four of the six attributes exhibit Variance Inflation Factor (VIF) values near 1
 
 
 ```R
-## ----- Diagnostics Checking
-
 # Install & load the "car" package for Variance inflation factor (VIF)
-suppressWarnings(suppressMessages(install.packages("car", verbose=TRUE, quiet=TRUE)))
-suppressPackageStartupMessages(library(car))
+#install.packages("car")
+library(car)
 
 # VIF for detecting multicollinearity
 vif_1 <- data.frame(Attribute = c("STATE",
@@ -598,10 +595,10 @@ vif_1
 
 
 <table class="dataframe">
-<caption>A data.frame: 6 × 4</caption>
+<!-- <caption>A data.frame: 6 × 4</caption> -->
 <thead>
   <tr><th></th><th scope=col>Attribute</th><th scope=col>GVIF</th><th scope=col>Df</th><th scope=col>GVIF^(1/(2*Df))</th></tr>
-  <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><th scope=row>1</th><td>STATE      </td><td>1.222732</td><td>15</td><td>1.006725</td></tr>
@@ -637,10 +634,10 @@ vif_2
 
 
 <table class="dataframe">
-<caption>A data.frame: 5 × 4</caption>
+<!-- <caption>A data.frame: 5 × 4</caption> -->
 <thead>
   <tr><th></th><th scope=col>Attribute</th><th scope=col>GVIF</th><th scope=col>Df</th><th scope=col>GVIF^(1/(2*Df))</th></tr>
-  <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><th scope=row>1</th><td>STATE      </td><td>1.209391</td><td>15</td><td>1.006357</td></tr>
@@ -661,8 +658,8 @@ Based on the results of the Breusch-Pagan test, with a p-value of 0.0001568 (sig
 
 ```R
 # Install & load the "lmtest" package for Breusch-Pagan (BP) Test
-suppressWarnings(suppressMessages(install.packages("lmtest", verbose = T, quiet=T)))
-suppressPackageStartupMessages(library(lmtest))
+install.packages("lmtest")
+library(lmtest)
 
 # BP Test for determining presence of heteroscedasticity
 bp_test_stat <- bptest(reduced_model2)$statistic
@@ -813,10 +810,10 @@ summary_reduced2
 
 
 <table class="dataframe">
-<caption>A data.frame: 23 × 5</caption>
+<!-- <caption>A data.frame: 23 × 5</caption> -->
 <thead>
   <tr><th></th><th scope=col>Variable</th><th scope=col>Estimate</th><th scope=col>Std. Error</th><th scope=col>t value</th><th scope=col>Pr(&gt;|t|)</th></tr>
-  <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><th scope=row>1</th><td>(Intercept)                 </td><td>128.186424988</td><td>8.73968327</td><td>14.66717053</td><td>2.601903e-46</td></tr>
@@ -867,17 +864,11 @@ Despite these recommended characteristics, however, one major limitation of the 
 #### Tables
 ##### ***Summary statistics of the numerical variables***
 
-
-```R
-sum_stats
-```
-
-
 <table class="dataframe">
-<caption>A data.frame: 8 × 6</caption>
+<!-- <caption>A data.frame: 8 × 6</caption> -->
 <thead>
   <tr><th></th><th scope=col>Variable</th><th scope=col>Mean</th><th scope=col>Std. Dev.</th><th scope=col>Min.</th><th scope=col>Median</th><th scope=col>Max.</th></tr>
-  <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><th scope=row>1</th><td>AGE               </td><td>  7.057508</td><td> 0.04944554</td><td> 7.00</td><td>  7.10</td><td>  7.1</td></tr>
@@ -895,29 +886,11 @@ sum_stats
 
 ##### ***Counts and percentages of the categorical variables***
 
-
-```R
-bind_rows(state_counts %>% 
-  dplyr::select(Attribute, everything(), -proportion) %>%
-  rename(Category = STATE),
-          residential_counts %>% 
-  dplyr::select(Attribute, everything(), -c(proportion, lab.ypos)) %>%
-  rename(Category = RESIDENTIAL),
-          gender_counts %>% 
-  dplyr::select(Attribute, everything(), -c(proportion, lab.ypos)) %>%
-  rename(Category = GENDER),
-          bmi_class_counts %>% 
-  dplyr::select(Attribute, everything(), -proportion) %>%
-  rename(Category = `CLASS (BMI)`)
-          )
-```
-
-
 <table class="dataframe">
-<caption>A tibble: 25 × 4</caption>
+<!-- <caption>A tibble: 25 × 4</caption> -->
 <thead>
   <tr><th scope=col>Attribute</th><th scope=col>Category</th><th scope=col>Number of children</th><th scope=col>Percentage</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>STATE      </td><td>SELANGOR       </td><td> 349</td><td>17.47%</td></tr>
@@ -947,558 +920,3 @@ bind_rows(state_counts %>%
   <tr><td>CLASS (BMI)</td><td>SEVERE THINNESS</td><td>  48</td><td>2.40% </td></tr>
 </tbody>
 </table>
-
-
-
-#### Codes
-
-
-```R
-## ---------- Pre-installed Packages, Dataset, and Vectors for Variable Names
-
-# Load pre-installed, required packages
-suppressPackageStartupMessages(library(tidyverse)) 
-suppressPackageStartupMessages(library(dplyr)) 
-suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(scales))
-suppressPackageStartupMessages(library(readr))
-
-# Read the data set from the CSV file
-motor_performance <- read_csv("data/motor-performance.csv", show_col_types = FALSE)
-
-# Make a character vector for all 8 attributes
-attributes <- c("STATE",
-                "RESIDENTIAL",
-                "GENDER",
-                "AGE",
-                "WEIGHT (kg)",
-                "HEIGHT (CM)",
-                "BMI (kg/m2)",
-                "CLASS (BMI)")
-
-# Make a character vector for all 4 motor skills
-motor_skills <- c("POWER (cm)",
-                  "SPEED (sec)",
-                  "FLEXIBILITY (cm)",
-                  "COORDINATION (no.)")
-
-# Make a character vector for all numerical variables
-num_vars <- c("AGE",
-              "WEIGHT (kg)",
-              "HEIGHT (cm)",
-              "BMI (kg/m2)",
-              "POWER (cm)",
-              "SPEED (sec)",
-              "FLEXIBILITY (cm)", 
-              "COORDINATION (no.)")
-
-
-## ---------- Descriptive Analysis
-
-## ----- Numerical Variables
-
-# Subset numerical variable columms
-stacked_num_vars <- stack(
-    motor_performance %>% 
-    dplyr::select(all_of(num_vars))
-) %>%
-    rename(Variable = ind) %>%
-  mutate(Type = ifelse(Variable %in% c("AGE","WEIGHT (kg)","HEIGHT (cm)","BMI (kg/m2)"),
-                         "Attribute", "Motor skill"))
-
-# Summary statistics for numerical variables
-sum_stats <- data.frame(Variable = num_vars) %>%
-  bind_cols(as.data.frame(t(motor_performance %>%
-                              summarise_at(num_vars, list(mean)) %>%
-                              bind_rows(motor_performance %>%
-                                        summarise_at(num_vars, list(sd)), motor_performance %>%
-                                        summarise_at(num_vars, list(min)),
-                                        motor_performance %>%
-                                        summarise_at(num_vars, list(median)),
-                                        motor_performance %>%
-                                        summarise_at(num_vars, list(max)))
-                             )) %>%
-              rename(Mean = V1,
-                     `Std. Dev.` = V2,
-                     `Min.` = V3,
-                     `Median` = V4,
-                     `Max.` = V5))
-
-rownames(sum_stats) <- 1: nrow(sum_stats)
-
-# Boxplots for numerical variables
-boxplots <- ggplot(stacked_num_vars, aes(x = Variable, y = values, fill=Type)) +       
-  geom_boxplot(width = 0.75) +
-  theme(legend.position = "top",  
-          legend.justification=0.48,
-          legend.key.size = unit(7, 'mm'),
-          legend.text = element_text(margin = margin(r = 10, unit = "pt"),
-                                     size = 8.5,
-                                     color = "#65707C",
-                                     family="sans serif"),
-          legend.title = element_text(color = "#65707C",
-                                   face = "bold",
-                                   size = 9,
-                                   family="sans serif"),  
-          legend.key = element_rect(fill = NA),
-          axis.title = element_text(color = "#65707C",
-                                    face = "bold",
-                                    size = 8.5,
-                                    family="sans serif"),
-          axis.text = element_text(color = "#65707C",
-                                   size = 8,
-                                   family="sans serif"),
-          axis.line = element_line(colour = "grey",
-                                   linewidth = 0.5),
-          panel.grid.major = element_line(color = "grey",
-                                          linetype="dashed",
-                                          linewidth=0.25),
-          panel.background = element_blank(),
-          panel.border = element_rect(color="grey40",
-                                      fill=NA),  
-          panel.spacing = unit(2, "lines"),
-          plot.title = element_text(color = "#65707C",
-                                    hjust = 0.5,
-                                    face = "bold",
-                                    size= 11,
-                                    family = "sans serif")) +
-  labs(x = "\nVariable \n(unit)\n", y = "", fill = "Type:  ") +
-  ggtitle("\n Fig. 1: Box Plots of the Numerical Attributes and Motor Skills          ") +
-  scale_x_discrete(labels=c("AGE",
-              "WEIGHT \n(kg)",
-              "HEIGHT \n(cm)",
-              "BMI \n(kg/m2)",
-              "POWER \n(cm)",
-              "SPEED \n(sec)",
-              "FLEXIBILITY \n(cm)", 
-              "COORDINATION \n(no.)")) + 
-  scale_y_continuous(expand = c(0.01, 0),
-                       limits = c(0, 175), 
-                       breaks = seq(0, 175, by = 25)) +
-  scale_fill_manual(values = c('#025C70',
-                                 '#007E6C'))
-
-# Save ggplot data
-dat <- ggplot_build(boxplots)$data[[1]]
-
-# Reformat boxplots' median line
-final_boxplots <- boxplots + geom_segment(data=dat, aes(x=xmin, 
-                                      xend=xmax,
-                                      y=middle-.15,
-                                      yend=middle-.15), 
-                        color="grey75", 
-                        linewidth=0.5,
-                        inherit.aes = FALSE)
-
-
-## ----- Categorical Variables
-
-# Count children per state
-state_counts <- motor_performance %>%
-  count(STATE, sort = TRUE)  %>%
-  mutate(proportion = n/1998, Attribute = "STATE",
-           Percentage = label_percent(accuracy=0.01)(proportion)) %>%
-  rename(`Number of children` = n)
-
-# Count children per residential
-residential_counts <- motor_performance %>%
-  count(RESIDENTIAL, sort = TRUE) %>%
-  mutate(proportion = n/1998, Attribute = "RESIDENTIAL",
-           Percentage = label_percent(accuracy=0.01)(proportion),
-           lab.ypos = cumsum(proportion) - 0.6*proportion) %>%
-  rename(`Number of children` = n)
-
-# Create a pie chart for the RESIDENTIAL variable
-pie_chart_for_residential <- ggplot(residential_counts, aes(x = "", y = proportion, fill = RESIDENTIAL)) +
-    geom_bar(width = 1, stat = "identity", color = "grey", linewidth=0.75) +
-    coord_polar("y", start = 0)+
-    geom_text(aes(y = lab.ypos, 
-                  label = paste(label_percent(accuracy=0.01)(proportion),
-                                "\n (", prettyNum(`Number of children`,
-                                                  big.mark=","),")",
-                                sep="")), color = "white",  size = 6)+
-    scale_fill_manual(values = c("#31688E", "#65C899")) +
-  ggtitle("\n Fig. 3: Pie Graph of the Distribution of Children per Residential Area  \n") +
-  theme(legend.position = "top",
-          legend.justification=0.48,
-          legend.direction="horizontal",
-          legend.key.size = unit(0, 'pt'),
-          legend.key = element_rect(fill = NA),
-          legend.text = element_text(margin = margin(r = 5, unit = "pt"),
-                                     color = "#65707C",
-                                     family="sans serif"),
-          legend.title = element_text(color = "#65707C",
-                                      size = 9,         
-                                      face = "bold",          
-                                      family="sans serif"),
-          axis.title = element_blank(),
-          axis.text = element_blank(),
-          axis.line = element_blank(),
-          axis.ticks = element_blank(),
-          panel.grid.major = element_line(color = "grey",
-                                          linetype="dashed",
-                                          linewidth=0.25),
-          panel.background = element_blank(),
-          plot.title = element_text(color = "#65707C",
-                                    hjust = 0.5,
-                                    face = "bold",
-                                    size= 11,
-                                    family = "sans serif")) +
-  labs(fill="RESIDENTIAL:  ")+
-    guides(fill = guide_legend(override.aes = list(
-                         shape = 15,
-                         size = 6)))
-
-# Count children per gender
-gender_counts <- motor_performance %>%
-  count(GENDER, sort = TRUE) %>%
-  mutate(proportion = n/1998, Attribute = "GENDER",
-           Percentage = label_percent(accuracy=0.01)(proportion),
-           lab.ypos = cumsum(proportion) - 0.6*proportion) %>%
-  rename(`Number of children` = n)
-
-# Create a pie chart for the GENDER variable
-pie_chart_for_gender <- ggplot(gender_counts, aes(x = "", y = proportion, fill = GENDER)) +
-    geom_bar(width = 1, stat = "identity", color = "grey", linewidth=0.75) +
-    coord_polar("y", start = 0) +
-    geom_text(aes(y = lab.ypos, 
-                  label = paste(label_percent(accuracy=0.01)(proportion),
-                                "\n (", prettyNum(`Number of children`,
-                                                  big.mark=","),")",
-                                sep="")), color = "white",  size = 6) +
-    scale_fill_manual(values = c("#31688E", "#65C899")) +
-  ggtitle("\nFig. 4: Pie Graph of the Distribution of Children per Gender   \n") + 
-  theme(legend.position = "top",
-          legend.justification=0.48,
-          legend.direction="horizontal",
-          legend.key.size = unit(0, 'pt'),
-          legend.key = element_rect(fill = NA),
-          legend.text = element_text(margin = margin(r = 5, unit = "pt"),
-                                     color = "#65707C",
-                                     family="sans serif"),
-          legend.title = element_text(color = "#65707C",
-                                      size = 9,    
-                                      face = "bold",
-                                      family="sans serif"),
-          axis.title = element_blank(),
-          axis.text = element_blank(),
-          axis.line = element_blank(),
-          axis.ticks = element_blank(),
-          panel.grid.major = element_line(color = "grey",
-                                          linetype="dashed",
-                                          linewidth=0.25),
-          panel.background = element_blank(),
-          plot.title = element_text(color = "#65707C",
-                                    face = "bold",
-                                    hjust = 0.5,
-                                    size= 11,
-                                    family = "sans serif")) +
-  labs(fill="GENDER:  ") +
-    guides(fill = guide_legend(override.aes = list(
-                         shape = 15,
-                         size = 6)))
-
-# Count children per BMI class
-bmi_class_counts <- motor_performance %>%
-  count(`CLASS (BMI)`, sort = TRUE) %>%
-  mutate(proportion = n/1998, Attribute = "CLASS (BMI)",
-           Percentage = label_percent(accuracy=0.01)(proportion)) %>%
-  rename(`Number of children` = n)
-
-
-## ---------- Correlation Analysis
-
-# Install & load the "corrplot" package for correlation plots
-suppressWarnings(suppressMessages(install.packages("corrplot", verbose=TRUE, quiet=TRUE)))
-suppressPackageStartupMessages(library(corrplot))
-
-# Subset motor skill columns
-motor_skills_df <- motor_performance %>%
-  dplyr::select(all_of(motor_skills)) %>%
-    rename(POWER = `POWER (cm)`,
-           SPEED = `SPEED (sec)`,
-           FLEXIBILITY = `FLEXIBILITY (cm)`,
-           COORDINATION = `COORDINATION (no.)`)
-
-# Color scheme for the correlation plot
-col <- colorRampPalette(c("#025C70", "white", "#007E6C"))
-
-# Correlation plot for motor skills
-par(family="sans serif")
-corrplot(cor(motor_skills_df), 
-         method="color", 
-         col=col(20),
-         order="FPC",
-         type="lower",
-         diag=FALSE, 
-         cl.cex=0.5,
-         tl.cex=0.9,
-         tl.srt=0,
-         tl.col="#65707C",
-         col.main="#65707C",
-         addCoef.col="#65707C",
-         addgrid.col="black",
-         main="\nFig. 6: Correlation Plot of the Four Motor Skills          ",
-         cex.main=1.1,
-         mar = c(5,3.5,6,0)
-        )
-
-# Pairwise correlation coefficients for motor skills
-pairwise_corr <- data.frame(Variable = num_vars[5:8]) %>% 
-  bind_cols(as.data.frame(round(cor(motor_performance %>%
-                dplyr::select(all_of(motor_skills))), 2)) %>%
-      dplyr::select(all_of(motor_skills)))
-
-rownames(pairwise_corr) <- 1:nrow(pairwise_corr)
-
-
-## ---------- Regression Analysis
-
-# Create an index variable called MPI
-data_for_regression <- motor_performance %>% 
-    mutate(MPI = (`POWER (cm)` + `SPEED (sec)` + `FLEXIBILITY (cm)` + `COORDINATION (no.)`)) 
-
-## ----- Full Model
-full_model <- lm(MPI ~ STATE + RESIDENTIAL + GENDER + AGE + `WEIGHT (kg)` + `HEIGHT (cm)` + `BMI (kg/m2)` + `CLASS (BMI)`, data = data_for_regression)
-
-# Summary statistics of the full model
-paste("Residual standard error:", round(summary.lm(full_model)$sigma, 4), 
-      " ,  R-square: ", round(summary.lm(full_model)$r.squared, 4), 
-      " ,  Adj. R-square: ", round(summary.lm(full_model)$adj.r.squared, 4))
-
-# Full model's table of estimated coefficients, their SEs, t-stats, and (two-sided) p-values
-summary_full <- data.frame(
-    Variable = rownames(as.data.frame(summary.lm(full_model)$coefficients))
-) %>%
-  bind_cols(as.data.frame(summary.lm(full_model)$coefficients))
-
-rownames(summary_full) <- 1:nrow(summary_full)
-summary_full
-
-# Install & load the "MASS" package for backward stepwise regression
-suppressWarnings(suppressMessages(install.packages("MASS", verbose=TRUE, quiet=TRUE)))
-suppressPackageStartupMessages(library(MASS))
-
-# 1 here means the intercept 
-null <- lm(`POWER (cm)` ~ 1, data = data_for_regression)
-
-# Backward elimination
-#bw_elim <- stepAIC(full_model, scope=list(lower=null, upper=full_model),
-#                   data = data_for_regression, direction='backward')
-
-## ----- First Reduced Model
-reduced_model1 <- lm(MPI ~ STATE + RESIDENTIAL + GENDER + `WEIGHT (kg)` + `HEIGHT (cm)` + `CLASS (BMI)`, data = data_for_regression)
-
-# Summary statistics of the first reduced model
-paste("Residual standard error:", round(summary.lm(reduced_model1)$sigma, 4), 
-      " ,  R-square: ", round(summary.lm(reduced_model1)$r.squared, 4), 
-      " ,  Adj. R-square: ", round(summary.lm(reduced_model1)$adj.r.squared, 4))
-
-# First reduced model's table of estimated coefficients, their SEs, t-stats, and (two-sided) p-values
-summary_reduced1 <- data.frame(
-    Variable = rownames(as.data.frame(summary.lm(reduced_model1)$coefficients))
-) %>%
-  bind_cols(as.data.frame(summary.lm(reduced_model1)$coefficients))
-
-rownames(summary_reduced1) <- 1:nrow(summary_reduced1)
-summary_reduced1
-
-## ----- Diagnostics Checking
-
-# Install & load the "car" package for Variance inflation factor (VIF)
-suppressWarnings(suppressMessages(install.packages("car", verbose=TRUE, quiet=TRUE)))
-suppressPackageStartupMessages(library(car))
-
-# Variance inflation factor (VIF) for detecting multicollinearity
-vif_1 <- data.frame(Attribute = c("STATE",
-                        "RESIDENTIAL",
-                        "GENDER",
-                        "WEIGHT (kg)",
-                        "HEIGHT (cm)", "CLASS (BMI)")) %>%
-  bind_cols(as.data.frame(vif(reduced_model1))) 
-
-rownames(vif_1) <- 1:nrow(vif_1)
-
-## ----- Second Reduced Model
-reduced_model2 <- lm(MPI ~ STATE + RESIDENTIAL + GENDER + `HEIGHT (cm)` + `CLASS (BMI)`,
-                     data = data_for_regression)
-
-# Variance inflation factor (VIF) for detecting multicollinearity
-vif_2 <- data.frame(Attribute = c("STATE",
-                                 "RESIDENTIAL",
-                                 "GENDER",
-                                 "HEIGHT (cm)",
-                                 "CLASS (BMI)")) %>%
-  bind_cols(as.data.frame(vif(reduced_model2))) 
-
-rownames(vif_2) <- 1:nrow(vif_2)
-
-# Install & load the "lmtest" package for Breusch-Pagan (BP) Test
-suppressWarnings(suppressMessages(install.packages("lmtest", verbose=TRUE, quiet=TRUE)))
-suppressPackageStartupMessages(library(lmtest))
-
-# -- BP Test for determining presence of heteroscedasticity
-
-# Test statistic
-bp_test_stat <- bptest(reduced_model2)$statistic
-names(bp_test_stat)[1] <- "Test statistic"
-bp_test_stat
-
-# Degrees of freedom
-bptest(reduced_model2)$parameter
-
-# P-value
-bp_pv <- bptest(reduced_model2)$p.value
-names(bp_pv)[1] <- "p-value"
-
-# Shapiro-Wilk Normality Test
-sw_test_stat <- shapiro.test(resid(reduced_model2))$statistic
-names(sw_test_stat)[1] <- "Test statistic"
-
-# P-value
-sw_pv <- shapiro.test(resid(reduced_model2))$p.value
-names(sw_pv)[1] <- "p-value"
-
-# Diagnostic plots of the second reduced / final model
-plot(reduced_model2)
-
-## ----- Second Reduced / Final Model
-
-# Summary statistics of the second reduced / final model
-paste("Residual standard error:", round(summary.lm(reduced_model2)$sigma, 4), 
-      " ,  R-square: ", round(summary.lm(reduced_model2)$r.squared, 4), 
-      " ,  Adj. R-square: ", round(summary.lm(reduced_model2)$adj.r.squared, 4))
-
-# Second reduced / final model's table of estimated coefficients, their SEs, t-stats, and (two-sided) p-values
-summary_reduced2 <- data.frame(Variable = rownames(
-                  as.data.frame(summary.lm(reduced_model2)$coefficients))
-                          ) %>%
-  bind_cols(as.data.frame(summary.lm(reduced_model2)$coefficients))
-rownames(summary_reduced2) <- 1:nrow(summary_reduced2)
-```
-
-
-<span style=white-space:pre-wrap>'Residual standard error: 18.5998  ,  R-square:  0.1143  ,  Adj. R-square:  0.103'</span>
-
-
-
-<table class="dataframe">
-<caption>A data.frame: 26 × 5</caption>
-<thead>
-  <tr><th></th><th scope=col>Variable</th><th scope=col>Estimate</th><th scope=col>Std. Error</th><th scope=col>t value</th><th scope=col>Pr(&gt;|t|)</th></tr>
-  <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><th scope=row>1</th><td>(Intercept)                 </td><td>65.0217354</td><td>69.1123732</td><td> 0.94081179</td><td>3.469165e-01</td></tr>
-  <tr><th scope=row>2</th><td>STATEKEDAH                  </td><td> 4.9864502</td><td> 2.0291488</td><td> 2.45740983</td><td>1.407982e-02</td></tr>
-  <tr><th scope=row>3</th><td>STATEKELANTAN               </td><td>-0.2035077</td><td> 2.0697095</td><td>-0.09832669</td><td>9.216829e-01</td></tr>
-  <tr><th scope=row>4</th><td>STATEKUALA LUMPUR           </td><td> 4.9068455</td><td> 2.3175311</td><td> 2.11727272</td><td>3.436159e-02</td></tr>
-  <tr><th scope=row>5</th><td>STATELABUAN                 </td><td>-4.8443791</td><td> 8.4380719</td><td>-0.57410973</td><td>5.659590e-01</td></tr>
-  <tr><th scope=row>6</th><td>STATEMELAKA                 </td><td>-5.2062606</td><td> 3.0569554</td><td>-1.70308686</td><td>8.870939e-02</td></tr>
-  <tr><th scope=row>7</th><td>STATENEGERI SEMBILAN        </td><td>-3.4623878</td><td> 2.5126976</td><td>-1.37795642</td><td>1.683731e-01</td></tr>
-  <tr><th scope=row>8</th><td>STATEPAHANG                 </td><td>-1.5492991</td><td> 2.0377064</td><td>-0.76031522</td><td>4.471571e-01</td></tr>
-  <tr><th scope=row>9</th><td>STATEPERAK                  </td><td>-2.4083089</td><td> 1.8931314</td><td>-1.27212978</td><td>2.034770e-01</td></tr>
-  <tr><th scope=row>10</th><td>STATEPERLIS                 </td><td>-2.0499381</td><td> 4.8442085</td><td>-0.42317297</td><td>6.722152e-01</td></tr>
-  <tr><th scope=row>11</th><td>STATEPULAU PINANG           </td><td>-4.4417736</td><td> 2.0795204</td><td>-2.13596055</td><td>3.280546e-02</td></tr>
-  <tr><th scope=row>12</th><td>STATEPUTRAJAYA              </td><td>-5.0581068</td><td> 5.7489537</td><td>-0.87983085</td><td>3.790582e-01</td></tr>
-  <tr><th scope=row>13</th><td>STATESABAH                  </td><td> 6.4421313</td><td> 1.7943039</td><td> 3.59032345</td><td>3.383426e-04</td></tr>
-  <tr><th scope=row>14</th><td>STATESARAWAK                </td><td> 0.8817717</td><td> 1.8214728</td><td> 0.48409822</td><td>6.283699e-01</td></tr>
-  <tr><th scope=row>15</th><td>STATESELANGOR               </td><td> 4.1372652</td><td> 1.5689123</td><td> 2.63702772</td><td>8.429271e-03</td></tr>
-  <tr><th scope=row>16</th><td>STATETERENGGANU             </td><td> 0.8072483</td><td> 2.3244795</td><td> 0.34728131</td><td>7.284170e-01</td></tr>
-  <tr><th scope=row>17</th><td>RESIDENTIALURBAN            </td><td>-1.5802387</td><td> 0.8839906</td><td>-1.78761927</td><td>7.399097e-02</td></tr>
-  <tr><th scope=row>18</th><td>GENDERM                     </td><td>10.0430571</td><td> 0.8429613</td><td>11.91401982</td><td>1.185731e-31</td></tr>
-  <tr><th scope=row>19</th><td>AGE                         </td><td> 0.8084578</td><td> 8.4729958</td><td> 0.09541582</td><td>9.239942e-01</td></tr>
-  <tr><th scope=row>20</th><td>`WEIGHT (kg)`               </td><td>-1.3840064</td><td> 0.7113665</td><td>-1.94556022</td><td>5.184951e-02</td></tr>
-  <tr><th scope=row>21</th><td>`HEIGHT (cm)`               </td><td> 0.5578033</td><td> 0.2966919</td><td> 1.88007578</td><td>6.024505e-02</td></tr>
-  <tr><th scope=row>22</th><td>`BMI (kg/m2)`               </td><td> 1.3365364</td><td> 1.0106452</td><td> 1.32245852</td><td>1.861689e-01</td></tr>
-  <tr><th scope=row>23</th><td>`CLASS (BMI)`OBESITY        </td><td>-3.5346197</td><td> 2.8041009</td><td>-1.26051805</td><td>2.076317e-01</td></tr>
-  <tr><th scope=row>24</th><td>`CLASS (BMI)`OVERWEIGHT     </td><td> 0.9695707</td><td> 1.7353525</td><td> 0.55871684</td><td>5.764184e-01</td></tr>
-  <tr><th scope=row>25</th><td>`CLASS (BMI)`SEVERE THINNESS</td><td>-3.3867506</td><td> 2.9608854</td><td>-1.14383036</td><td>2.528328e-01</td></tr>
-  <tr><th scope=row>26</th><td>`CLASS (BMI)`THINNESS       </td><td>-6.0155153</td><td> 1.9871211</td><td>-3.02725145</td><td>2.499846e-03</td></tr>
-</tbody>
-</table>
-
-
-
-
-<span style=white-space:pre-wrap>'Residual standard error: 18.5986  ,  R-square:  0.1135  ,  Adj. R-square:  0.1032'</span>
-
-
-
-<table class="dataframe">
-<caption>A data.frame: 24 × 5</caption>
-<thead>
-  <tr><th></th><th scope=col>Variable</th><th scope=col>Estimate</th><th scope=col>Std. Error</th><th scope=col>t value</th><th scope=col>Pr(&gt;|t|)</th></tr>
-  <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><th scope=row>1</th><td>(Intercept)                 </td><td>114.6837462</td><td>10.5498589</td><td>10.8706427</td><td>8.972322e-27</td></tr>
-  <tr><th scope=row>2</th><td>STATEKEDAH                  </td><td>  4.9995849</td><td> 2.0288212</td><td> 2.4642807</td><td>1.381351e-02</td></tr>
-  <tr><th scope=row>3</th><td>STATEKELANTAN               </td><td> -0.2746474</td><td> 2.0685727</td><td>-0.1327714</td><td>8.943877e-01</td></tr>
-  <tr><th scope=row>4</th><td>STATEKUALA LUMPUR           </td><td>  4.8511979</td><td> 2.3144001</td><td> 2.0960930</td><td>3.620098e-02</td></tr>
-  <tr><th scope=row>5</th><td>STATELABUAN                 </td><td> -4.7655878</td><td> 8.4361872</td><td>-0.5648983</td><td>5.722071e-01</td></tr>
-  <tr><th scope=row>6</th><td>STATEMELAKA                 </td><td> -4.8875654</td><td> 3.0464262</td><td>-1.6043603</td><td>1.087946e-01</td></tr>
-  <tr><th scope=row>7</th><td>STATENEGERI SEMBILAN        </td><td> -3.4943188</td><td> 2.5121631</td><td>-1.3909602</td><td>1.643943e-01</td></tr>
-  <tr><th scope=row>8</th><td>STATEPAHANG                 </td><td> -1.5896358</td><td> 2.0353551</td><td>-0.7810115</td><td>4.348894e-01</td></tr>
-  <tr><th scope=row>9</th><td>STATEPERAK                  </td><td> -2.5389245</td><td> 1.8901321</td><td>-1.3432524</td><td>1.793447e-01</td></tr>
-  <tr><th scope=row>10</th><td>STATEPERLIS                 </td><td> -2.3512322</td><td> 4.8361233</td><td>-0.4861812</td><td>6.268927e-01</td></tr>
-  <tr><th scope=row>11</th><td>STATEPULAU PINANG           </td><td> -4.5448868</td><td> 2.0772698</td><td>-2.1879136</td><td>2.879278e-02</td></tr>
-  <tr><th scope=row>12</th><td>STATEPUTRAJAYA              </td><td> -5.2458440</td><td> 5.7459381</td><td>-0.9129656</td><td>3.613721e-01</td></tr>
-  <tr><th scope=row>13</th><td>STATESABAH                  </td><td>  6.3322964</td><td> 1.7922115</td><td> 3.5332306</td><td>4.199524e-04</td></tr>
-  <tr><th scope=row>14</th><td>STATESARAWAK                </td><td>  0.9161919</td><td> 1.8211668</td><td> 0.5030796</td><td>6.149644e-01</td></tr>
-  <tr><th scope=row>15</th><td>STATESELANGOR               </td><td>  4.1373446</td><td> 1.5688082</td><td> 2.6372534</td><td>8.423618e-03</td></tr>
-  <tr><th scope=row>16</th><td>STATETERENGGANU             </td><td>  0.6892802</td><td> 2.3226322</td><td> 0.2967668</td><td>7.666758e-01</td></tr>
-  <tr><th scope=row>17</th><td>RESIDENTIALURBAN            </td><td> -1.5740942</td><td> 0.8829311</td><td>-1.7828053</td><td>7.477163e-02</td></tr>
-  <tr><th scope=row>18</th><td>GENDERM                     </td><td> 10.0313573</td><td> 0.8428016</td><td>11.9023949</td><td>1.347188e-31</td></tr>
-  <tr><th scope=row>19</th><td>`WEIGHT (kg)`               </td><td> -0.4870348</td><td> 0.2136321</td><td>-2.2797833</td><td>2.272680e-02</td></tr>
-  <tr><th scope=row>20</th><td>`HEIGHT (cm)`               </td><td>  0.1959724</td><td> 0.1143583</td><td> 1.7136709</td><td>8.674619e-02</td></tr>
-  <tr><th scope=row>21</th><td>`CLASS (BMI)`OBESITY        </td><td> -3.2599963</td><td> 2.7962650</td><td>-1.1658396</td><td>2.438202e-01</td></tr>
-  <tr><th scope=row>22</th><td>`CLASS (BMI)`OVERWEIGHT     </td><td>  1.1859822</td><td> 1.7275272</td><td> 0.6865201</td><td>4.924658e-01</td></tr>
-  <tr><th scope=row>23</th><td>`CLASS (BMI)`SEVERE THINNESS</td><td> -3.5142913</td><td> 2.9589427</td><td>-1.1876848</td><td>2.351005e-01</td></tr>
-  <tr><th scope=row>24</th><td>`CLASS (BMI)`THINNESS       </td><td> -6.2734191</td><td> 1.9763175</td><td>-3.1742973</td><td>1.525143e-03</td></tr>
-</tbody>
-</table>
-
-
-
-
-<strong>Test statistic:</strong> 54.1480970638192
-
-
-
-<strong>df:</strong> 22
-
-
-
-    
-![png](notebook_files/notebook_47_6.png)
-    
-
-
-
-    
-![png](notebook_files/notebook_47_7.png)
-    
-
-
-
-    
-![png](notebook_files/notebook_47_8.png)
-    
-
-
-
-    
-![png](notebook_files/notebook_47_9.png)
-    
-
-
-
-<span style=white-space:pre-wrap>'Residual standard error: 18.6184  ,  R-square:  0.1111  ,  Adj. R-square:  0.1012'</span>
-
-
-
-    
-![png](notebook_files/notebook_47_11.png)
-    
-
