@@ -211,10 +211,8 @@ age_stats <- data.frame(Value = unclass(summary(data$Age))) %>%
   mutate_if(is.numeric, round, 2)
 
 # Age distribution plot
-age_dist_plot <- ggplot(data, aes(x = Age, text = paste0("<b>Count:</b> ", after_stat(count)))) +
+age_dist_plot <- ggplot(data, aes(x = Age, text = paste0(after_stat(count)))) +
   geom_histogram(breaks = hist(data$Age, breaks="FD", plot = FALSE)$breaks) +
-  geom_vline(aes(xintercept = mean(Age), text = paste0("<b>Mean: </b>", round(mean(Age), 2))), col="#FFA53E", linewidth=0.5) +
-  geom_vline(aes(xintercept = median(Age), text = paste0("<b>Median: </b>", round(median(Age), 2))), col="#4C6DB4", linewidth=0.5) +
   theme_economist() + 
   scale_color_economist() +
   scale_x_continuous(breaks = seq(15, 50, by=5)) +
@@ -232,14 +230,6 @@ age_dist_plotly <- ggplotly(age_dist_plot, tooltip=c("text")) %>%
     hoverlabel = list(font = list(family="ITC Officina Sans", size=15)),
     xaxis = list(tickfont = list(family="ITC Officina Sans", size=13)),
     yaxis = list(tickfont = list(family="ITC Officina Sans", size=13))
-  ) %>%
-  add_annotations(
-    text = paste0(
-      "<b>Std. Deviation (<i>\u03c3</i>): </b>", round(sd(data$Age), 2), 
-      ";  <b>Skewness (<i>Sk\u209a</i>): </b>", round(skewness(data$Age), 2)
-    ),
-    x = 0.037, y = 0.97, xref = "paper", yref = "paper",
-    showarrow = FALSE, font = list(family="ITC Officina Sans", size=13.5), align="left"
   )
 ```
 
@@ -247,33 +237,28 @@ age_dist_plotly <- ggplotly(age_dist_plot, tooltip=c("text")) %>%
 {
   "data": [
     {
-      "x": [18, 20, 22, 23, 26, 28, 32, 34, 36, 37, 40, 43, 45, 47, 50],
-      "type": "histogram",
-      "xbins": {
-        "start": 15,
-        "end": 55,
-        "size": 5
-      },
+      "x": ["15-20", "21-25", "26-30", "31-35", "36-40", "41-45", "46-50"],
+      "y": [86, 138, 153, 166, 156, 151, 149],
+      "type": "bar",
       "marker": {
-        "color": "#4C6DB4"
+        "color": "#595959"
       },
       "name": "Age",
-      "hoverinfo": "x+y",
-      "autobinx": false
+      "hoverinfo": "y"
     }
   ],
   "layout": {
     "title": {
-      "text": "<b>𝗙𝗜𝗚. 𝟭﹕𝗔𝗚𝗘 𝗗𝗜𝗦𝗧𝗥𝗜𝗕𝗨𝗧𝗜𝗢𝗡 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<b>",
+      "text": "<br><b>𝗙𝗜𝗚. 𝟭﹕𝗔𝗚𝗘 𝗗𝗜𝗦𝗧𝗥𝗜𝗕𝗨𝗧𝗜𝗢𝗡 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<b>",
       "font": {
-        "size": 14
+        "size": 17
       },
       "xref": "paper",
       "x": 0.5
     },
     "xaxis": {
       "title": {
-        "text": "Age",
+        "text": "Age Range",
         "font": {
           "family": "ITC Officina Sans",
           "size": 13
@@ -282,9 +267,7 @@ age_dist_plotly <- ggplotly(age_dist_plot, tooltip=c("text")) %>%
       "tickfont": {
         "family": "ITC Officina Sans",
         "size": 13
-      },
-      "dtick": 5,
-      "range": [15, 55]
+      }
     },
     "yaxis": {
       "title": {
@@ -299,51 +282,6 @@ age_dist_plotly <- ggplotly(age_dist_plot, tooltip=c("text")) %>%
         "size": 13
       }
     },
-    "shapes": [
-      {
-        "type": "line",
-        "x0": 34.19,
-        "x1": 34.19,
-        "y0": 0,
-        "y1": 1,
-        "xref": "x",
-        "yref": "paper",
-        "line": {
-          "color": "#FFA53E",
-          "width": 2,
-          "dash": "dot"
-        }
-      },
-      {
-        "type": "line",
-        "x0": 34,
-        "x1": 34,
-        "y0": 0,
-        "y1": 1,
-        "xref": "x",
-        "yref": "paper",
-        "line": {
-          "color": "#4C6DB4",
-          "width": 2,
-          "dash": "dot"
-        }
-      }
-    ],
-    "annotations": [
-      {
-        "text": "<b>Std. Deviation (\u03c3):</b> 9.38; <b>Skewness (S\u209a):</b> -0.03",
-        "xref": "paper",
-        "yref": "paper",
-        "x": 0.037,
-        "y": 1.0,
-        "showarrow": false,
-        "font": {
-          "family": "ITC Officina Sans",
-          "size": 13.5
-        },
-        "align": "left"
-      }
-    ],
     "paper_bgcolor": "#D5E4EB",
     "plot_bgcolor": "#D5E4EB",
     "margin": {
@@ -371,12 +309,21 @@ This report defines an individual’s medical history as their medical backgroun
 - **Genetics:** A total of 52.25% of respondents reported having a family history of baldness.  
 - **Hormonal Changes:** Approximately 51% of respondents have experienced hormonal changes.  
 - **Medical Conditions:** Among the 889 individuals with recorded medical conditions potentially leading to baldness, alopecia areata is the most common, affecting 12.04% of the group. It is followed by psoriasis (11.25%), thyroid problems (11.14%), and androgenetic alopecia (11.02%). Dermatitis (10.35%) also ranks highly, rounding out the top five conditions.
+- **Nutritional Deficiencies:** Most of the documented 919 individuals with nutritional deficiencies that may contribute to hair loss are zinc deficient (11.75%). Vitamin D deficiency follows closely at 11.32%, while both Biotin and vitamin A deficiencies impact 10.77% each. The deficiency of omega-3 fatty acids completes the top five, affecting 10.01% of the group.
 
 ```R
 # Tabularize summary statistics of Medical Conditions
 summarize_variable(
   data = data %>% rename(`Medical condition that may lead to baldness` = `Medical Conditions`),
   variable = "Medical condition that may lead to baldness"
+)
+
+# Tabularize summary statistics of Nutritional Deficiencies
+summarize_variable(
+  data %>% rename(`Nutritional deficiency that may contribute to hair loss` = `Nutritional Deficiencies`),
+  variable = "Nutritional deficiency that may contribute to hair loss",
+  dom = "tip",
+  pageLength = 5
 )
 ```
 
@@ -438,6 +385,68 @@ summarize_variable(
       <td>Ringworm</td>
       <td>69</td>
       <td>7.76%</td>
+    </tr>
+  </tbody>
+</table>
+
+<table border="1" style="border-collapse: collapse; width: 100%;">
+  <thead>
+    <tr>
+      <th>Medication or treatment that may cause hair loss</th>
+      <th>Count</th>
+      <th>Percentage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Rogaine</td>
+      <td>116</td>
+      <td>11.63%</td>
+    </tr>
+    <tr>
+      <td>Antidepressants</td>
+      <td>110</td>
+      <td>11.03%</td>
+    </tr>
+    <tr>
+      <td>Steroids</td>
+      <td>107</td>
+      <td>10.73%</td>
+    </tr>
+    <tr>
+      <td>Heart Medication</td>
+      <td>104</td>
+      <td>10.43%</td>
+    </tr>
+    <tr>
+      <td>Accutane</td>
+      <td>102</td>
+      <td>10.23%</td>
+    </tr>
+    <tr>
+      <td>Antibiotics</td>
+      <td>94</td>
+      <td>9.43%</td>
+    </tr>
+    <tr>
+      <td>Antifungal Cream</td>
+      <td>94</td>
+      <td>9.43%</td>
+    </tr>
+    <tr>
+      <td>Blood Pressure Medication</td>
+      <td>90</td>
+      <td>9.03%</td>
+    </tr>
+    <tr>
+      <td>Chemotherapy</td>
+      <td>90</td>
+      <td>9.03%</td>
+    </tr>
+    <tr>
+      <td>Immunomodulators</td>
+      <td>90</td>
+      <td>9.03%</td>
     </tr>
   </tbody>
 </table>
@@ -518,13 +527,13 @@ hair_loss_pie <- plot_ly(
     {
       "type": "pie",
       "labels": ["<b>With baldness</b>", "<b>Without baldness</b>"],
-      "values": [312, 688],
+      "values": [497, 502],
       "textinfo": "label",
       "textposition": "inside",
       "hoverinfo": "text",
       "hovertext": [
-        "<b>Percentage:</b> 31.20%<br><b>Count:</b> 312",
-        "<b>Percentage:</b> 68.80%<br><b>Count:</b> 688"
+        "<b>Percentage:</b> 49.75%<br><b>Count:</b> 497",
+        "<b>Percentage:</b> 50.25%<br><b>Count:</b> 502"
       ],
       "marker": {
         "colors": ["#FF6347", "#8c8c8c"]
@@ -538,8 +547,10 @@ hair_loss_pie <- plot_ly(
   ],
   "layout": {
     "title": {
-      "text": "<b>𝗙𝗜𝗚. 𝟮﹕𝗣𝗜𝗘 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
-      "font": { "size": 18 }
+      "text": "<b>𝗙𝗜𝗚. 𝟮﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦 𝗕𝗬 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "font": { "size": 18 },
+      "x": 0.5,
+      "xanchor": "center"
     },
     "paper_bgcolor": "#D5E4EB",
     "margin": { "l": 0, "r": 0, "b": 20, "t": 80 },
@@ -548,7 +559,9 @@ hair_loss_pie <- plot_ly(
 }
 ```
 
+<div style="margin: 16px 0 16px 0;">
 The pie graph in Figure 2 illustrates that baldness affects nearly half of the respondents, indicating a balanced dataset in terms of hair loss outcomes. This section explores the distribution of individuals by hair loss outcome across various factor groups. Furthermore, it examines the relationships between hair loss and each specific factor by applying appropriate measures of association.  
+</div>
 
 Below is a table presenting each factor, its levels of measurement, and the corresponding statistical methods applied for the analysis:  
 
@@ -660,7 +673,29 @@ age_hair_loss_boxplot <- plot_ly(
 {
   "data": [
     {
-      "y": [21, 25, 28, 35, 40, 22],
+      "y": [
+        19, 43, 26, 46, 35, 49, 26, 30, 34, 29, 46, 26, 29, 33, 34, 28, 41, 35, 21, 22, 30, 30, 24, 38, 19,
+        48, 38, 28, 45, 50, 50, 34, 27, 25, 43, 44, 49, 34, 24, 41, 18, 46, 43, 37, 24, 19, 45, 24, 34, 41,
+        37, 50, 34, 37, 18, 24, 24, 23, 27, 35, 23, 24, 35, 48, 30, 39, 47, 42, 23, 34, 18, 35, 39, 50, 19,
+        32, 43, 32, 33, 26, 30, 25, 49, 33, 42, 43, 50, 26, 46, 30, 42, 36, 41, 22, 30, 18, 29, 29, 36, 39,
+        31, 24, 32, 47, 25, 30, 43, 18, 35, 45, 39, 50, 32, 18, 27, 39, 23, 22, 42, 42, 36, 29, 47, 50, 44,
+        19, 43, 43, 43, 34, 25, 37, 45, 24, 48, 27, 37, 45, 33, 46, 35, 26, 26, 37, 44, 49, 39, 47, 27, 43,
+        24, 43, 28, 41, 47, 38, 45, 27, 29, 21, 36, 38, 18, 38, 22, 21, 30, 48, 47, 41, 26, 22, 39, 33, 45,
+        32, 25, 31, 40, 30, 49, 38, 36, 50, 22, 40, 27, 32, 18, 47, 48, 20, 43, 48, 33, 23, 36, 40, 25, 46,
+        33, 29, 44, 32, 44, 40, 36, 41, 26, 46, 47, 45, 40, 38, 45, 41, 19, 23, 35, 44, 40, 27, 46, 26, 24,
+        47, 32, 40, 18, 32, 43, 44, 50, 32, 31, 34, 41, 37, 50, 49, 49, 27, 23, 28, 41, 35, 28, 39, 47, 18,
+        45, 50, 43, 41, 40, 31, 24, 31, 37, 50, 18, 46, 22, 47, 49, 29, 45, 46, 48, 21, 48, 25, 41, 36, 39,
+        24, 43, 28, 41, 28, 28, 49, 46, 35, 45, 31, 50, 42, 34, 37, 29, 39, 38, 19, 26, 23, 46, 41, 32, 22,
+        34, 32, 37, 44, 27, 38, 24, 20, 30, 37, 32, 41, 43, 20, 25, 50, 27, 42, 40, 22, 31, 26, 44, 34, 34,
+        22, 25, 39, 22, 46, 19, 21, 30, 24, 39, 24, 40, 36, 23, 48, 19, 47, 21, 45, 48, 37, 27, 29, 49, 30,
+        41, 43, 24, 32, 33, 33, 49, 47, 29, 43, 22, 45, 40, 49, 20, 28, 36, 26, 46, 35, 31, 33, 27, 50, 31,
+        32, 47, 18, 18, 50, 25, 19, 18, 45, 40, 19, 34, 30, 26, 21, 38, 19, 31, 38, 50, 26, 31, 19, 24, 40,
+        47, 26, 30, 32, 23, 23, 41, 50, 41, 44, 19, 27, 34, 36, 35, 30, 50, 20, 20, 47, 25, 39, 36, 20, 44,
+        49, 18, 27, 39, 34, 43, 48, 47, 37, 42, 31, 20, 45, 28, 19, 23, 50, 46, 39, 27, 35, 40, 44, 23, 33,
+        26, 29, 45, 36, 50, 38, 27, 26, 49, 40, 20, 45, 41, 32, 48, 18, 37, 38, 47, 22, 41, 44, 38, 28, 50,
+        38, 33, 42, 43, 49, 22, 23, 41, 35, 46, 38, 41, 44, 21, 25, 46, 26, 40, 50, 43, 33, 19, 23, 42, 33,
+        23, 47
+      ],
       "type": "box",
       "name": "Without Baldness",
       "marker": { "color": "#8c8c8c" },
@@ -668,7 +703,28 @@ age_hair_loss_boxplot <- plot_ly(
       "jitter": 0.3
     },
     {
-      "y": [30, 44, 48, 50, 60, 52],
+      "y": [
+        30, 37, 40, 19, 48, 20, 19, 46, 46, 20, 37, 45, 24, 31, 39, 21, 39, 30, 24, 37, 36, 18, 18, 46, 39,
+        31, 28, 44, 21, 35, 28, 35, 22, 34, 23, 44, 24, 25, 50, 38, 22, 47, 32, 31, 46, 34, 29, 28, 41, 37,
+        19, 39, 27, 19, 23, 50, 28, 24, 36, 47, 29, 42, 19, 30, 43, 27, 42, 37, 18, 29, 27, 32, 30, 45, 32,
+        20, 38, 32, 26, 41, 20, 35, 39, 45, 23, 46, 18, 44, 47, 47, 33, 44, 50, 44, 26, 27, 48, 47, 48, 28,
+        45, 46, 23, 29, 19, 30, 27, 40, 34, 18, 32, 30, 18, 22, 47, 38, 18, 33, 20, 39, 26, 21, 31, 25, 42,
+        38, 34, 25, 44, 50, 18, 47, 42, 32, 36, 37, 47, 25, 20, 33, 35, 36, 33, 21, 32, 40, 40, 33, 22, 26,
+        24, 22, 40, 44, 47, 47, 45, 29, 27, 48, 29, 46, 35, 23, 43, 31, 28, 48, 28, 41, 41, 43, 41, 19, 22,
+        35, 38, 40, 30, 40, 28, 40, 19, 20, 43, 29, 21, 46, 19, 24, 43, 43, 39, 21, 36, 39, 20, 42, 27, 18,
+        25, 34, 35, 32, 32, 32, 21, 32, 36, 22, 37, 20, 32, 43, 19, 48, 33, 48, 49, 29, 23, 42, 34, 24, 26,
+        29, 31, 18, 41, 29, 49, 48, 27, 28, 39, 35, 38, 37, 42, 40, 33, 40, 28, 18, 47, 32, 18, 24, 34, 30,
+        50, 23, 29, 48, 39, 48, 24, 36, 37, 33, 36, 44, 36, 34, 49, 34, 32, 49, 33, 41, 29, 18, 43, 48, 37,
+        38, 40, 29, 24, 38, 36, 19, 40, 29, 24, 46, 24, 26, 40, 18, 45, 49, 28, 31, 28, 27, 32, 45, 48, 43,
+        25, 33, 36, 39, 19, 18, 28, 35, 35, 18, 33, 19, 25, 22, 28, 28, 43, 22, 23, 31, 43, 22, 36, 35, 24,
+        49, 22, 33, 44, 42, 21, 46, 47, 41, 31, 37, 42, 35, 39, 42, 36, 32, 35, 39, 49, 45, 24, 33, 49, 49,
+        35, 26, 43, 21, 31, 33, 32, 31, 43, 38, 23, 45, 29, 44, 37, 29, 38, 28, 29, 34, 30, 37, 24, 30, 22,
+        29, 26, 25, 31, 43, 34, 38, 28, 37, 32, 35, 40, 48, 38, 29, 41, 45, 37, 35, 32, 50, 45, 50, 39, 19,
+        40, 37, 22, 21, 34, 48, 37, 23, 40, 40, 47, 48, 21, 38, 30, 49, 27, 22, 39, 37, 34, 31, 28, 35, 30,
+        19, 20, 31, 22, 26, 36, 42, 31, 45, 33, 45, 35, 42, 33, 24, 24, 31, 23, 29, 38, 21, 19, 43, 43, 21,
+        40, 29, 35, 48, 39, 32, 28, 20, 45, 49, 26, 34, 48, 41, 46, 21, 29, 25, 42, 28, 24, 48, 31, 49, 33,
+        38, 24, 21, 46, 26, 35, 45, 27, 21, 35, 41, 18, 40, 27, 33, 46, 45, 30, 33, 20, 32, 34
+      ],
       "type": "box",
       "name": "With Baldness",
       "marker": { "color": "#FF6347" },
@@ -714,7 +770,9 @@ age_hair_loss_boxplot <- plot_ly(
 }
 ```
 
+<div style="margin-top: 16px;">
 Based on the boxplots in Figure 3, the age distributions of both groups (with and without baldness) are observed to be nearly symmetric, with no indications of outliers. A slight shift of two years between their median to upper quartile ranges is identified, suggesting subtle differences in age-related baldness patterns.
+</div>
 
 ```R
 # Data frame for the treemap, by Age Group and by Hair Loss outcome
@@ -777,7 +835,7 @@ age_hair_loss_treemap <- plot_ly(
 ) %>%
   layout(
     title = list(
-      text = "<br><b>𝗙𝗜𝗚. 𝟰: 𝗧𝗥𝗘𝗘 𝗠𝗔𝗣 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗔𝗚𝗘 𝗚𝗥𝗢𝗨𝗣 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      text = "<br><b>𝗙𝗜𝗚. 𝟰: 𝗧𝗥𝗘𝗘 𝗠𝗔𝗣 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗔𝗚𝗘 𝗚𝗥𝗢𝗨𝗣 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
       font = list(size = 18)
     ),
     paper_bgcolor = "#D5E4EB",
@@ -807,17 +865,17 @@ age_hair_loss_treemap <- plot_ly(
         "<b>Old (>45)<br>without baldness</b>"
       ],
       "parents": ["", "", "", "", "", ""],
-      "values": [45, 52, 25, 110, 120, 57],
+      "values": [193, 241, 63, 184, 232, 86],
       "marker": { "colors": ["#175952", "#762127", "#0b385b", "#01877c", "#ae1726", "#005289"] },
       "textfont": { "family": "ITC Officina Sans", "size": 15, "color": "white" },
       "hoverinfo": "text",
       "hovertext": [
-        "<b>Percentage:</b> 9.62%<br><b>Count:</b> 45",
-        "<b>Percentage:</b> 11.12%<br><b>Count:</b> 52",
-        "<b>Percentage:</b> 5.35%<br><b>Count:</b> 25",
-        "<b>Percentage:</b> 23.54%<br><b>Count:</b> 110",
-        "<b>Percentage:</b> 25.68%<br><b>Count:</b> 120",
-        "<b>Percentage:</b> 12.22%<br><b>Count:</b> 57"
+        "<b>Percentage:</b> 19.32%<br><b>Count:</b> 193",
+        "<b>Percentage:</b> 24.12%<br><b>Count:</b> 241",
+        "<b>Percentage:</b> 6.31%<br><b>Count:</b> 63",
+        "<b>Percentage:</b> 18.42%<br><b>Count:</b> 184",
+        "<b>Percentage:</b> 23.22%<br><b>Count:</b> 232",
+        "<b>Percentage:</b> 8.61%<br><b>Count:</b> 86"
       ],
       "textinfo": "label",
       "textposition": "middle center"
@@ -825,7 +883,7 @@ age_hair_loss_treemap <- plot_ly(
   ],
   "layout": {
     "title": {
-      "text": "<br><b>𝗙𝗜𝗚. 𝟰: 𝗧𝗥𝗘𝗘 𝗠𝗔𝗣 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗔𝗚𝗘 𝗚𝗥𝗢𝗨𝗣 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "text": "<br><b>𝗙𝗜𝗚. 𝟰: 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦 𝗕𝗬 𝗔𝗚𝗘 𝗚𝗥𝗢𝗨𝗣 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
       "font": { "size": 18 },
     "x": 0.5,
     "xanchor": "center"
@@ -835,11 +893,11 @@ age_hair_loss_treemap <- plot_ly(
   }
 }
 ```
-
-Using the age groups defined by Prajapati et al. (2014), which categorize adults as `Young (17-30)`, `Middle-aged (31-45)`, or `Old (>45)`, it can be seen in Figure 4 that among individuals experiencing hair loss, middle-aged adults represent the largest proportion at 0.2412, followed by young adults at 0.1932. Similarly, among those without hair loss, 0.2322 are middle-aged adults, while 0.1842 are young adults.
+<div style="margin: 16px 0 16px 0;">
+Using the age groups defined by Prajapati et al. (2014), which categorize adults as Young (17-30), Middle-aged (31-45), or Old (>45), it can be seen in Figure 4 that among individuals experiencing hair loss, middle-aged adults represent the largest proportion at 0.2412, followed by young adults at 0.1932. Similarly, among those without hair loss, 0.2322 are middle-aged adults, while 0.1842 are young adults.
+</div>
 
 The distributions of individuals with and without hair loss appear similar, particularly among middle-aged and young adults. However, a significant difference is observed among older adults, where the absence of hair loss is more common than its presence. This indicates a possible negative association between being over 45 and experiencing hair loss.
-
 
 ```R
 # Compute point-biserial correlation coefficient between Age and Hair Loss outcome
@@ -894,12 +952,6 @@ where:<br>
 
 
 ```R
-# Create contingency table for Stress by Hair Loss outcome
-stress_table <- create_contingency_table(
-  create_contingency_data(data, "Stress"), 
-  "Stress"
-)
-
 # Data frame for the treemap, by Stress and Hair Loss
 stress_lvl_and_hair_loss <- data %>%
 	select(Stress, `Hair Loss`) %>%
@@ -909,8 +961,7 @@ stress_lvl_and_hair_loss <- data %>%
 	arrange(desc(`Hair Loss`), desc(Count))
 
 # Factorize the Stress variable
-stress_lvl_and_hair_loss$Stress <- factor(stress_lvl_and_hair_loss$Stress, levels=c("Low", "Moderate", "High"),
-										  ordered=TRUE)
+stress_lvl_and_hair_loss$Stress <- factor(stress_lvl_and_hair_loss$Stress, levels=c("Low", "Moderate", "High"), ordered=TRUE)
 
 # Create a treemap for by stress level and hair loss experience
 colors1 <- c("#567c07", "#996f00", "#a73735", "#77b200", "#e19c00", "#ec3330") 
@@ -947,7 +998,7 @@ stress_hair_loss_treemap <- plot_ly(
 ) %>%
   layout(
     title = list(
-      text="<br><b>𝗙𝗜𝗚. 𝟱﹕𝗧𝗥𝗘𝗘𝗠𝗔𝗣 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗦𝗧𝗥𝗘𝗦𝗦 𝗟𝗘𝗩𝗘𝗟 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      text="<br><b>𝗙𝗜𝗚. 𝟱﹕𝗧𝗥𝗘𝗘𝗠𝗔𝗣 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗦𝗧𝗥𝗘𝗦𝗦 𝗟𝗘𝗩𝗘𝗟 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
       font = list(size=18)
     ),
     paper_bgcolor="#D5E4EB",
@@ -961,7 +1012,6 @@ stress_hair_loss_treemap <- plot_ly(
       )
     )
   )
-
 ```
 
 ```plotly
@@ -978,7 +1028,7 @@ stress_hair_loss_treemap <- plot_ly(
         "<b>High stress level<br>without baldness</b>"
       ],
       "parents": ["", "", "", "", "", ""],
-      "values": [25, 50, 35, 70, 120, 90],
+      "values": [159, 182, 156, 168, 169, 165],
       "marker": {
         "colors": ["#567c07", "#996f00", "#a73735", "#77b200", "#e19c00", "#ec3330"]
       },
@@ -1002,8 +1052,8 @@ stress_hair_loss_treemap <- plot_ly(
   ],
   "layout": {
     "title": {
-      "text": "<br><b>𝗙𝗜𝗚. 𝟱﹕𝗧𝗥𝗘𝗘𝗠𝗔𝗣 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗦𝗧𝗥𝗘𝗦𝗦 𝗟𝗘𝗩𝗘𝗟 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
-      "font": { "size": 18 }
+      "text": "<br><b>𝗙𝗜𝗚. 𝟱﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦 𝗕𝗬 𝗦𝗧𝗥𝗘𝗦𝗦 𝗟𝗘𝗩𝗘𝗟 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "font": { "size": 16 }
     },
     "paper_bgcolor": "#D5E4EB",
     "margin": { "l": 30, "r": 30, "b": 25, "t": 45 }
@@ -1012,8 +1062,9 @@ stress_hair_loss_treemap <- plot_ly(
 
 ```
 
-
+<div style="margin: 16px 0 16px 0;">
 The treemap shows that the distribution of individuals with and without hair loss is fairly balanced across all stress levels, which suggests that stress may not exhibit a strong association with hair loss.
+</div>
 
 ```R
 # Compute rank-biserial correlation coefficients between Stress and Hair Loss outcome
@@ -1063,27 +1114,22 @@ where:<br>
 - $${n}$$ is the total number of observations
 - $$r$$ is the number of categories of the factor
 - $$c$$ is the number of categories for hair loss
-- $$O_i$$ is the observed count for category $i$
-- $$E_i$$ is the expected count for category $i$
+- $$O_i$$ is the observed count for category $$i$$
+- $$E_i$$ is the expected count for category $$i$$
 
 
 ```R
-# Create a contingency table by Medical Conditions and and Hair Loss outcome
-medical_conditions_table <- create_contingency_table(
-  create_contingency_data(data, "Medical Conditions"), 
-  "Medical Conditions", 
-  "Medical condition that may lead to baldness"
-)
-
 # Create a proportional stacked bar plot by Medical Conditions and Hair Loss outcome
 create_stackbar_plot1(
   data1, 
   var = "Medical Conditions", 
   yaxis_text = "\nMedical Condition", 
   tickangle = 0,
-  plot_title = "𝗙𝗜𝗚. 𝟲﹕𝗣𝗥𝗢𝗣𝗢𝗥𝗧𝗜𝗢𝗡𝗔𝗟 𝗦𝗧𝗔𝗖𝗞𝗘𝗗 𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦\n𝗕𝗬 𝗠𝗘𝗗𝗜𝗖𝗔𝗟 𝗖𝗢𝗡𝗗𝗜𝗧𝗜𝗢𝗡 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘"
+  plot_title = "𝗙𝗜𝗚. 𝟲﹕𝗣𝗥𝗢𝗣𝗢𝗥𝗧𝗜𝗢𝗡𝗔𝗟 𝗦𝗧𝗔𝗖𝗞𝗘𝗗 𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗠𝗘𝗗𝗜𝗖𝗔𝗟 𝗖𝗢𝗡𝗗𝗜𝗧𝗜𝗢𝗡 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘"
 )
 ```
+
+![Proportional Stacked Bar Plot by Medical Conditions & Hair Loss Outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-6.png)
 
 Alopecia areata, androgenetic alopecia, and seborrheic dermatitis show higher prevalence in the group with baldness, with the former two being known causes of hair loss. In contrast, thyroid problems are more commonly reported by those without baldness.
 
@@ -1091,48 +1137,157 @@ The distribution is closely balanced across conditions, suggesting that while an
 
 
 ```R
-# Create a contingency table for Medications & Treatments
-medications_table <- create_contingency_table(
-  create_contingency_data(data, "Medications & Treatments"),
-  "Medications & Treatments", 
-  "Medication or treatment that may cause hair loss"
-)
-
-# Create a proportional stacked bar plot for Medications and Treatments and Hair Loss outcome
+# Create a proportional stacked bar plot by Medications and Treatments and Hair Loss outcome
 create_stackbar_plot1(
   data1 %>% rename(`Medications and Treatments` = `Medications & Treatments`),
   var = "Medications and Treatments", 
   yaxis_text = "\nMedication / Treatment", 
   tickangle = 0, 
-  plot_title = "𝗙𝗜𝗚. 𝟳﹕𝗣𝗥𝗢𝗣𝗢𝗥𝗧𝗜𝗢𝗡𝗔𝗟 𝗦𝗧𝗔𝗖𝗞𝗘𝗗 𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦\n𝗕𝗬 𝗠𝗘𝗗𝗜𝗖𝗔𝗧𝗜𝗢𝗡 𝗢𝗥 𝗧𝗥𝗘𝗔𝗧𝗠𝗘𝗡𝗧 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘"
+  plot_title = "𝗙𝗜𝗚. 𝟳﹕𝗣𝗥𝗢𝗣𝗢𝗥𝗧𝗜𝗢𝗡𝗔𝗟 𝗦𝗧𝗔𝗖𝗞𝗘𝗗 𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗠𝗘𝗗𝗜𝗖𝗔𝗧𝗜𝗢𝗡 𝗢𝗥 𝗧𝗥𝗘𝗔𝗧𝗠𝗘𝗡𝗧 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘"
 )
 ```
 
+![Proportional Stacked Bar Plot by Medications & Hair Loss Outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-7.png)
+
+<!-- ```plotly
+{
+  "data": [
+    {
+      "type": "bar",
+      "orientation": "h",
+      "x": [0.0592, 0.0592, 0.0532, 0.0532, 0.0502, 0.0502, 0.0461, 0.0441, 0.0421, 0.0401],
+      "y": [
+        "Rogaine",
+        "Steroids",
+        "Antidepressants",
+        "Heart Medication",
+        "Accutane",
+        "Antibiotics",
+        "Chemotherapy",
+        "Antifungal Cream",
+        "Blood Pressure Medication",
+        "Immunomodulators"
+      ],
+      "name": "With Baldness",
+      "marker": {"color": "#FF6347"},
+      "text": ["5.92%", "5.92%", "5.32%", "5.32%", "5.02%", "5.02%", "4.61%", "4.41%", "4.21%", "4.01%"],
+      "textposition": "auto"
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "x": [0.0572, 0.0481, 0.0572, 0.0512, 0.0522, 0.0441, 0.0441, 0.0502, 0.0481, 0.0502],
+      "y": [
+        "Rogaine",
+        "Steroids",
+        "Antidepressants",
+        "Heart Medication",
+        "Accutane",
+        "Antibiotics",
+        "Chemotherapy",
+        "Antifungal Cream",
+        "Blood Pressure Medication",
+        "Immunomodulators"
+      ],
+      "name": "Without Baldness",
+      "marker": {"color": "#8c8c8c"},
+      "text": ["5.72%", "4.81%", "5.72%", "5.12%", "5.22%", "4.41%", "4.41%", "5.02%", "4.81%", "5.02%"],
+      "textposition": "auto"
+    }
+  ],
+  "layout": {
+    "barmode": "stack",
+    "title": {
+      "text": "<br><b>𝗙𝗜𝗚. 𝟳﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦\n𝗕𝗬 𝗠𝗘𝗗𝗜𝗖𝗔𝗧𝗜𝗢𝗡 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "font": {"family": "ITC Officina Sans", "size": 16},
+      "x": 0.5,
+      "xanchor": "center",
+      "y": 0.93
+    },
+    "xaxis": {
+      "title": {
+        "text": "Proportion",
+        "font": {"family": "ITC Officina Sans", "size": 20}
+      },
+      "tickfont": {"family": "ITC Officina Sans", "size": 15},
+      "range": [0, 0.12]
+    },
+    "yaxis": {
+      "title": {
+        "text": "\nMedication / Treatment",
+        "font": {"family": "ITC Officina Sans", "size": 20}
+      },
+      "tickfont": {"family": "ITC Officina Sans", "size": 15}
+    },
+    "plot_bgcolor": "#D5E4EB",
+    "paper_bgcolor": "#D5E4EB",
+    "margin": {"t": 95}
+  }
+}
+``` -->
+
 Steroids and antibiotics are more prevalently used among individuals with baldness compared to those without it, whereas immunomodulators are more commonly used by those without baldness. These differences in usage across groups are generally small, which suggests that these medications and treatments are unlikely to be standalone causes of baldness.
 
-
 ```R
-# Create a contingency table by Nutritional Deficiencies and Hair Loss outcome
-nutritional_deficiencies_table <- create_contingency_table(
-  create_contingency_data(data, "Nutritional Deficiencies"),
-  "Nutritional Deficiencies",
-  "Nutritional deficiency that may contribute to hair loss"
-)
-
 # Create a proportional stacked bar plot for Nutritional Deficiencies and Hair Loss outcome
 create_stackbar_plot1(
   data1, 
   var = "Nutritional Deficiencies", 
   yaxis_text = "\nNutritional Deficiency", 
   tickangle = 0,
-  plot_title = "𝗙𝗜𝗚. 𝟴﹕𝗣𝗥𝗢𝗣𝗢𝗥𝗧𝗜𝗢𝗡𝗔𝗟 𝗦𝗧𝗔𝗖𝗞𝗘𝗗 𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦\n𝗕𝗬 𝗡𝗨𝗧𝗥𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗗𝗘𝗙𝗜𝗖𝗜𝗘𝗡𝗖𝗬 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘"
+  plot_title = "𝗙𝗜𝗚. 𝟴﹕𝗣𝗥𝗢𝗣𝗢𝗥𝗧𝗜𝗢𝗡𝗔𝗟 𝗦𝗧𝗔𝗖𝗞𝗘𝗗 𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗡𝗨𝗧𝗥𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗗𝗘𝗙𝗜𝗖𝗜𝗘𝗡𝗖𝗬 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘"
 )
 ```
+
+![Proportional Stacked Bar Plot by Nutritional Deficiencies & Hair Loss outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-8.png)
 
 Magnesium deficiency is more prevalent among individuals with baldness, while omega-3 fatty acids and vitamin E deficiencies skew toward the no-baldness group. Otherwise, the differences across factors are generally small.
 
 The table below illustrates the results of calculating Cramér's _V_, along with observation and category counts, Chi-square statistics, and 95% confidence intervals.
 
+```R
+## Compute Cramer's V
+# Between Medical Conditions and Hair Loss
+med_cons_cramers <- compute_cramersV(
+  subset(data1, `Medical Conditions` != "No Data"), 
+  x = "Medical Conditions", 
+  y = "Hair Loss"
+)
+
+# Between Hormonal Changes and Hair Loss
+meds_cramers <- compute_cramersV(
+  subset(data1, `Medications & Treatments` != "No Data"), 
+  x = "Medications & Treatments", 
+  y = "Hair Loss"
+)
+
+# Between Poor Hair Care Habits and Hair Loss
+nutri_defs_cramers <- compute_cramersV(
+  subset(data1, `Nutritional Deficiencies` != "No Data"), 
+  x = "Nutritional Deficiencies", 
+  y = "Hair Loss"
+)
+
+# Tabularize results
+summarize_variable(
+  bind_rows(med_cons_cramers, meds_cramers, nutri_defs_cramers) %>%
+    select(-y) %>%
+    column_to_rownames("x"),
+  rownames = TRUE
+)
+```
+
+While these factors show some level of association with hair loss, the relationships are generally weak as indicated by the small Cramer's V values (0.06–0.09).
+
+### 3.3. Phi Coefficient
+
+For hair loss factors indicating specific characteristics using "Yes/No" responses (e.g., genetics, hormonal changes, poor hair care habits, environmental factors, smoking, and weight loss), the phi coefficient examines binary-to-binary relationships with hair loss. The formula is:
+
+<div align="center">
+    
+$$ \phi = \frac{ad - bc}{\sqrt{(a + b)(c + d)(a + c)(b + d)}} $$
+
+</div>
 
 ```R
 ## Compute Cramer's V
@@ -1205,20 +1360,6 @@ where $$a$$,$$b$$,$$c$$, and $$d$$ represent the counts in the contingency table
 </div>
 
 ```R
-# Create a contingency table by Genetics and Hair Loss outcome
-genetics_table <- create_contingency_table(
-  create_contingency_data(data, "Genetics"),
-  "Genetics",
-  "Has a family history of baldness"
-)
-
-# Create a contingency table by Hormonal Changes and Hair Loss outcome
-hormonal_changes_table <- create_contingency_table(
-  create_contingency_data(data, "Hormonal Changes"),
-  "Hormonal Changes",
-  "Has experienced hormonal changes"
-)
-
 ## Create proportional stacked bar plots
 
 # Genetics
@@ -1258,63 +1399,13 @@ subplot(stackbar_plot1, stackbar_plot2, nrows = 2, shareX = TRUE, shareY = TRUE)
   )
 ```
 
+![Proportional Stacked Bar Plot by Genetics, Hormonal Changes, & Hair Loss outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-9.png)
+
 - **Genetics:** Among those with a family history of baldness, more individuals have experienced hair loss than those who have not.
 
 - **Hormonal Changes:** The distribution is fairly balanced across hormonal changes and baldness experience groups, indicating no clear link in the dataset.
 
-
 ```R
-# Transform data to long format for lifestyle factors
-lifestyle_data_long <- data %>%
-  select("Id", "Hair Loss", "Poor Hair Care Habits", "Environmental Factors", "Smoking", "Weight Loss") %>%
-  tidyr::pivot_longer(
-    cols = c("Poor Hair Care Habits", "Environmental Factors", "Smoking", "Weight Loss"),
-    names_to = "Factor",
-    values_to = "Response"
-  ) %>%
-  mutate(
-    Lifestyle = case_when(
-      Factor == "Poor Hair Care Habits" ~ "Practices poor hair care habits",
-      Factor == "Environmental Factors" ~ "Exposed to environmental factors that may contribute to hair loss",
-      Factor == "Smoking" ~ "Smoking",
-      Factor == "Weight Loss" ~ "Has experienced significant weight loss",
-      TRUE ~ NA_character_
-    )
-  )
-
-# Summarize counts and proportions
-lifestyle_summ <- lifestyle_data_long %>%
-  group_by(`Hair Loss`, Factor, Lifestyle, Response) %>%
-  summarise(Count = n(), Proportion = Count / nrow(data), .groups = "drop") %>%
-  arrange(Factor)
-
-# Create a contingency table by Poor Hair Care Habits and Hair Loss outcome
-hair_care_table <- create_contingency_table(
-  create_contingency_data(data, "Poor Hair Care Habits"), 
-  "Poor Hair Care Habits",
-  "Practices poor hair care habits"
-)
-
-# Create a contingency table by Environmental Factors and Hair Loss outcome
-envi_factors_table <- create_contingency_table(
-  create_contingency_data(data, "Environmental Factors"), 
-  "Environmental Factors",
-  "Exposed to environmental factors that may contribute to hair loss"
-)
-
-# Create a contingency table by Smoking and Hair Loss outcome
-smoking_table <- create_contingency_table(
-  create_contingency_data(data, "Smoking"), 
-  "Smoking"
-)
-
-# Create a contingency table by Weight Loss and Hair Loss outcome
-weight_loss_table <- create_contingency_table(
-  create_contingency_data(data, "Weight Loss"), 
-  "Weight Loss",
-  "Has experienced significant weight loss"
-)
-
 ## Create proportional stacked bar plots for lifestyle factors
 
 # Poor Hair Care Habits
@@ -1360,7 +1451,7 @@ subplot(
     plot_bgcolor = "#D5E4EB",
     paper_bgcolor = "#D5E4EB",
     title = list(
-      text = "𝗙𝗜𝗚. 𝟭𝟬﹕𝗣𝗥𝗢𝗣𝗢𝗥𝗧𝗜𝗢𝗡𝗔𝗟 𝗦𝗧𝗔𝗖𝗞𝗘𝗗 𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦\n𝗕𝗬 𝗟𝗜𝗙𝗘𝗦𝗧𝗬𝗟𝗘 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘", 
+      text = "𝗙𝗜𝗚. 𝟭𝟬﹕𝗣𝗥𝗢𝗣𝗢𝗥𝗧𝗜𝗢𝗡𝗔𝗟 𝗦𝗧𝗔𝗖𝗞𝗘𝗗 𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗟𝗜𝗙𝗘𝗦𝗧𝗬𝗟𝗘 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘", 
       font = list(family = "ITC Officina Sans", size = 18), 
       y = 0.93
     ),
@@ -1370,6 +1461,8 @@ subplot(
     )
   )
 ```
+
+![Proportional Stacked Bar Plot by Lifestyle & Hair Loss outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-10.png)
 
 - **Poor Hair Care Habits, Environmental Factors, and Smoking:** Among those who practice poor hair care habits, are exposed to environmental factors, and smoke, fewer individuals reported baldness.
 - **Weight Loss:** More individuals who experience significant weight loss reported baldness compared to those who do not experience such weight loss.
@@ -1759,7 +1852,7 @@ sil_plotly <- ggplotly(sil_plot) %>%
     plot_bgcolor = "#D5E4EB",
     paper_bgcolor = "#D5E4EB",
     title = list(
-      text = "𝗙𝗜𝗚. 𝟭𝟮﹕𝗣𝗟𝗢𝗧 𝗢𝗙 𝗧𝗛𝗘 𝗢𝗣𝗧𝗜𝗠𝗔𝗟 𝗡𝗨𝗠𝗕𝗘𝗥 𝗢𝗙 𝗖𝗟𝗨𝗦𝗧𝗘𝗥𝗦 𝗨𝗦𝗜𝗡𝗚 𝗘𝗟𝗕𝗢𝗪 𝗔𝗡𝗗 𝗦𝗜𝗟𝗛𝗢𝗨𝗘𝗧𝗧𝗘 𝗠𝗘𝗧𝗛𝗢𝗗𝗦", 
+      text = "𝗙𝗜𝗚. 𝟭𝟮﹕𝗣𝗟𝗢𝗧 𝗢𝗙 𝗧𝗛𝗘 𝗢𝗣𝗧𝗜𝗠𝗔𝗟 𝗡𝗨𝗠𝗕𝗘𝗥 𝗢𝗙 𝗖𝗟𝗨𝗦𝗧𝗘𝗥𝗦 𝗨𝗦𝗜𝗡𝗚 𝗘𝗟𝗕𝗢𝗪 & 𝗦𝗜𝗟𝗛𝗢𝗨𝗘𝗧𝗧𝗘 𝗠𝗘𝗧𝗛𝗢𝗗𝗦", 
       font = list(family = "ITC Officina Sans", size = 18), 
       y = 0.93
     ),
