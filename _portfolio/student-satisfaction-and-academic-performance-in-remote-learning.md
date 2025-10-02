@@ -164,6 +164,13 @@ mode <- function(x) {
 ```
 
 ### 1.4. Dataset
+Data were collected through an online survey administered near the end of the first semester of Academic Year 2021–2022 at the University of the Philippines (UP), approximately one year after the onset of the COVID-19 pandemic. Convenience sampling was employed due to constraints in time and resources, as well as the exploratory nature of the study. The participants were undergraduate students enrolled at the time of data collection.
+
+The survey included the following information:
+
+* A student’s educational background and the learning management systems (LMSs) used in their online classes.
+* A student’s level of agreement with the 20-item UP Student Satisfaction Scale (UPSSS), measured on a 7-point Likert scale ranging from 1 (*Strongly Disagree*) to 7 (*Strongly Agree*).
+* A student’s level of agreement with the 7-item Student Perception on Academic Performance Scale (SPAPS), also measured on a 7-point Likert scale ranging from 1 (*Strongly Disagree*) to 7 (*Strongly Agree*).
 
 | Item Code | Variable          | Short Description                                    | Full Description |
 |-----------|-------------------|------------------------------------------------------|------------------|
@@ -905,4 +912,3 @@ DOI: https://doi.org/10.58729/1941-6679.1486.
 - Lontoc, J. F. B. (2021). UP students and admin meet to assess remote learning and teaching experience. University of the Philippines. Retrieved January 18, 2022, from https://up.edu.ph/up-students-and-admin-meet-to-assess-remote-learning-and-teaching-experience.
 
 - Santos, A. P., By, Shewakramani, J., Zhou, B., & Tsang, C. (2020). “In the Philippines, Distance Learning reveals the digital divide”: Heinrich Böll stiftung: Brussels Office - European Union. Heinrich-Böll-Stiftung. Retrieved January 18, 2022, from https://eu.boell.org/en/2020/10/06/philippines-distance-learning-reveals-digital-divide.
-
