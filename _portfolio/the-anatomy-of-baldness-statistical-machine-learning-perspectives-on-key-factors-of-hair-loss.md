@@ -3,7 +3,7 @@ title: 'The Anatomy of Baldness: Statistical and Machine Learning Perspectives o
 collection: portfolio
 permalink: /portfolio/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss
 date: 2024-11-29
-last_updated: 2024-12-13
+last_updated: 2025-10-02
 excerpt: 'In this [Crack the Code of Hair Loss](https://www.datacamp.com/competitions/why-hair-loss?entry=05f354fb-dd89-4631-a682-00499eab8fb2) first-place entry, survey responses from 999 patients were analyzed to identify factors contributing to hair loss. The report integrates association measures, machine learning models, and feature importance analysis to uncover links between baldness and age, medical history, stress, and lifestyle, offering actionable insights for health management and medical intervention.'
 venue: 'DataCamp'
 categories:
@@ -770,7 +770,7 @@ age_hair_loss_boxplot <- plot_ly(
 }
 ```
 
-<div style="margin-top: 16px;">
+<div style="margin: 16px 0 16px 0;">
 Based on the boxplots in Figure 3, the age distributions of both groups (with and without baldness) are observed to be nearly symmetric, with no indications of outliers. A slight shift of two years between their median to upper quartile ranges is identified, suggesting subtle differences in age-related baldness patterns.
 </div>
 
@@ -931,9 +931,7 @@ summarize_variable(age_rpb[, c(1, 3:4, 7, 5, 6)] %>% column_to_rownames("x"), ro
   </tbody>
 </table>
 
-Based on the results of a point-biserial correlation, the relationship between age and baldness is found to be inverse, as indicated by the negative coefficient. This means that as age increases, there is a slight tendency for baldness to occur less frequently. However, the coefficient of -0.06 is close to 0, which translates to a very weak relationship.
-
-This suggests that age alone does not strongly influence the likelihood of hair loss in this dataset.
+Based on the results of a point-biserial correlation, the relationship between age and baldness is found to be inverse, as indicated by the negative coefficient. This means that as age increases, there is a slight tendency for baldness to occur less frequently. However, the coefficient of -0.06 is close to 0, which translates to a very weak relationship. This suggests that age alone does not strongly influence the likelihood of hair loss in this dataset.
 
 #### 3.1.2. Rank-Biserial
 
@@ -1123,18 +1121,108 @@ where:<br>
 create_stackbar_plot1(
   data1, 
   var = "Medical Conditions", 
-  yaxis_text = "\nMedical Condition", 
+  yaxis_text = "Medical Condition", 
   tickangle = 0,
-  plot_title = "𝗙𝗜𝗚. 𝟲﹕𝗣𝗥𝗢𝗣𝗢𝗥𝗧𝗜𝗢𝗡𝗔𝗟 𝗦𝗧𝗔𝗖𝗞𝗘𝗗 𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗠𝗘𝗗𝗜𝗖𝗔𝗟 𝗖𝗢𝗡𝗗𝗜𝗧𝗜𝗢𝗡 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘"
+  plot_title = "𝗙𝗜𝗚. 𝟲﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗠𝗘𝗗𝗜𝗖𝗔𝗟 𝗖𝗢𝗡𝗗𝗜𝗧𝗜𝗢𝗡 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘"
 )
 ```
 
-![Proportional Stacked Bar Plot by Medical Conditions & Hair Loss Outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-6.png)
+```plotly
+{
+  "data": [
+    {
+      "type": "bar",
+      "orientation": "h",
+      "x": [43.43, 47.83, 47.83, 47.83, 48.10, 48.86, 50.00, 56.12, 56.82, 57.01],
+      "y": [
+        "Thyroid Problems",
+        "Dermatitis",
+        "Eczema",
+        "Ringworm",
+        "Scalp Infection",
+        "Dermatosis",
+        "Psoriasis",
+        "Androgenetic Alopecia",
+        "Seborrheic Dermatitis",
+        "Alopecia Areata"
+      ],
+      "name": "With Baldness",
+      "marker": {"color": "#FF6347"},
+      "textposition": "auto",
+      "customdata": [43, 44, 33, 33, 38, 43, 50, 55, 50, 61],
+      "hovertemplate": "<b>Percentage:</b> %{x}%<br><b>Count:</b> %{customdata}"
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "x": [56.57, 52.17, 52.17, 52.17, 51.90, 51.14, 50.00, 43.88, 43.18, 42.99],
+      "y": [
+        "Thyroid Problems",
+        "Dermatitis",
+        "Eczema",
+        "Ringworm",
+        "Scalp Infection",
+        "Dermatosis",
+        "Psoriasis",
+        "Androgenetic Alopecia",
+        "Seborrheic Dermatitis",
+        "Alopecia Areata"
+      ],
+      "name": "Without Baldness",
+      "marker": {"color": "#8c8c8c"},
+      "textposition": "auto",
+      "customdata": [56, 48, 36, 36, 41, 45, 50, 43, 38, 46],
+      "hovertemplate": "<b>Percentage:</b> %{x}%<br><b>Count:</b> %{customdata}"
+    }
+  ],
+  "layout": {
+    "barmode": "stack",
+    "title": {
+      "text": "<br><b>𝗙𝗜𝗚. 𝟲﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗠𝗘𝗗𝗜𝗖𝗔𝗟 𝗖𝗢𝗡𝗗𝗜𝗧𝗜𝗢𝗡 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "font": {"family": "ITC Officina Sans", "size": 20},
+      "x": 0.5,
+      "xanchor": "center",
+      "y": 0.93
+    },
+    "xaxis": {
+      "title": {
+        "text": "Percentage (%)",
+        "font": {"family": "ITC Officina Sans", "size": 16}
+      },
+      "tickfont": {"family": "ITC Officina Sans", "size": 15},
+      "range": [0, 100]
+    },
+    "yaxis": {
+      "title": {
+        "text": "<br><b>Medical Condition</b>",
+        "font": {"family": "ITC Officina Sans", "size": 18}
+      },
+      "tickfont": {"family": "ITC Officina Sans", "size": 15},
+      "categoryorder": "array",
+      "categoryarray": [
+        "Thyroid Problems",
+        "Dermatitis",
+        "Eczema",
+        "Ringworm",
+        "Scalp Infection",
+        "Dermatosis",
+        "Psoriasis",
+        "Androgenetic Alopecia",
+        "Seborrheic Dermatitis",
+        "Alopecia Areata"
+      ]
+    },
+    "plot_bgcolor": "#D5E4EB",
+    "paper_bgcolor": "#D5E4EB",
+    "margin": {"t": 95}
+  }
+}
+```
 
-Alopecia areata, androgenetic alopecia, and seborrheic dermatitis show higher prevalence in the group with baldness, with the former two being known causes of hair loss. In contrast, thyroid problems are more commonly reported by those without baldness.
-
-The distribution is closely balanced across conditions, suggesting that while an individual's medical condition is relevant, it might not be strongly associated with hair loss.
-
+<!-- ![Proportional Stacked Bar Plot by Medical Conditions & Hair Loss Outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-6.png) -->
+<div style="margin: 16px 0 16px 0;">
+Alopecia areata, androgenetic alopecia, and seborrheic dermatitis show higher prevalence in the group with baldness, with the former two being known causes of hair loss. In contrast, thyroid problems are more commonly reported by those without baldness. Therefore, the distribution is closely balanced across conditions, suggesting that while an individual's medical condition is relevant, it might not be strongly associated with hair loss.
+</div>
 
 ```R
 # Create a proportional stacked bar plot by Medications and Treatments and Hair Loss outcome
@@ -1143,90 +1231,106 @@ create_stackbar_plot1(
   var = "Medications and Treatments", 
   yaxis_text = "\nMedication / Treatment", 
   tickangle = 0, 
-  plot_title = "𝗙𝗜𝗚. 𝟳﹕𝗣𝗥𝗢𝗣𝗢𝗥𝗧𝗜𝗢𝗡𝗔𝗟 𝗦𝗧𝗔𝗖𝗞𝗘𝗗 𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗠𝗘𝗗𝗜𝗖𝗔𝗧𝗜𝗢𝗡 𝗢𝗥 𝗧𝗥𝗘𝗔𝗧𝗠𝗘𝗡𝗧 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘"
+  plot_title = "<br><b>𝗙𝗜𝗚. 𝟳﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗠𝗘𝗗𝗜𝗖𝗔𝗧𝗜𝗢𝗡 𝗢𝗥 𝗧𝗥𝗘𝗔𝗧𝗠𝗘𝗡𝗧 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>"
 )
 ```
 
-![Proportional Stacked Bar Plot by Medications & Hair Loss Outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-7.png)
-
-<!-- ```plotly
+```plotly
 {
   "data": [
     {
       "type": "bar",
       "orientation": "h",
-      "x": [0.0592, 0.0592, 0.0532, 0.0532, 0.0502, 0.0502, 0.0461, 0.0441, 0.0421, 0.0401],
+      "x": [44.44, 46.67, 46.81, 48.18, 49.02, 50.86, 50.96, 51.11, 53.19, 55.14],
       "y": [
-        "Rogaine",
-        "Steroids",
-        "Antidepressants",
-        "Heart Medication",
-        "Accutane",
-        "Antibiotics",
-        "Chemotherapy",
-        "Antifungal Cream",
+        "Immunomodulators",
         "Blood Pressure Medication",
-        "Immunomodulators"
+        "Antifungal Cream",
+        "Antidepressants",
+        "Accutane",
+        "Rogaine",
+        "Heart Medication",
+        "Chemotherapy",
+        "Antibiotics",
+        "Steroids"
       ],
       "name": "With Baldness",
       "marker": {"color": "#FF6347"},
-      "text": ["5.92%", "5.92%", "5.32%", "5.32%", "5.02%", "5.02%", "4.61%", "4.41%", "4.21%", "4.01%"],
-      "textposition": "auto"
+      "textposition": "auto",
+      "customdata": [40, 42, 44, 53, 50, 59, 53, 46, 50, 59],
+      "hovertemplate": "<b>Percentage:</b> %{x}%<br><b>Count:</b> %{customdata}"
     },
     {
       "type": "bar",
       "orientation": "h",
-      "x": [0.0572, 0.0481, 0.0572, 0.0512, 0.0522, 0.0441, 0.0441, 0.0502, 0.0481, 0.0502],
+      "x": [55.56, 53.33, 53.19, 51.82, 50.98, 49.14, 49.04, 48.89, 46.81, 44.86],
       "y": [
-        "Rogaine",
-        "Steroids",
-        "Antidepressants",
-        "Heart Medication",
-        "Accutane",
-        "Antibiotics",
-        "Chemotherapy",
-        "Antifungal Cream",
+        "Immunomodulators",
         "Blood Pressure Medication",
-        "Immunomodulators"
+        "Antifungal Cream",
+        "Antidepressants",
+        "Accutane",
+        "Rogaine",
+        "Heart Medication",
+        "Chemotherapy",
+        "Antibiotics",
+        "Steroids"
       ],
       "name": "Without Baldness",
       "marker": {"color": "#8c8c8c"},
-      "text": ["5.72%", "4.81%", "5.72%", "5.12%", "5.22%", "4.41%", "4.41%", "5.02%", "4.81%", "5.02%"],
-      "textposition": "auto"
+      "textposition": "auto",
+      "customdata": [50, 48, 50, 57, 52, 57, 51, 44, 44, 48],
+      "hovertemplate": "<b>Percentage:</b> %{x}%<br><b>Count:</b> %{customdata}"
     }
   ],
   "layout": {
     "barmode": "stack",
     "title": {
-      "text": "<br><b>𝗙𝗜𝗚. 𝟳﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦\n𝗕𝗬 𝗠𝗘𝗗𝗜𝗖𝗔𝗧𝗜𝗢𝗡 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
-      "font": {"family": "ITC Officina Sans", "size": 16},
+      "text": "<br><b>𝗙𝗜𝗚. 𝟳﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗠𝗘𝗗𝗜𝗖𝗔𝗧𝗜𝗢𝗡 𝗢𝗥 𝗧𝗥𝗘𝗔𝗧𝗠𝗘𝗡𝗧 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "font": {"family": "ITC Officina Sans", "size": 20},
       "x": 0.5,
       "xanchor": "center",
       "y": 0.93
     },
     "xaxis": {
       "title": {
-        "text": "Proportion",
-        "font": {"family": "ITC Officina Sans", "size": 20}
+        "text": "Percentage (%)",
+        "font": {"family": "ITC Officina Sans", "size": 16}
       },
       "tickfont": {"family": "ITC Officina Sans", "size": 15},
-      "range": [0, 0.12]
+      "range": [0, 100]
     },
     "yaxis": {
       "title": {
-        "text": "\nMedication / Treatment",
-        "font": {"family": "ITC Officina Sans", "size": 20}
+        "text": "<br><b>Medication / Treatment</b>",
+        "font": {"family": "ITC Officina Sans", "size": 18}
       },
-      "tickfont": {"family": "ITC Officina Sans", "size": 15}
+      "tickfont": {"family": "ITC Officina Sans", "size": 15},
+      "categoryorder": "array",
+      "categoryarray": [
+        "Immunomodulators",
+        "Blood Pressure Medication",
+        "Antifungal Cream",
+        "Antidepressants",
+        "Accutane",
+        "Rogaine",
+        "Heart Medication",
+        "Chemotherapy",
+        "Antibiotics",
+        "Steroids"
+      ]
     },
     "plot_bgcolor": "#D5E4EB",
     "paper_bgcolor": "#D5E4EB",
     "margin": {"t": 95}
   }
 }
-``` -->
+```
 
+<!-- ![Proportional Stacked Bar Plot by Medications & Hair Loss Outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-7.png) -->
+<div style="margin: 16px 0 16px 0;">
 Steroids and antibiotics are more prevalently used among individuals with baldness compared to those without it, whereas immunomodulators are more commonly used by those without baldness. These differences in usage across groups are generally small, which suggests that these medications and treatments are unlikely to be standalone causes of baldness.
+</div>
 
 ```R
 # Create a proportional stacked bar plot for Nutritional Deficiencies and Hair Loss outcome
@@ -1235,15 +1339,107 @@ create_stackbar_plot1(
   var = "Nutritional Deficiencies", 
   yaxis_text = "\nNutritional Deficiency", 
   tickangle = 0,
-  plot_title = "𝗙𝗜𝗚. 𝟴﹕𝗣𝗥𝗢𝗣𝗢𝗥𝗧𝗜𝗢𝗡𝗔𝗟 𝗦𝗧𝗔𝗖𝗞𝗘𝗗 𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗡𝗨𝗧𝗥𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗗𝗘𝗙𝗜𝗖𝗜𝗘𝗡𝗖𝗬 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘"
+  plot_title = "𝗙𝗜𝗚. 𝟴﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗡𝗨𝗧𝗥𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗗𝗘𝗙𝗜𝗖𝗜𝗘𝗡𝗖𝗬 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘"
 )
 ```
 
-![Proportional Stacked Bar Plot by Nutritional Deficiencies & Hair Loss outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-8.png)
+```plotly
+{
+  "data": [
+    {
+      "type": "bar",
+      "orientation": "h",
+      "x": [45.65, 45.78, 46.46, 47.22, 50.00, 51.22, 51.28, 51.52, 52.22, 54.76],
+      "y": [
+        "Omega-3 fatty acids",
+        "Vitamin E deficiency",
+        "Biotin Deficiency",
+        "Zinc Deficiency",
+        "Vitamin D Deficiency",
+        "Selenium deficiency",
+        "Iron deficiency",
+        "Vitamin A Deficiency",
+        "Protein deficiency",
+        "Magnesium deficiency"
+      ],
+      "name": "With Baldness",
+      "marker": {"color": "#FF6347"},
+      "textposition": "auto",
+      "customdata": [42, 38, 46, 51, 52, 42, 40, 51, 47, 46],
+      "hovertemplate": "<b>Percentage:</b> %{x}%<br><b>Count:</b> %{customdata}"
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "x": [54.35, 54.22, 53.54, 52.78, 50.00, 48.78, 48.72, 48.48, 47.78, 45.24],
+      "y": [
+        "Omega-3 fatty acids",
+        "Vitamin E deficiency",
+        "Biotin Deficiency",
+        "Zinc Deficiency",
+        "Vitamin D Deficiency",
+        "Selenium deficiency",
+        "Iron deficiency",
+        "Vitamin A Deficiency",
+        "Protein deficiency",
+        "Magnesium deficiency"
+      ],
+      "name": "Without Baldness",
+      "marker": {"color": "#8c8c8c"},
+      "textposition": "auto",
+      "customdata": [50, 45, 53, 57, 52, 40, 38, 48, 43, 38],
+      "hovertemplate": "<b>Percentage:</b> %{x}%<br><b>Count:</b> %{customdata}"
+    }
+  ],
+  "layout": {
+    "barmode": "stack",
+    "title": {
+      "text": "<br><b>𝗙𝗜𝗚. 𝟴﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗡𝗨𝗧𝗥𝗜𝗧𝗜𝗢𝗡𝗔𝗟 𝗗𝗘𝗙𝗜𝗖𝗜𝗘𝗡𝗖𝗬 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "font": {"family": "ITC Officina Sans", "size": 20},
+      "x": 0.5,
+      "xanchor": "center",
+      "y": 0.93
+    },
+    "xaxis": {
+      "title": {
+        "text": "Percentage (%)",
+        "font": {"family": "ITC Officina Sans", "size": 16}
+      },
+      "tickfont": {"family": "ITC Officina Sans", "size": 15},
+      "range": [0, 100]
+    },
+    "yaxis": {
+      "title": {
+        "text": "<br><b>Nutritional Deficiency</b>",
+        "font": {"family": "ITC Officina Sans", "size": 18}
+      },
+      "tickfont": {"family": "ITC Officina Sans", "size": 15},
+      "categoryorder": "array",
+      "categoryarray": [
+        "Omega-3 fatty acids",
+        "Vitamin E deficiency",
+        "Biotin Deficiency",
+        "Zinc Deficiency",
+        "Vitamin D Deficiency",
+        "Selenium deficiency",
+        "Iron deficiency",
+        "Vitamin A Deficiency",
+        "Protein deficiency",
+        "Magnesium deficiency"
+      ]
+    },
+    "plot_bgcolor": "#D5E4EB",
+    "paper_bgcolor": "#D5E4EB",
+    "margin": {"t": 95}
+  }
+}
+```
 
-Magnesium deficiency is more prevalent among individuals with baldness, while omega-3 fatty acids and vitamin E deficiencies skew toward the no-baldness group. Otherwise, the differences across factors are generally small.
+<!-- ![Proportional Stacked Bar Plot by Nutritional Deficiencies & Hair Loss outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-8.png) -->
 
-The table below illustrates the results of calculating Cramér's _V_, along with observation and category counts, Chi-square statistics, and 95% confidence intervals.
+<div style="margin: 16px 0 16px 0;">
+Magnesium deficiency is more prevalent among individuals with baldness, while omega-3 fatty acids and vitamin E deficiencies skew toward the no-baldness group. Otherwise, the differences across factors are generally small. The table below illustrates the results of calculating Cramér's V, along with observation and category counts, Chi-square statistics, and 95% confidence intervals.
+</div>
 
 ```R
 ## Compute Cramer's V
@@ -1277,6 +1473,45 @@ summarize_variable(
 )
 ```
 
+<table border="1" style="border-collapse: collapse; width:100%;">
+  <thead>
+    <tr>
+      <th> </th>
+      <th>n</th>
+      <th>r, c</th>
+      <th>Chi-square statistic</th>
+      <th>Cramer's V</th>
+      <th>95% CI</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Medical Conditions</td>
+      <td>889</td>
+      <td>10, 2</td>
+      <td>7.37</td>
+      <td>0.09</td>
+      <td>[0.08, 0.19]</td>
+    </tr>
+    <tr>
+      <td>Medications &amp; Treatments</td>
+      <td>997</td>
+      <td>10, 2</td>
+      <td>3.68</td>
+      <td>0.06</td>
+      <td>[0.06, 0.16]</td>
+    </tr>
+    <tr>
+      <td>Nutritional Deficiencies</td>
+      <td>919</td>
+      <td>10, 2</td>
+      <td>3.16</td>
+      <td>0.06</td>
+      <td>[0.06, 0.17]</td>
+    </tr>
+  </tbody>
+</table>
+
 While these factors show some level of association with hair loss, the relationships are generally weak as indicated by the small Cramer's V values (0.06–0.09).
 
 ### 3.3. Phi Coefficient
@@ -1291,6 +1526,7 @@ $$ \phi = \frac{ad - bc}{\sqrt{(a + b)(c + d)(a + c)(b + d)}} $$
 
 ```R
 ## Compute Cramer's V
+
 # Between Medical Conditions and Hair Loss
 med_cons_cramers <- compute_cramersV(
   subset(data1, `Medical Conditions` != "No Data"), 
@@ -1335,29 +1571,10 @@ $$ \phi = \frac{ad - bc}{\sqrt{(a + b)(c + d)(a + c)(b + d)}} $$
 
 where $$a$$,$$b$$,$$c$$, and $$d$$ represent the counts in the contingency table as shown below:
 
-<div align="center">
-  <table border="1" cellspacing="0" cellpadding="6">
-    <thead>
-      <tr>
-        <th></th>
-        <th>With baldness <br> (Hair Loss = 1)</th>
-        <th>Without baldness <br> (Hair Loss = 0)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>Yes</strong></td>
-        <td>$$a$$</td>
-        <td>$$b$$</td>
-      </tr>
-      <tr>
-        <td><strong>No</strong></td>
-        <td>$$c$$</td>
-        <td>$$d$$</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+|       | With baldness<br>(Hair Loss = $$1$$) | Without baldness<br>(Hair Loss = $$0$$) |
+|:-------|:-------:|:-------:|
+| **Yes**ㅤ |   $$a$$  |   $$b$$  |
+| **No** ㅤ|   $$c$$  |   $$d$$  |
 
 ```R
 ## Create proportional stacked bar plots
@@ -1390,7 +1607,7 @@ subplot(stackbar_plot1, stackbar_plot2, nrows = 2, shareX = TRUE, shareY = TRUE)
     plot_bgcolor = "#D5E4EB",
     paper_bgcolor = "#D5E4EB",
     title = list(
-      text = "𝗙𝗜𝗚. 𝟵﹕𝗣𝗥𝗢𝗣𝗢𝗥𝗧𝗜𝗢𝗡𝗔𝗟 𝗦𝗧𝗔𝗖𝗞𝗘𝗗 𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦\n𝗕𝗬 𝗚𝗘𝗡𝗘𝗧𝗜𝗖𝗦, 𝗛𝗢𝗥𝗠𝗢𝗡𝗔𝗟 𝗖𝗛𝗔𝗡𝗚𝗘𝗦, 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘", 
+      text = "𝗙𝗜𝗚. 𝟵﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗚𝗘𝗡𝗘𝗧𝗜𝗖𝗦, 𝗛𝗢𝗥𝗠𝗢𝗡𝗔𝗟 𝗖𝗛𝗔𝗡𝗚𝗘𝗦, & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘", 
       font = list(family = "ITC Officina Sans", size = 18), 
       y = 0.93
     ),
@@ -1399,7 +1616,88 @@ subplot(stackbar_plot1, stackbar_plot2, nrows = 2, shareX = TRUE, shareY = TRUE)
   )
 ```
 
-![Proportional Stacked Bar Plot by Genetics, Hormonal Changes, & Hair Loss outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-9.png)
+```plotly
+{
+  "data": [
+    {
+      "type": "bar",
+      "orientation": "h",
+      "x": [51.72, 47.59],
+      "y": ["<b>Genetics</b> - Yes", "<b>Genetics</b> - No"],
+      "name": "With Baldness",
+      "marker": {"color": "#FF6347"},
+      "textposition": "auto",
+      "customdata": [270, 227],
+      "hovertemplate": "<b>Percentage:</b> %{x}%<br><b>Count:</b> %{customdata}"
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "x": [48.28, 52.41],
+      "y": ["<b>Genetics</b> - Yes", "<b>Genetics</b> - No"],
+      "name": "Without Baldness",
+      "marker": {"color": "#8c8c8c"},
+      "textposition": "auto",
+      "customdata": [252, 250],
+      "hovertemplate": "<b>Percentage:</b> %{x}%<br><b>Count:</b> %{customdata}"
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "x": [50.10, 49.39],
+      "y": ["<b>Hormonal Changes</b> - Yes", "<b>Hormonal Changes</b> - No"],
+      "name": "With Baldness",
+      "marker": {"color": "#FF6347"},
+      "textposition": "auto",
+      "customdata": [255, 242],
+      "hovertemplate": "<b>Percentage:</b> %{x}%<br><b>Count:</b> %{customdata}",
+      "showlegend": false
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "x": [49.90, 50.61],
+      "y": ["<b>Hormonal Changes</b> - Yes", "<b>Hormonal Changes</b> - No"],
+      "name": "Without Baldness",
+      "marker": {"color": "#8c8c8c"},
+      "textposition": "auto",
+      "customdata": [254, 248],
+      "hovertemplate": "<b>Percentage:</b> %{x}%<br><b>Count:</b> %{customdata}",
+      "showlegend": false
+    }
+  ],
+  "layout": {
+    "barmode": "stack",
+    "title": {
+      "text": "<br><b>𝗙𝗜𝗚. 𝟵﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗚𝗘𝗡𝗘𝗧𝗜𝗖𝗦, 𝗛𝗢𝗥𝗠𝗢𝗡𝗔𝗟 𝗖𝗛𝗔𝗡𝗚𝗘𝗦, & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "font": {"family": "ITC Officina Sans", "size": 18},
+      "x": 0.5,
+      "xanchor": "center",
+      "y": 0.93
+    },
+    "xaxis": {
+      "title": {"text": "Percentage (%)", "font": {"family": "ITC Officina Sans", "size": 16}},
+      "tickfont": {"family": "ITC Officina Sans", "size": 15},
+      "range": [0, 100]
+    },
+    "yaxis": {
+      "tickfont": {"family": "ITC Officina Sans", "size": 15},
+      "categoryorder": "array",
+      "categoryarray": [
+        "<b>Hormonal Changes</b> - No",
+        "<b>Hormonal Changes</b> - Yes",
+        "<b>Genetics</b> - No",
+        "<b>Genetics</b> - Yes"
+      ]
+    },
+    "plot_bgcolor": "#D5E4EB",
+    "paper_bgcolor": "#D5E4EB",
+    "margin": {"t": 95}
+  }
+}
+```
+
+<!-- ![Proportional Stacked Bar Plot by Genetics, Hormonal Changes, & Hair Loss outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-9.png) -->
 
 - **Genetics:** Among those with a family history of baldness, more individuals have experienced hair loss than those who have not.
 
@@ -1451,7 +1749,7 @@ subplot(
     plot_bgcolor = "#D5E4EB",
     paper_bgcolor = "#D5E4EB",
     title = list(
-      text = "𝗙𝗜𝗚. 𝟭𝟬﹕𝗣𝗥𝗢𝗣𝗢𝗥𝗧𝗜𝗢𝗡𝗔𝗟 𝗦𝗧𝗔𝗖𝗞𝗘𝗗 𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗟𝗜𝗙𝗘𝗦𝗧𝗬𝗟𝗘 𝗔𝗡𝗗 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘", 
+      text = "<br><b>𝗙𝗜𝗚. 𝟭𝟬﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗟𝗜𝗙𝗘𝗦𝗧𝗬𝗟𝗘 𝗙𝗔𝗖𝗧𝗢𝗥 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>", 
       font = list(family = "ITC Officina Sans", size = 18), 
       y = 0.93
     ),
@@ -1462,7 +1760,86 @@ subplot(
   )
 ```
 
-![Proportional Stacked Bar Plot by Lifestyle & Hair Loss outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-10.png)
+```plotly
+{
+  "data": [
+    {
+      "type": "bar",
+      "orientation": "h",
+      "x": [47.76, 51.68, 48.82, 50.71, 47.01, 52.71, 52.12, 47.63],
+      "y": [
+        "<b>Poor Hair Care Habits</b> - Yes",
+        "<b>Poor Hair Care Habits</b> - No",
+        "<b>Environmental Factors</b> - Yes",
+        "<b>Environmental Factors</b> - No",
+        "<b>Smoking</b> - Yes",
+        "<b>Smoking</b> - No",
+        "<b>Weight Loss</b> - Yes",
+        "<b>Weight Loss</b> - No"
+      ],
+      "name": "With Baldness",
+      "marker": {"color": "#FF6347"},
+      "textposition": "auto",
+      "customdata": [235, 262, 248, 249, 244, 253, 246, 251],
+      "hovertemplate": "<b>Percentage:</b> %{x}%<br><b>Count:</b> %{customdata}"
+    },
+    {
+      "type": "bar",
+      "orientation": "h",
+      "x": [52.24, 48.32, 51.18, 49.29, 52.99, 47.29, 47.88, 52.37],
+      "y": [
+        "<b>Poor Hair Care Habits</b> - Yes",
+        "<b>Poor Hair Care Habits</b> - No",
+        "<b>Environmental Factors</b> - Yes",
+        "<b>Environmental Factors</b> - No",
+        "<b>Smoking</b> - Yes",
+        "<b>Smoking</b> - No",
+        "<b>Weight Loss</b> - Yes",
+        "<b>Weight Loss</b> - No"
+      ],
+      "name": "Without Baldness",
+      "marker": {"color": "#8c8c8c"},
+      "textposition": "auto",
+      "customdata": [257, 245, 260, 242, 275, 227, 226, 276],
+      "hovertemplate": "<b>Percentage:</b> %{x}%<br><b>Count:</b> %{customdata}"
+    }
+  ],
+  "layout": {
+    "barmode": "stack",
+    "title": {
+      "text": "<br><b>𝗙𝗜𝗚. 𝟭𝟬﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗟𝗜𝗙𝗘𝗦𝗧𝗬𝗟𝗘 𝗙𝗔𝗖𝗧𝗢𝗥 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "font": {"family": "ITC Officina Sans", "size": 18},
+      "x": 0.5,
+      "xanchor": "center",
+      "y": 0.93
+    },
+    "xaxis": {
+      "title": {"text": "Percentage (%)", "font": {"family": "ITC Officina Sans", "size": 16}},
+      "tickfont": {"family": "ITC Officina Sans", "size": 15},
+      "range": [0, 100]
+    },
+    "yaxis": {
+      "tickfont": {"family": "ITC Officina Sans", "size": 15},
+      "categoryorder": "array",
+      "categoryarray": [
+        "<b>Weight Loss</b> - No",
+        "<b>Weight Loss</b> - Yes",
+        "<b>Smoking</b> - No",
+        "<b>Smoking</b> - Yes",
+        "<b>Environmental Factors</b> - No",
+        "<b>Environmental Factors</b> - Yes",
+        "<b>Poor Hair Care Habits</b> - No",
+        "<b>Poor Hair Care Habits</b> - Yes"
+      ]
+    },
+    "plot_bgcolor": "#D5E4EB",
+    "paper_bgcolor": "#D5E4EB",
+    "margin": {"t": 95}
+  }
+}
+```
+
+<!-- ![Proportional Stacked Bar Plot by Lifestyle & Hair Loss outcome](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/fig-10.png) -->
 
 - **Poor Hair Care Habits, Environmental Factors, and Smoking:** Among those who practice poor hair care habits, are exposed to environmental factors, and smoke, fewer individuals reported baldness.
 - **Weight Loss:** More individuals who experience significant weight loss reported baldness compared to those who do not experience such weight loss.
@@ -1472,6 +1849,7 @@ Overall, lifestyle factors show only slight differences between those with and w
 
 ```R
 ## Compute phi coefficients
+
 # Between Genetics and Hair Loss
 genetics_phi <- compute_phi(data, x = "Genetics", y = "Hair Loss", u = "No", t = "Yes")
 
@@ -1596,7 +1974,6 @@ new_data <- new_data %>%
   dplyr::select(HairLoss, everything()) %>%
   rename(NutritionalDeficienciesOmega3fattyacids = `NutritionalDeficienciesOmega-3fattyacids`) # Remove the special character in column name
 
-
 # List of required packages
 packages1 <- c("caret", "e1071", "nnet", "randomForest", "kernlab")
 
@@ -1659,9 +2036,7 @@ class_metrics <- rbind(
   evaluate_model(model = svm_model, test = test_data, y = "HairLoss", model_name = "SVM"),
   evaluate_model(model = rf_model, test = test_data, y = "HairLoss", model_name = "Random Forest")
 )
-```
 
-```R
 # Tabularize the summarized metrics of the models
 summarize_variable(class_metrics, rownames = TRUE)
 ```
@@ -2749,185 +3124,5 @@ output
 }			  		  
 ```
 
-### 6.2. Tables
-#### 6.2.1. Summary Statistics by Factor
-
-```R
-# Tabularize summary statistics of Genetics
-summarize_variable(
-  data = data %>% rename(`Has a family history of baldness` = Genetics),
-  variable = "Has a family history of baldness",
-  rownames = FALSE
-)
-
-<table border="1" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr>
-      <th>Has a family history of baldness</th>
-      <th>Count</th>
-      <th>Percentage</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Yes</td>
-      <td>522</td>
-      <td>52.25%</td>
-    </tr>
-    <tr>
-      <td>No</td>
-      <td>477</td>
-      <td>47.75%</td>
-    </tr>
-  </tbody>
-</table>
-
-# Tabularize summary statistics of Hormonal Changes
-summarize_variable(
-  data %>% rename(`Has experienced hormonal changes` = `Hormonal Changes`),
-  variable = "Has experienced hormonal changes",
-  rownames = FALSE
-)
-
-<table border="1" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr>
-      <th>Has experienced hormonal changes</th>
-      <th>Count</th>
-      <th>Percentage</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Yes</td>
-      <td>509</td>
-      <td>50.95%</td>
-    </tr>
-    <tr>
-      <td>No</td>
-      <td>490</td>
-      <td>49.05%</td>
-    </tr>
-  </tbody>
-</table>
-
-# Tabularize summary statistics of Stress
-summarize_variable(
-  data %>% 
-    mutate(
-      Stress = factor(Stress, levels = c("High", "Moderate", "Low"), ordered = TRUE)
-    ) %>%
-    rename(`Stress level` = Stress),
-  variable = "Stress level",
-  rownames = FALSE
-)
-
-# Tabularize summary statistics of Poor Hair Care Habits
-summarize_variable(
-  data %>%
-    rename(
-      `Practices poor hair care habits` = `Poor Hair Care Habits`
-    ),
-  variable = "Practices poor hair care habits",
-  rownames = FALSE
-)
-
-# Tabularize summary statistics of Environmental Factors
-summarize_variable(
-  data %>%
-    rename(
-      `Exposed to environmental factors that may contribute to hair loss` = `Environmental Factors`
-    ),
-  variable = "Exposed to environmental factors that may contribute to hair loss",
-  rownames = FALSE
-)
-
-# Tabularize summary statistics of Smoking
-summarize_variable(data, variable = "Smoking", rownames = FALSE
-)
-
-# Tabularize summary statistics of Weight Loss
-summarize_variable(
-  data %>%
-    rename(
-      `Has experienced significant weight loss` = `Weight Loss`
-    ),
-  variable = "Has experienced significant weight loss",
-  rownames = FALSE
-)
-```
-
-<html>
-  <body>
-    <div class="datatables html-widget html-fill-item" id="htmlwidget-07f3257b0e3a41dcc230" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-07f3257b0e3a41dcc230">{"x":{"filter":"none","vertical":false,"data":[["Yes","No"],[509,490],["50.95%","49.05%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Has experienced hormonal changes<\/th>\n      <th>Count<\/th>\n      <th>Percentage<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","searching":false,"pageLength":10,"columnDefs":[{"className":"dt-right","targets":1},{"name":"Has experienced hormonal changes","targets":0},{"name":"Count","targets":1},{"name":"Percentage","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
-  </body>
-</html>
-
-<html>
-  <body>
-    <div class="datatables html-widget html-fill-item" id="htmlwidget-6d4d7b7c68a4ade4ee7b" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-6d4d7b7c68a4ade4ee7b">{"x":{"filter":"none","vertical":false,"data":[["Low","Moderate","High"],[327,351,321],["32.73%","35.14%","32.13%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Stress level<\/th>\n      <th>Count<\/th>\n      <th>Percentage<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","searching":false,"pageLength":10,"columnDefs":[{"className":"dt-right","targets":1},{"name":"Stress level","targets":0},{"name":"Count","targets":1},{"name":"Percentage","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
-  </body>
-</html>
-
-
-  <body>
-    <div class="datatables html-widget html-fill-item" id="htmlwidget-66c9417ffe55bc7aa3c1" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-66c9417ffe55bc7aa3c1">{"x":{"filter":"none","vertical":false,"data":[["No","Yes"],[507,492],["50.75%","49.25%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Practices poor hair care habits<\/th>\n      <th>Count<\/th>\n      <th>Percentage<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","searching":false,"pageLength":10,"columnDefs":[{"className":"dt-right","targets":1},{"name":"Practices poor hair care habits","targets":0},{"name":"Count","targets":1},{"name":"Percentage","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
-  </body>
-</html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table border="1" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr>
-      <th>Feature</th>
-      <th>CI</th>
-      <th>MeanDecreaseAccuracy</th>
-      <th>MeanDecreaseGini</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>Age</td><td>92.25</td><td>6.88</td><td>51.09</td></tr>
-    <tr><td>Stress.L</td><td>59.76</td><td>8.13</td><td>13.85</td></tr>
-    <tr><td>Smoking</td><td>41.88</td><td>5.99</td><td>9.57</td></tr>
-    <tr><td>MedicationsTreatmentsImmunomodulators</td><td>30.67</td><td>4.8</td><td>6.06</td></tr>
-    <tr><td>EnvironmentalFactors</td><td>28.89</td><td>3.78</td><td>10.25</td></tr>
-    <tr><td>NutritionalDeficienciesZincDeficiency</td><td>27.78</td><td>4.11</td><td>7.33</td></tr>
-    <tr><td>NutritionalDeficienciesProteindeficiency</td><td>25.19</td><td>3.89</td><td>6.17</td></tr>
-    <tr><td>MedicalConditionsPsoriasis</td><td>21.5</td><td>3.29</td><td>6.2</td></tr>
-    <tr><td>Stress.Q</td><td>19.94</td><td>2.82</td><td>7.46</td></tr>
-    <tr><td>HormonalChanges</td><td>19.27</td><td>2.35</td><td>9.52</td></tr>
-    <tr><td>WeightLoss</td><td>18.66</td><td>2.27</td><td>9.42</td></tr>
-    <tr><td>MedicationsTreatmentsRogaine</td><td>16.48</td><td>2.46</td><td>6.3</td></tr>
-    <tr><td>MedicalConditionsAlopeciaAreata</td><td>16.43</td><td>2.49</td><td>6.09</td></tr>
-    <tr><td>MedicationsTreatmentsChemotherapy</td><td>12.29</td><td>1.93</td><td>5.47</td></tr>
-    <tr><td>NutritionalDeficienciesMagnesiumdeficiency</td><td>11.57</td><td>1.9</td><td>4.97</td></tr>
-    <tr><td>MedicationsTreatmentsAntidepressants</td><td>11.3</td><td>1.69</td><td>5.94</td></tr>
-    <tr><td>MedicalConditionsScalpInfection</td><td>7.73</td><td>1.17</td><td>5.65</td></tr>
-    <tr><td>MedicationsTreatmentsSteroids</td><td>6.52</td><td>0.93</td><td>5.88</td></tr>
-    <tr><td>Genetics</td><td>5.93</td><td>0.41</td><td>8.31</td></tr>
-    <tr><td>NutritionalDeficienciesOmega3fattyacids</td><td>3.38</td><td>0.49</td><td>5.49</td></tr>
-    <tr><td>MedicationsTreatmentsBloodPressureMedication</td><td>2.99</td><td>0.51</td><td>5.01</td></tr>
-    <tr><td>MedicalConditionsDermatosis</td><td>1.58</td><td>0.2</td><td>5.49</td></tr>
-    <tr><td>NutritionalDeficienciesVitaminDDeficiency</td><td>1.47</td><td>0.23</td><td>5.24</td></tr>
-    <tr><td>NutritionalDeficienciesSeleniumdeficiency</td><td>0</td><td>0.06</td><td>4.82</td></tr>
-  </tbody>
-</table>
+<!-- ### 6.2. Tables
+#### 6.2.1. Summary Statistics by Factor -->
