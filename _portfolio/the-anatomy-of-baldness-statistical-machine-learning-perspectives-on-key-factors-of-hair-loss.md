@@ -3,7 +3,7 @@ title: 'The Anatomy of Baldness: Statistical and Machine Learning Perspectives o
 collection: portfolio
 permalink: /portfolio/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss
 date: 2024-11-29
-last_updated: 2025-10-02
+last_updated: 2025-10-05
 excerpt: 'In this [Crack the Code of Hair Loss](https://www.datacamp.com/competitions/why-hair-loss?entry=05f354fb-dd89-4631-a682-00499eab8fb2) first-place entry, survey responses from 999 patients were analyzed to identify factors contributing to hair loss. The report integrates association measures, machine learning models, and feature importance analysis to uncover links between baldness and age, medical history, stress, and lifestyle, offering actionable insights for health management and medical intervention.'
 venue: 'DataCamp'
 categories:
@@ -59,7 +59,19 @@ library(scales)
 library(readr)
 library(DT)
 library(ggthemes)
+library(rcompanion)
+library(statpsych)
+library(pROC)
 library(moments)
+
+library(caret)
+library(cluster)
+library(dendextend)
+library(gridExtra)
+library(grid)
+library(fpc)
+library(reshape2)
+library(randomForest)
 ```
 See [Appendix](#appendix-functions) for a comprehensive list of the functions used.
 
@@ -102,102 +114,13 @@ data1 <- read_csv("data/Predict Hair Fall.csv", show_col_types=FALSE)
 summarize_variable(slice(data, 1:5), dom="t")		  
 ```
 
-<table border="1" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr>
-      <th>Id</th>
-      <th>Genetics</th>
-      <th>Hormonal Changes</th>
-      <th>Medical Conditions</th>
-      <th>Medications & Treatments</th>
-      <th>Nutritional Deficiencies</th>
-      <th>Stress</th>
-      <th>Age</th>
-      <th>Poor Hair Care Habits</th>
-      <th>Environmental Factors</th>
-      <th>Smoking</th>
-      <th>Weight Loss</th>
-      <th>Hair Loss</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>133992</td>
-      <td>Yes</td>
-      <td>No</td>
-      <td>No Data</td>
-      <td>No Data</td>
-      <td>Magnesium deficiency</td>
-      <td>Moderate</td>
-      <td>19</td>
-      <td>Yes</td>
-      <td>Yes</td>
-      <td>No</td>
-      <td>No</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>148393</td>
-      <td>No</td>
-      <td>No</td>
-      <td>Eczema</td>
-      <td>Antibiotics</td>
-      <td>Magnesium deficiency</td>
-      <td>High</td>
-      <td>43</td>
-      <td>Yes</td>
-      <td>Yes</td>
-      <td>No</td>
-      <td>No</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>155074</td>
-      <td>No</td>
-      <td>No</td>
-      <td>Dermatosis</td>
-      <td>Antifungal Cream</td>
-      <td>Protein deficiency</td>
-      <td>Moderate</td>
-      <td>26</td>
-      <td>Yes</td>
-      <td>Yes</td>
-      <td>No</td>
-      <td>Yes</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>118261</td>
-      <td>Yes</td>
-      <td>Yes</td>
-      <td>Ringworm</td>
-      <td>Antibiotics</td>
-      <td>Biotin Deficiency</td>
-      <td>Moderate</td>
-      <td>46</td>
-      <td>Yes</td>
-      <td>Yes</td>
-      <td>No</td>
-      <td>No</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>111915</td>
-      <td>No</td>
-      <td>No</td>
-      <td>Psoriasis</td>
-      <td>Accutane</td>
-      <td>Iron deficiency</td>
-      <td>Moderate</td>
-      <td>30</td>
-      <td>No</td>
-      <td>Yes</td>
-      <td>Yes</td>
-      <td>No</td>
-      <td>1</td>
-    </tr>
-  </tbody>
-</table>
+| Id      | Genetics | Hormonal Changes | Medical Conditions | Medications & Treatments | Nutritional Deficiencies | Stress   | Age | Poor Hair Care Habits | Environmental Factors | Smoking | Weight Loss | Hair Loss |
+|----------|-----------|------------------|--------------------|---------------------------|----------------------------|-----------|-----|------------------------|------------------------|----------|--------------|------------|
+| 133992   | Yes       | No               | No Data            | No Data                   | Magnesium deficiency        | Moderate  | 19  | Yes                    | Yes                    | No       | No           | 0          |
+| 148393   | No        | No               | Eczema             | Antibiotics               | Magnesium deficiency        | High      | 43  | Yes                    | Yes                    | No       | No           | 0          |
+| 155074   | No        | No               | Dermatosis         | Antifungal Cream           | Protein deficiency          | Moderate  | 26  | Yes                    | Yes                    | No       | Yes          | 0          |
+| 118261   | Yes       | Yes              | Ringworm           | Antibiotics               | Biotin Deficiency           | Moderate  | 46  | Yes                    | Yes                    | No       | No           | 0          |
+| 111915   | No        | No               | Psoriasis          | Accutane                  | Iron deficiency             | Moderate  | 30  | No                     | Yes                    | Yes      | No           | 1          |
 
 ## 2. Descriptive Analysis  
 This section provides an overview of the characteristics of the surveyed individuals using summary statistics, focusing on age, medical history, stress, and lifestyle factors.  
@@ -309,7 +232,6 @@ This report defines an individual’s medical history as their medical backgroun
 - **Genetics:** A total of 52.25% of respondents reported having a family history of baldness.  
 - **Hormonal Changes:** Approximately 51% of respondents have experienced hormonal changes.  
 - **Medical Conditions:** Among the 889 individuals with recorded medical conditions potentially leading to baldness, alopecia areata is the most common, affecting 12.04% of the group. It is followed by psoriasis (11.25%), thyroid problems (11.14%), and androgenetic alopecia (11.02%). Dermatitis (10.35%) also ranks highly, rounding out the top five conditions.
-- **Nutritional Deficiencies:** Most of the documented 919 individuals with nutritional deficiencies that may contribute to hair loss are zinc deficient (11.75%). Vitamin D deficiency follows closely at 11.32%, while both Biotin and vitamin A deficiencies impact 10.77% each. The deficiency of omega-3 fatty acids completes the top five, affecting 10.01% of the group.
 
 ```R
 # Tabularize summary statistics of Medical Conditions
@@ -317,139 +239,66 @@ summarize_variable(
   data = data %>% rename(`Medical condition that may lead to baldness` = `Medical Conditions`),
   variable = "Medical condition that may lead to baldness"
 )
+```
 
+| Medical condition that may lead to baldness | Count | Percentage  |
+|---------------------------------------------|-------|-------------|
+| Alopecia Areata                             | 107   | 12.04%      |
+| Psoriasis                                   | 100   | 11.25%      |
+| Thyroid Problems                            | 99    | 11.14%      |
+| Androgenetic Alopecia                       | 98    | 11.02%      |
+| Dermatitis                                  | 92    | 10.35%      |
+| Dermatosis                                  | 88    | 9.90%       |
+| Seborrheic Dermatitis                       | 88    | 9.90%       |
+| Scalp Infection                             | 79    | 8.89%       |
+| Eczema                                      | 69    | 7.76%       |
+| Ringworm                                    | 69    | 7.76%       |
+
+- **Medications & Treatments:** **Rogaine** is the most commonly used medication or treatment associated with hair loss among the respondents, with 11.63% reporting its use. It is followed by antidepressants (11.03%), steroids (10.73%), heart medication (10.43%), and Accutane (10.23%).
+
+```R
 # Tabularize summary statistics of Nutritional Deficiencies
 summarize_variable(
   data %>% rename(`Nutritional deficiency that may contribute to hair loss` = `Nutritional Deficiencies`),
-  variable = "Nutritional deficiency that may contribute to hair loss",
-  dom = "tip",
-  pageLength = 5
+  variable = "Nutritional deficiency that may contribute to hair loss"
 )
 ```
 
-<table border="1" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr>
-      <th>Medical condition that may lead to baldness</th>
-      <th>Count</th>
-      <th>Percentage</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Alopecia Areata</td>
-      <td>107</td>
-      <td>12.04%</td>
-    </tr>
-    <tr>
-      <td>Psoriasis</td>
-      <td>100</td>
-      <td>11.25%</td>
-    </tr>
-    <tr>
-      <td>Thyroid Problems</td>
-      <td>99</td>
-      <td>11.14%</td>
-    </tr>
-    <tr>
-      <td>Androgenetic Alopecia</td>
-      <td>98</td>
-      <td>11.02%</td>
-    </tr>
-    <tr>
-      <td>Dermatitis</td>
-      <td>92</td>
-      <td>10.35%</td>
-    </tr>
-    <tr>
-      <td>Dermatosis</td>
-      <td>88</td>
-      <td>9.90%</td>
-    </tr>
-    <tr>
-      <td>Seborrheic Dermatitis</td>
-      <td>88</td>
-      <td>9.90%</td>
-    </tr>
-    <tr>
-      <td>Scalp Infection</td>
-      <td>79</td>
-      <td>8.89%</td>
-    </tr>
-    <tr>
-      <td>Eczema</td>
-      <td>69</td>
-      <td>7.76%</td>
-    </tr>
-    <tr>
-      <td>Ringworm</td>
-      <td>69</td>
-      <td>7.76%</td>
-    </tr>
-  </tbody>
-</table>
+| Medication or treatment that may cause hair loss | Count  | Percentage  |
+|--------------------------------------------------|:------:|:-----------:|
+| Rogaine                                          | 116    | 11.63%      |
+| Antidepressants                                  | 110    | 11.03%      |
+| Steroids                                         | 107    | 10.73%      |
+| Heart Medication                                 | 104    | 10.43%      |
+| Accutane                                         | 102    | 10.23%      |
+| Antibiotics                                      | 94     | 9.43%       |
+| Antifungal Cream                                 | 94     | 9.43%       |
+| Blood Pressure Medication                        | 90     | 9.03%       |
+| Chemotherapy                                     | 90     | 9.03%       |
+| Immunomodulators                                 | 90     | 9.03%       |
 
-<table border="1" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr>
-      <th>Medication or treatment that may cause hair loss</th>
-      <th>Count</th>
-      <th>Percentage</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Rogaine</td>
-      <td>116</td>
-      <td>11.63%</td>
-    </tr>
-    <tr>
-      <td>Antidepressants</td>
-      <td>110</td>
-      <td>11.03%</td>
-    </tr>
-    <tr>
-      <td>Steroids</td>
-      <td>107</td>
-      <td>10.73%</td>
-    </tr>
-    <tr>
-      <td>Heart Medication</td>
-      <td>104</td>
-      <td>10.43%</td>
-    </tr>
-    <tr>
-      <td>Accutane</td>
-      <td>102</td>
-      <td>10.23%</td>
-    </tr>
-    <tr>
-      <td>Antibiotics</td>
-      <td>94</td>
-      <td>9.43%</td>
-    </tr>
-    <tr>
-      <td>Antifungal Cream</td>
-      <td>94</td>
-      <td>9.43%</td>
-    </tr>
-    <tr>
-      <td>Blood Pressure Medication</td>
-      <td>90</td>
-      <td>9.03%</td>
-    </tr>
-    <tr>
-      <td>Chemotherapy</td>
-      <td>90</td>
-      <td>9.03%</td>
-    </tr>
-    <tr>
-      <td>Immunomodulators</td>
-      <td>90</td>
-      <td>9.03%</td>
-    </tr>
-  </tbody>
-</table>
+- **Nutritional Deficiencies:** Most of the documented 919 individuals with nutritional deficiencies that may contribute to hair loss are zinc deficient (11.75%). Vitamin D deficiency follows closely at 11.32%, while both Biotin and vitamin A deficiencies impact 10.77% each. The deficiency of omega-3 fatty acids completes the top five, affecting 10.01% of the group.
+
+```R
+# Tabularize summary statistics of Nutritional Deficiencies
+summarize_variable(
+  data %>% rename(`Nutritional deficiency that may contribute to hair loss` = `Nutritional Deficiencies`),
+  variable = "Nutritional deficiency that may contribute to hair loss"
+)
+```
+
+| Nutritional deficiency that may contribute to hair loss  | Count  | Percentage  |
+|----------------------------------------------------------|:------:|:-----------:|
+| Zinc Deficiency                                          | 108    | 11.75%      |
+| Vitamin D Deficiency                                     | 104    | 11.32%      |
+| Biotin Deficiency                                        | 99     | 10.77%      |
+| Vitamin A Deficiency                                     | 99     | 10.77%      |
+| Omega-3 fatty acids                                      | 92     | 10.01%      |
+| Protein deficiency                                       | 90     | 9.79%       |
+| Magnesium deficiency                                     | 84     | 9.14%       |
+| Vitamin E deficiency                                     | 83     | 9.03%       |
+| Selenium deficiency                                      | 82     | 8.92%       |
+| Iron deficiency                                          | 78     | 8.49%       |
 
 ### 2.3. Stress  
 
@@ -565,19 +414,19 @@ The pie graph in Figure 2 illustrates that baldness affects nearly half of the r
 
 Below is a table presenting each factor, its levels of measurement, and the corresponding statistical methods applied for the analysis:  
 
-| Variable | Level of measurement | Measure of association |
-|:---------|:---------------------|:-----------------------|
-|Age|	Continuous|	Point-biserial correlation|
-|Stress|	Ordinal|	Rank-biserial correlation|
-|Medical Conditions|	Nominal (>2 categories)|	Cramer's V|
-|Medications & Treatments|	Nominal (>2 categories)|	Cramer's V|
-|Nutritional Deficiencies|	Nominal (>2 categories)|	Cramer's V|
-|Genetics|	Nominal (binary)|	Phi (φ) coefficient|
-|Hormonal Changes|Nominal (binary)	|Phi (φ) coefficient|
-|Poor Hair Care Habits|	Nominal (binary)|	Phi (φ) coefficient|
-|Environmental Factors|	Nominal (binary)|	Phi (φ) coefficient|
-|Smoking|	Nominal (binary)|	Phi (φ) coefficient|
-|Weight Loss|	Nominal (binary)|	Phi (φ) coefficient|
+| Variable                  | Level of measurement       | Measure of association        |
+|:--------------------------|:---------------------------|:------------------------------|
+| Age                       | Continuous                 | Point-biserial correlation    |
+| Stress                    | Ordinal                    | Rank-biserial correlation     |
+| Medical Conditions        | Nominal (>2 categories)    | Cramer's V                    |
+| Medications & Treatments  | Nominal (>2 categories)    | Cramer's V                    |
+| Nutritional Deficiencies  | Nominal (>2 categories)    | Cramer's V                    |
+| Genetics                  | Nominal (binary)           | Phi (φ) coefficient           |
+| Hormonal Changes          | Nominal (binary)           | Phi (φ) coefficient           |
+| Poor Hair Care Habits     | Nominal (binary)           | Phi (φ) coefficient           |
+| Environmental Factors     | Nominal (binary)           | Phi (φ) coefficient           |
+| Smoking                   | Nominal (binary)           | Phi (φ) coefficient           |
+| Weight Loss               | Nominal (binary)           | Phi (φ) coefficient           |
 
 ### 3.1. Biserial Correlation
 
@@ -835,7 +684,7 @@ age_hair_loss_treemap <- plot_ly(
 ) %>%
   layout(
     title = list(
-      text = "<br><b>𝗙𝗜𝗚. 𝟰: 𝗧𝗥𝗘𝗘 𝗠𝗔𝗣 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗔𝗚𝗘 𝗚𝗥𝗢𝗨𝗣 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      text = "<br><b>𝗙𝗜𝗚. 𝟰﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗔𝗚𝗘 𝗚𝗥𝗢𝗨𝗣 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
       font = list(size = 18)
     ),
     paper_bgcolor = "#D5E4EB",
@@ -883,7 +732,7 @@ age_hair_loss_treemap <- plot_ly(
   ],
   "layout": {
     "title": {
-      "text": "<br><b>𝗙𝗜𝗚. 𝟰: 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦 𝗕𝗬 𝗔𝗚𝗘 𝗚𝗥𝗢𝗨𝗣 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "text": "<br><b>𝗙𝗜𝗚. 𝟰﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗔𝗚𝗘 𝗚𝗥𝗢𝗨𝗣 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
       "font": { "size": 18 },
     "x": 0.5,
     "xanchor": "center"
@@ -908,28 +757,9 @@ summarize_variable(age_rpb[, c(1, 3:4, 7, 5, 6)] %>% column_to_rownames("x"), ro
 )
 ```
 
-<table border="1" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr>
-      <th> </th>
-      <th>X1</th>
-      <th>X0</th>
-      <th>Method</th>
-      <th>Correlation coefficient</th>
-      <th>95% CI</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Age</td>
-      <td>33.60</td>
-      <td>34.77</td>
-      <td>Point-biserial</td>
-      <td>-0.06</td>
-      <td>[-0.12, -4.59e-04]</td>
-    </tr>
-  </tbody>
-</table>
+|                 |   X1   |   X0   | Method          | Correlation coefficient | 95% CI               |
+|-----------------|:------:|:------:|:----------------|:-----------------------:|:---------------------|
+| **Age**         | 33.60  | 34.77  | Point-biserial  | -0.06                   | [-0.12, -4.59e-04]   |
 
 Based on the results of a point-biserial correlation, the relationship between age and baldness is found to be inverse, as indicated by the negative coefficient. This means that as age increases, there is a slight tendency for baldness to occur less frequently. However, the coefficient of -0.06 is close to 0, which translates to a very weak relationship. This suggests that age alone does not strongly influence the likelihood of hair loss in this dataset.
 
@@ -996,7 +826,7 @@ stress_hair_loss_treemap <- plot_ly(
 ) %>%
   layout(
     title = list(
-      text="<br><b>𝗙𝗜𝗚. 𝟱﹕𝗧𝗥𝗘𝗘𝗠𝗔𝗣 𝗢𝗙 𝗧𝗛𝗘 𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗦𝗧𝗥𝗘𝗦𝗦 𝗟𝗘𝗩𝗘𝗟 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      text="<br><b>𝗙𝗜𝗚. 𝟱﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗦𝗧𝗥𝗘𝗦𝗦 𝗟𝗘𝗩𝗘𝗟 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
       font = list(size=18)
     ),
     paper_bgcolor="#D5E4EB",
@@ -1037,12 +867,12 @@ stress_hair_loss_treemap <- plot_ly(
       },
       "hoverinfo": "text",
       "hovertext": [
-        "<b>Percentage:</b> 7.04%<br><b>Count:</b> 25",
-        "<b>Percentage:</b> 14.08%<br><b>Count:</b> 50",
-        "<b>Percentage:</b> 9.86%<br><b>Count:</b> 35",
-        "<b>Percentage:</b> 19.72%<br><b>Count:</b> 70",
-        "<b>Percentage:</b> 33.80%<br><b>Count:</b> 120",
-        "<b>Percentage:</b> 25.35%<br><b>Count:</b> 90"
+        "<b>Percentage:</b> 15.92%<br><b>Count:</b> 159",
+        "<b>Percentage:</b> 18.22%<br><b>Count:</b> 182",
+        "<b>Percentage:</b> 15.62%<br><b>Count:</b> 156",
+        "<b>Percentage:</b> 16.82%<br><b>Count:</b> 168",
+        "<b>Percentage:</b> 16.92%<br><b>Count:</b> 169",
+        "<b>Percentage:</b> 16.52%<br><b>Count:</b> 165"
       ],
       "textinfo": "label",
       "textposition": "middle center"
@@ -1050,14 +880,16 @@ stress_hair_loss_treemap <- plot_ly(
   ],
   "layout": {
     "title": {
-      "text": "<br><b>𝗙𝗜𝗚. 𝟱﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦 𝗕𝗬 𝗦𝗧𝗥𝗘𝗦𝗦 𝗟𝗘𝗩𝗘𝗟 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
-      "font": { "size": 16 }
+      "text": "<br><b>𝗙𝗜𝗚. 𝟱﹕𝗦𝗨𝗥𝗩𝗘𝗬𝗘𝗗 𝗜𝗡𝗗𝗜𝗩𝗜𝗗𝗨𝗔𝗟𝗦<br>𝗕𝗬 𝗦𝗧𝗥𝗘𝗦𝗦 𝗟𝗘𝗩𝗘𝗟 & 𝗛𝗔𝗜𝗥 𝗟𝗢𝗦𝗦 𝗢𝗨𝗧𝗖𝗢𝗠𝗘</b>",
+      "font": { "family": "ITC Officina Sans", "size": 18 },
+      "x": 0.5,
+      "xanchor": "center"
     },
     "paper_bgcolor": "#D5E4EB",
-    "margin": { "l": 30, "r": 30, "b": 25, "t": 45 }
+    "plot_bgcolor": "#D5E4EB",
+    "margin": { "l": 30, "r": 30, "b": 25, "t": 65 }
   }
 }
-
 ```
 
 <div style="margin: 16px 0 16px 0;">
@@ -1072,28 +904,9 @@ stress_rrb <- compute_rank_biserial(data, x = "Stress", y = "Hair Loss")
 summarize_variable(stress_rrb[, c(1, 3:4, 7, 5, 6)] %>% column_to_rownames("x"), rownames = TRUE)
 ```
 
-<table border="1" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr>
-      <th></th>
-      <th>R1</th>
-      <th>R0</th>
-      <th>Method</th>
-      <th>Correlation coefficient</th>
-      <th>95% CI</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Stress</td>
-      <td>500.01</td>
-      <td>499.99</td>
-      <td>Rank-biserial</td>
-      <td>4.81e-05</td>
-      <td>[-0.07, 0.06]</td>
-    </tr>
-  </tbody>
-</table>
+| Variable  | R1     | R0     | Method        | Correlation coefficient | 95% CI        |
+|:----------|:-------|:-------|:--------------|:------------------------|:--------------|
+| Stress    | 500.01 | 499.99 | Rank-biserial | 4.81e-05                | [-0.07, 0.07] |
 
 As expected, the rank-biserial correlation results confirm a negligible association (4.81e-05) between stress and baldness, indicating that stress alone does not significantly influence the outcome of hair loss.
 
@@ -1441,134 +1254,6 @@ create_stackbar_plot1(
 Magnesium deficiency is more prevalent among individuals with baldness, while omega-3 fatty acids and vitamin E deficiencies skew toward the no-baldness group. Otherwise, the differences across factors are generally small. The table below illustrates the results of calculating Cramér's V, along with observation and category counts, Chi-square statistics, and 95% confidence intervals.
 </div>
 
-```R
-## Compute Cramer's V
-# Between Medical Conditions and Hair Loss
-med_cons_cramers <- compute_cramersV(
-  subset(data1, `Medical Conditions` != "No Data"), 
-  x = "Medical Conditions", 
-  y = "Hair Loss"
-)
-
-# Between Hormonal Changes and Hair Loss
-meds_cramers <- compute_cramersV(
-  subset(data1, `Medications & Treatments` != "No Data"), 
-  x = "Medications & Treatments", 
-  y = "Hair Loss"
-)
-
-# Between Poor Hair Care Habits and Hair Loss
-nutri_defs_cramers <- compute_cramersV(
-  subset(data1, `Nutritional Deficiencies` != "No Data"), 
-  x = "Nutritional Deficiencies", 
-  y = "Hair Loss"
-)
-
-# Tabularize results
-summarize_variable(
-  bind_rows(med_cons_cramers, meds_cramers, nutri_defs_cramers) %>%
-    select(-y) %>%
-    column_to_rownames("x"),
-  rownames = TRUE
-)
-```
-
-<table border="1" style="border-collapse: collapse; width:100%;">
-  <thead>
-    <tr>
-      <th> </th>
-      <th>n</th>
-      <th>r, c</th>
-      <th>Chi-square statistic</th>
-      <th>Cramer's V</th>
-      <th>95% CI</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Medical Conditions</td>
-      <td>889</td>
-      <td>10, 2</td>
-      <td>7.37</td>
-      <td>0.09</td>
-      <td>[0.08, 0.19]</td>
-    </tr>
-    <tr>
-      <td>Medications &amp; Treatments</td>
-      <td>997</td>
-      <td>10, 2</td>
-      <td>3.68</td>
-      <td>0.06</td>
-      <td>[0.06, 0.16]</td>
-    </tr>
-    <tr>
-      <td>Nutritional Deficiencies</td>
-      <td>919</td>
-      <td>10, 2</td>
-      <td>3.16</td>
-      <td>0.06</td>
-      <td>[0.06, 0.17]</td>
-    </tr>
-  </tbody>
-</table>
-
-While these factors show some level of association with hair loss, the relationships are generally weak as indicated by the small Cramer's V values (0.06–0.09).
-
-### 3.3. Phi Coefficient
-
-For hair loss factors indicating specific characteristics using "Yes/No" responses (e.g., genetics, hormonal changes, poor hair care habits, environmental factors, smoking, and weight loss), the phi coefficient examines binary-to-binary relationships with hair loss. The formula is:
-
-<div align="center">
-    
-$$ \phi = \frac{ad - bc}{\sqrt{(a + b)(c + d)(a + c)(b + d)}} $$
-
-</div>
-
-```R
-## Compute Cramer's V
-
-# Between Medical Conditions and Hair Loss
-med_cons_cramers <- compute_cramersV(
-  subset(data1, `Medical Conditions` != "No Data"), 
-  x = "Medical Conditions", 
-  y = "Hair Loss"
-)
-
-# Between Hormonal Changes and Hair Loss
-meds_cramers <- compute_cramersV(
-  subset(data1, `Medications & Treatments` != "No Data"), 
-  x = "Medications & Treatments", 
-  y = "Hair Loss"
-)
-
-# Between Poor Hair Care Habits and Hair Loss
-nutri_defs_cramers <- compute_cramersV(
-  subset(data1, `Nutritional Deficiencies` != "No Data"), 
-  x = "Nutritional Deficiencies", 
-  y = "Hair Loss"
-)
-
-# Tabularize results
-summarize_variable(
-  bind_rows(med_cons_cramers, meds_cramers, nutri_defs_cramers) %>%
-    select(-y) %>%
-    column_to_rownames("x"),
-  rownames = TRUE
-)
-```
-
-While these factors show some level of association with hair loss, the relationships are generally weak as indicated by the small Cramer's V values (0.06–0.09).
-
-### 3.3. Phi Coefficient
-
-For hair loss factors indicating specific characteristics using "Yes/No" responses (e.g., genetics, hormonal changes, poor hair care habits, environmental factors, smoking, and weight loss), the phi coefficient examines binary-to-binary relationships with hair loss. The formula is:
-
-<div align="center">
-    
-$$ \phi = \frac{ad - bc}{\sqrt{(a + b)(c + d)(a + c)(b + d)}} $$
-
-</div>
-
 where $$a$$,$$b$$,$$c$$, and $$d$$ represent the counts in the contingency table as shown below:
 
 |       | With baldness<br>(Hair Loss = $$1$$) | Without baldness<br>(Hair Loss = $$0$$) |
@@ -1880,54 +1565,14 @@ summarize_variable(
 )
 ```
 
-<table border="1" style="border-collapse: collapse; width:100%;">
-  <thead>
-    <tr>
-      <th>Factor</th>
-      <th>a, b, c, d</th>
-      <th>Phi coefficient</th>
-      <th>95% CI</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Genetics</td>
-      <td>270, 252, 227, 250</td>
-      <td>0.04</td>
-      <td>[-0.02, 0.1]</td>
-    </tr>
-    <tr>
-      <td>Hormonal Changes</td>
-      <td>255, 254, 242, 248</td>
-      <td>7.1e-03</td>
-      <td>[-0.05, 0.07]</td>
-    </tr>
-    <tr>
-      <td>Poor Hair Care Habits</td>
-      <td>235, 257, 262, 245</td>
-      <td>-0.04</td>
-      <td>[-0.1, 0.02]</td>
-    </tr>
-    <tr>
-      <td>Environmental Factors</td>
-      <td>248, 260, 249, 242</td>
-      <td>-0.02</td>
-      <td>[-0.08, 0.04]</td>
-    </tr>
-    <tr>
-      <td>Smoking</td>
-      <td>244, 275, 253, 227</td>
-      <td>-0.06</td>
-      <td>[-0.12, 0.01]</td>
-    </tr>
-    <tr>
-      <td>Weight Loss</td>
-      <td>246, 226, 251, 276</td>
-      <td>0.04</td>
-      <td>[-0.02, 0.11]</td>
-    </tr>
-  </tbody>
-</table>
+| Factor                 | a, b, c, d             | Phi coefficient | 95% CI            |
+|------------------------|------------------------|:----------------:|:----------------:|
+| Genetics               | 270, 252, 227, 250     | 0.04             | [-0.02, 0.1]     |
+| Hormonal Changes       | 255, 254, 242, 248     | 7.1e-03          | [-0.05, 0.07]    |
+| Poor Hair Care Habits  | 235, 257, 262, 245     | -0.04            | [-0.1, 0.02]     |
+| Environmental Factors  | 248, 260, 249, 242     | -0.02            | [-0.08, 0.04]    |
+| Smoking                | 244, 275, 253, 227     | -0.06            | [-0.12, 0.01]    |
+| Weight Loss            | 246, 226, 251, 276     | 0.04             | [-0.02, 0.11]    |
 
 The results suggest that hormonal changes have a negligible positive association with hair loss. In contrast, Genetics and Weight Loss show a weak positive relationship, while Poor Hair Care Habits, Environmental Factors, and Smoking exhibit a weak negative relationship with hair loss.
 
@@ -1973,12 +1618,6 @@ new_data <- new_data %>%
   ) %>%
   dplyr::select(HairLoss, everything()) %>%
   rename(NutritionalDeficienciesOmega3fattyacids = `NutritionalDeficienciesOmega-3fattyacids`) # Remove the special character in column name
-
-# List of required packages
-packages1 <- c("caret", "e1071", "nnet", "randomForest", "kernlab")
-
-# Install and load necessary packages
-invisible(lapply(packages1, install_if_missing))
 
 # Split the dataset into training and testing sets
 set.seed(123)
@@ -2041,44 +1680,11 @@ class_metrics <- rbind(
 summarize_variable(class_metrics, rownames = TRUE)
 ```
 
-<table border="1" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr>
-      <th>Model</th>
-      <th>AUC</th>
-      <th>Accuracy</th>
-      <th>Precision</th>
-      <th>Recall</th>
-      <th>F1 Score</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Logistic Regression</td>
-      <td>0.5436</td>
-      <td>0.5289</td>
-      <td>0.5273</td>
-      <td>0.4833</td>
-      <td>0.5043</td>
-    </tr>
-    <tr>
-      <td>SVM</td>
-      <td>0.5484</td>
-      <td>0.4545</td>
-      <td>0.4583</td>
-      <td>0.55</td>
-      <td>0.5</td>
-    </tr>
-    <tr>
-      <td>Random Forest</td>
-      <td>0.58</td>
-      <td>0.5868</td>
-      <td>0.5833</td>
-      <td>0.5833</td>
-      <td>0.5833</td>
-    </tr>
-  </tbody>
-</table>
+| Model              |   AUC  | Accuracy | Precision | Recall | F1 Score |
+|---------------------|:------:|:--------:|:----------:|:------:|:--------:|
+| Logistic Regression | 0.5436 | 0.5289   | 0.5273     | 0.4833 | 0.5043   |
+| SVM                 | 0.5484 | 0.4545   | 0.4583     | 0.5500 | 0.5000   |
+| Random Forest       | 0.5800 | 0.5868   | 0.5833     | 0.5833 | 0.5833   |
 
 - **Logistic Regression:** Achieves four metric values that exceed the 0.5 threshold, which may potentially be useful due to its simplicity and interpretability.
 - **Support Vector Machine (SVM):** Exhibits the lowest performance, with accuracy and precision falling below 0.5.
@@ -2091,15 +1697,6 @@ Clustering is utilized to identify potential groups of individuals with similar 
 
 
 ```R
-# Define the packages to be installed
-packages2 <- c(
-  "mvtnorm", "fpc", "mclust", "factoextra", "cluster", 
-  "cowplot", "ggdendro", "dendextend", "reshape2", "gridExtra", "grid"
-)
-
-# Install and load necessary packages
-invisible(lapply(packages2, install_if_missing))
-
 # Compute the dissimilarity matrix
 gower_dist <- daisy(new_data, metric = c("gower"))
 
@@ -2199,7 +1796,7 @@ elbow_plotly <- ggplotly(elbow_plot) %>%
     plot_bgcolor = "#D5E4EB",
     paper_bgcolor = "#D5E4EB",
     title = list(
-      text = "𝗙𝗜𝗚. 𝟭𝟭﹕𝗣𝗟𝗢𝗧 𝗢𝗙 𝗧𝗛𝗘 𝗢𝗣𝗧𝗜𝗠𝗔𝗟 𝗡𝗨𝗠𝗕𝗘𝗥 𝗢𝗙 𝗖𝗟𝗨𝗦𝗧𝗘𝗥𝗦 𝗨𝗦𝗜𝗡𝗚 𝗘𝗟𝗕𝗢𝗪 𝗠𝗘𝗧𝗛𝗢𝗗", 
+      text = "𝗙𝗜𝗚. 𝟭𝟮﹕𝗢𝗣𝗧𝗜𝗠𝗔𝗟 𝗡𝗨𝗠𝗕𝗘𝗥 𝗢𝗙 𝗖𝗟𝗨𝗦𝗧𝗘𝗥𝗦 𝗨𝗦𝗜𝗡𝗚 𝗘𝗟𝗕𝗢𝗪 𝗠𝗘𝗧𝗛𝗢𝗗", 
       font = list(family = "ITC Officina Sans", size = 18), 
       y = 0.93
     ),
@@ -2227,7 +1824,7 @@ sil_plotly <- ggplotly(sil_plot) %>%
     plot_bgcolor = "#D5E4EB",
     paper_bgcolor = "#D5E4EB",
     title = list(
-      text = "𝗙𝗜𝗚. 𝟭𝟮﹕𝗣𝗟𝗢𝗧 𝗢𝗙 𝗧𝗛𝗘 𝗢𝗣𝗧𝗜𝗠𝗔𝗟 𝗡𝗨𝗠𝗕𝗘𝗥 𝗢𝗙 𝗖𝗟𝗨𝗦𝗧𝗘𝗥𝗦 𝗨𝗦𝗜𝗡𝗚 𝗘𝗟𝗕𝗢𝗪 & 𝗦𝗜𝗟𝗛𝗢𝗨𝗘𝗧𝗧𝗘 𝗠𝗘𝗧𝗛𝗢𝗗𝗦", 
+      text = "<br><b>𝗙𝗜𝗚. 𝟭𝟮﹕𝗢𝗣𝗧𝗜𝗠𝗔𝗟 𝗡𝗨𝗠𝗕𝗘𝗥 𝗢𝗙 𝗖𝗟𝗨𝗦𝗧𝗘𝗥𝗦<br>𝗨𝗦𝗜𝗡𝗚 𝗘𝗟𝗕𝗢𝗪 & 𝗦𝗜𝗟𝗛𝗢𝗨𝗘𝗧𝗧𝗘 𝗠𝗘𝗧𝗛𝗢𝗗𝗦</b>", 
       font = list(family = "ITC Officina Sans", size = 18), 
       y = 0.93
     ),
@@ -2243,11 +1840,76 @@ combined_plotly <- subplot(
   titleY = TRUE, 
   margin = 0.04
 )
-
-combined_plotly
 ```
 
-**Elbow Plot:** This method, which analyzes the rate of decrease in the within-cluster sum of squares (WSS), identifies two clusters as the "elbow point." At this point, the rate of decrease significantly slows, suggesting that two clusters best capture the structure of the data.
+```plotly
+{
+  "data": [
+    {
+      "type": "scatter",
+      "mode": "lines+markers",
+      "x": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "y": [25.50, 24.90, 24.27, 23.81, 23.36, 22.80, 22.34, 21.79, 21.36],
+      "name": "Within sum of squares (WSS)",
+      "marker": {"color": "#FF6347", "size": 8},
+      "line": {"color": "#FF6347", "width": 2},
+      "hovertemplate": "<b>Cluster:</b> %{x}<br><b>Within sum of squares (WSS)</b> %{y}<extra></extra>"
+    },
+    {
+      "type": "scatter",
+      "mode": "lines+markers",
+      "x": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "y": [0.02, 0.01, 0.01, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00],
+      "xaxis": "x2",
+      "yaxis": "y2",
+      "name": "Average silhouette width",
+      "marker": {"color": "#4682B4", "size": 8},
+      "line": {"color": "#4682B4", "width": 2},
+      "hovertemplate": "<b>Cluster:</b> %{x}<br><b>Average silhouette width:</b> %{y}<extra></extra>"
+    }
+  ],
+  "layout": {
+    "grid": {"rows": 1, "columns": 2, "pattern": "independent"},
+    "plot_bgcolor": "#D5E4EB",
+    "paper_bgcolor": "#D5E4EB",
+    "title": {
+      "text": "<br><b>𝗙𝗜𝗚. 𝟭𝟮﹕𝗢𝗣𝗧𝗜𝗠𝗔𝗟 𝗡𝗨𝗠𝗕𝗘𝗥 𝗢𝗙 𝗖𝗟𝗨𝗦𝗧𝗘𝗥𝗦<br>𝗨𝗦𝗜𝗡𝗚 𝗘𝗟𝗕𝗢𝗪 & 𝗦𝗜𝗟𝗛𝗢𝗨𝗘𝗧𝗧𝗘 𝗠𝗘𝗧𝗛𝗢𝗗𝗦</b>",
+      "font": {"family": "ITC Officina Sans", "size": 18},
+      "x": 0.5,
+      "xanchor": "center",
+      "y": 0.93
+    },
+    "xaxis": {
+      "title": {"text": "Cluster number", "font": {"family": "ITC Officina Sans", "size": 13.5}},
+      "tickfont": {"family": "ITC Officina Sans", "size": 12.5}
+    },
+    "yaxis": {
+      "title": {"text": "Within sum of squares (WSS)", "font": {"family": "ITC Officina Sans", "size": 13.5}},
+      "tickfont": {"family": "ITC Officina Sans", "size": 12.5}
+    },
+    "xaxis2": {
+      "title": {"text": "Cluster number", "font": {"family": "ITC Officina Sans", "size": 13.5}},
+      "tickfont": {"family": "ITC Officina Sans", "size": 12.5},
+      "anchor": "y2",
+      "domain": [0.55, 1.0]
+    },
+    "yaxis2": {
+      "title": {"text": "Average silhouette width", "font": {"family": "ITC Officina Sans", "size": 13.5}},
+      "tickfont": {"family": "ITC Officina Sans", "size": 12.5},
+      "domain": [0, 1]
+    },
+    "hoverlabel": {"font": {"family": "ITC Officina Sans", "size": 15}},
+    "margin": {"t": 80, "l": 65, "r": 40, "b": 60},
+    "showlegend": false
+  }
+}
+```
+
+<div style="margin: 16px 0 16px 0;">
+
+<b>Elbow Plot:</b> This method, which analyzes the rate of decrease in the within-cluster sum of squares (WSS), identifies two clusters as the "elbow point." At this point, the rate of decrease significantly slows, suggesting that two clusters best capture the structure of the data.
+
+</div>
 
 **Silhouette Analysis:**
 - The silhouette width, which measures the quality of clustering, drops significantly after 2 clusters.
@@ -2277,26 +1939,9 @@ dendro_col <- as.dendrogram(aggl_clust_comp) %>%
   set("labels_colors", value = c("darkslategray")) %>%
   set("labels_cex", 0.2)
 
-# Dendrogram by color
-dendrogram <- ggplot(as.ggdend(dendro_col), theme = theme_minimal()) +
-  labs(
-    x = "Number of observations", 
-    y = "Height", 
-    title = "\n𝗙𝗜𝗚. 𝟭𝟯﹕ 𝗗𝗘𝗡𝗗𝗥𝗢𝗚𝗥𝗔𝗠 𝗢𝗙 𝗧𝗛𝗘 𝗧𝗪𝗢 𝗖𝗟𝗨𝗦𝗧𝗘𝗥𝗦"
-  ) +
-  theme(
-    plot.title = element_text(hjust = 0.5, family = "ITC Officina Sans", size = 15),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    axis.text.x = element_blank(),
-    axis.text.y = element_blank(),
-    axis.ticks = element_blank(),
-    plot.background = element_rect(fill = "#D5E4EB", color = NA)
-  )
-
 # Radial graph
 radial_graph <- ggplot(as.ggdend(dendro_col), labels = TRUE) + 
-  labs(title = "\n𝗙𝗜𝗚. 𝟭𝟯﹕ 𝗥𝗔𝗗𝗜𝗔𝗟 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗧𝗪𝗢 𝗖𝗟𝗨𝗦𝗧𝗘𝗥𝗦") +
+  labs(title = "<br>𝗙𝗜𝗚. 𝟭𝟯﹕ 𝗥𝗔𝗗𝗜𝗔𝗟 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗧𝗛𝗘 𝗧𝗪𝗢 𝗖𝗟𝗨𝗦𝗧𝗘𝗥𝗦") +
   scale_y_reverse(expand = c(0.2, 0)) +
   coord_polar(theta = "x") +
   theme(
@@ -2308,22 +1953,20 @@ radial_graph <- ggplot(as.ggdend(dendro_col), labels = TRUE) +
     axis.ticks = element_blank(),
     plot.background = element_rect(fill = "#D5E4EB", color = NA)
   )
-
-# radial_graph
-# ggsave("radial_graph.png", plot = radial_graph, width = 10, height = 10, dpi = 300)
 ```
 
 ![Radial Graph](/files/the-anatomy-of-baldness-statistical-machine-learning-perspectives-on-key-factors-of-hair-loss/images/radial_graph.png)
 
 Alternatively, the heatmap in Figure 14 visually represents relationships between the two identified clusters and various categorical features associated with hair loss. The intensity of the color gradient, ranging from white to dark orange, reflects the percentage of individuals with hair loss for each specific feature.
 
-
 ```R
 # Reshape data with cluster numbers to long format
-clust_long <- reshape2::melt(new_data1, 
-                             id.vars = c("Cluster", "Age", "HairLoss", "Stress"),
-                             variable.name = "Variable", 
-                             value.name = "Value")
+clust_long <- melt(
+  new_data1, 
+  id.vars = c("Cluster", "Age", "HairLoss", "Stress"),
+  variable.name = "Variable", 
+  value.name = "Value"
+)
 
 # Calculate counts and percentages for heatmap
 clust_long_summ <- clust_long %>%
@@ -2361,7 +2004,7 @@ clus_heatmap <- plot_ly(
   ) %>%
   layout(
     title = list(
-      text = "\n𝗙𝗜𝗚. 𝟭𝟰﹕𝗛𝗘𝗔𝗧𝗠𝗔𝗣 𝗢𝗙 𝗖𝗟𝗨𝗦𝗧𝗘𝗥 𝗩𝗦 𝗙𝗘𝗔𝗧𝗨𝗥𝗘",
+      text = "<br><b>𝗙𝗜𝗚. 𝟭𝟰﹕𝗖𝗟𝗨𝗦𝗧𝗘𝗥 𝗩𝗦. 𝗙𝗘𝗔𝗧𝗨𝗥𝗘</b>",
       font = list(size = 18)
     ),
     paper_bgcolor = "#D5E4EB",
@@ -2377,78 +2020,81 @@ clus_heatmap <- plot_ly(
   )
 ```
 
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<div id="clus_heatmap" style="width:100%; margin-bottom:1rem;"></div>
-<script>
-// Example data: replace with your actual summaries
-var clusters = ["1", "2"]; // Cluster labels on x-axis
-var variables = ["FeatureA", "FeatureB", "FeatureC", "FeatureD"]; // Feature labels on y-axis
-
-// Z-matrix: rows are variables (features), columns are clusters; percent values in decimals (e.g. 0.25 = 25%)
-var zData = [
-  [0.28, 0.19],
-  [0.18, 0.24],
-  [0.12, 0.08],
-  [0.33, 0.26]
-];
-
-// Generate hovertext matrix matching above dimensions
-var hovertext = [];
-for (var i = 0; i < variables.length; i++) {
-  hovertext[i] = [];
-  for (var j = 0; j < clusters.length; j++) {
-    hovertext[i][j] =
-      "<b>Cluster:</b> " + clusters[j] +
-      "<br><b>Feature:</b> " + variables[i] +
-      "<br><b>Percentage of individuals with feature and baldness:</b> " +
-      (zData[i][j]*100).toFixed(2) + "%";
+```plotly
+{
+  "data": [
+    {
+      "x": ["1", "2"],
+      "y": [
+        "Genetics", "HormonalChanges", "PoorHairCareHabits", "EnvironmentalFactors",
+        "Smoking", "WeightLoss", "MedicalConditionsAlopeciaAreata",
+        "MedicalConditionsAndrogeneticAlopecia", "MedicalConditionsDermatitis",
+        "MedicalConditionsDermatosis", "MedicalConditionsEczema",
+        "MedicalConditionsPsoriasis", "MedicalConditionsRingworm",
+        "MedicalConditionsScalpInfection", "MedicalConditionsSeborrheicDermatitis",
+        "MedicalConditionsThyroidProblems", "MedicationsTreatmentsAntibiotics",
+        "MedicationsTreatmentsAntidepressants", "MedicationsTreatmentsAntifungalCream",
+        "MedicationsTreatmentsBloodPressureMedication", "MedicationsTreatmentsChemotherapy",
+        "MedicationsTreatmentsHeartMedication", "MedicationsTreatmentsImmunomodulators",
+        "MedicationsTreatmentsRogaine", "MedicationsTreatmentsSteroids",
+        "NutritionalDeficienciesIrondeficiency", "NutritionalDeficienciesMagnesiumdeficiency",
+        "NutritionalDeficienciesOmega3fattyacids", "NutritionalDeficienciesProteindeficiency",
+        "NutritionalDeficienciesSeleniumdeficiency", "NutritionalDeficienciesVitaminADeficiency",
+        "NutritionalDeficienciesVitaminDDeficiency", "NutritionalDeficienciesVitaminEdeficiency",
+        "NutritionalDeficienciesZincDeficiency"
+      ],
+      "z": [
+        [0.4508, 0.6735], [0.4607, 0.5580], [0.4196, 0.5575], [0.4225, 0.6797],
+        [0.3694, 0.5950], [0.4167, 0.6726], [0.4565, 0.6923], [0.5472, 0.5556],
+        [0.4211, 0.5227], [0.2000, 0.6600], [0.3750, 0.6400], [0.5000, 0.5152],
+        [0.3902, 0.6316], [0.4667, 0.5000], [0.5143, 0.5909], [0.3594, 0.5926],
+        [0.4524, 0.6667], [0.3243, 0.6000], [0.4286, 0.5091], [0.5111, 0.4000],
+        [0.4412, 0.6471], [0.4667, 0.5789], [0.3750, 0.4615], [0.3455, 0.7174],
+        [0.4762, 0.7500], [0.5000, 0.6429], [0.5263, 0.6667], [0.3469, 0.6364],
+        [0.4000, 0.6923], [0.6154, 0.3448], [0.4444, 0.6216], [0.3636, 0.5410],
+        [0.3636, 0.6053], [0.2979, 0.6327]
+      ],
+      "type": "heatmap",
+      "colorscale": [
+        [0, "white"],
+        [1, "#FF6347"]
+      ],
+      "showscale": true,
+      "colorbar": {
+        "title": "Percentage",
+        "tickformat": ".0%",
+        "titlefont": {"family": "ITC Officina Sans", "size": 14},
+        "tickfont": {"family": "ITC Officina Sans", "size": 12}
+      },
+      "hovertemplate": "<b>Cluster:</b> %{x}<br><b>Feature:</b> %{y}<br><b>Percentage of individuals with feature and baldness:</b> %{z:.2%}<extra></extra>"
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "<br><b>𝗙𝗜𝗚. 𝟭𝟰﹕𝗖𝗟𝗨𝗦𝗧𝗘𝗥 𝗩𝗦. 𝗙𝗘𝗔𝗧𝗨𝗥𝗘</b>",
+      "font": {"family": "ITC Officina Sans", "size": 18},
+      "x": 0.5,
+      "xanchor": "center"
+    },
+    "xaxis": {
+      "title": {"text": "Cluster", "font": {"family": "ITC Officina Sans", "size": 18}},
+      "tickfont": {"family": "ITC Officina Sans"}
+    },
+    "yaxis": {
+      "title": {"text": "Feature", "font": {"family": "ITC Officina Sans", "size": 18}},
+      "tickfont": {"family": "ITC Officina Sans", "size": 10},
+      "automargin": true
+    },
+    "hoverlabel": {"font": {"family": "ITC Officina Sans", "size": 15}},
+    "plot_bgcolor": "#D5E4EB",
+    "paper_bgcolor": "#D5E4EB",
+    "margin": {"l": 120, "r": 30, "b": 25, "t": 70}
   }
 }
-
-var trace = {
-  x: clusters,
-  y: variables,
-  z: zData,
-  type: "heatmap",
-  colorscale: [
-    [0, 'white'],
-    [1, '#FF6347']
-  ],
-  text: hovertext,
-  hoverinfo: "text"
-};
-
-var layout = {
-  title: {
-    text: "<br><b>𝗙𝗜𝗚. 𝟭𝟰﹕𝗖𝗟𝗨𝗦𝗧𝗘𝗥 𝗩𝗦. 𝗙𝗘𝗔𝗧𝗨𝗥𝗘</b>",
-    font: { size: 18 }
-  },
-  xaxis: {
-    title: {
-      text: "<br>Cluster",
-      font: { family: "ITC Officina Sans", size: 18 }
-    },
-    tickfont: { family: "ITC Officina Sans" }
-  },
-  yaxis: {
-    title: {
-      text: "Feature",
-      font: { family: "ITC Officina Sans", size: 18 }
-    },
-    tickfont: { family: "ITC Officina Sans", size: 10 },
-    automargin: true
-  },
-  paper_bgcolor: "#D5E4EB",
-  margin: { l: 70, r: 30, b: 25, t: 70 }
-};
-
-Plotly.newPlot("clus_heatmap", [trace], layout, {responsive: true, displayModeBar: false});
-</script>
+```
 
 - Both clusters exhibit similar patterns for features associated with medical conditions, including scalp infection, psoriasis, and androgenetic alopecia, as well as hormonal changes and medications and treatments such as immunomodulators.
-
 - A notable difference emerges in the feature related to selenium deficiency, with Cluster 2 showing a significantly higher percentage compared to Cluster 1.
-
 - Overall, Cluster 2 shows higher percentages of individuals with both a specific feature and baldness compared to Cluster 1. This suggests stronger feature-related associations with hair loss in Cluster 2.
 
 ### 4.3. Importance Analysis
@@ -2502,7 +2148,7 @@ importance_plot_mda <- plot_ly(
   ) %>%
   layout(
     title = list(
-      text = "\n𝗙𝗜𝗚. 𝟭𝟱﹕𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗙𝗘𝗔𝗧𝗨𝗥𝗘 𝗜𝗠𝗣𝗢𝗥𝗧𝗔𝗡𝗖𝗘 𝗕𝗬 𝗠𝗘𝗔𝗡 𝗗𝗘𝗖𝗥𝗘𝗔𝗦𝗘 𝗔𝗖𝗖𝗨𝗥𝗔𝗖𝗬",
+      text = "<br><b>𝗙𝗜𝗚. 𝟭𝟱﹕𝗙𝗘𝗔𝗧𝗨𝗥𝗘 𝗜𝗠𝗣𝗢𝗥𝗧𝗔𝗡𝗖𝗘 𝗕𝗬 𝗠𝗘𝗔𝗡 𝗗𝗘𝗖𝗥𝗘𝗔𝗦𝗘 𝗔𝗖𝗖𝗨𝗥𝗔𝗖𝗬</b>",
       font = list(size = 18)
     ),
     paper_bgcolor = "#D5E4EB",
@@ -2519,12 +2165,95 @@ importance_plot_mda <- plot_ly(
   )
 ```
 
+```plotly
+{
+  "data": [
+    {
+      "type": "bar",
+      "orientation": "h",
+      "x": [
+        0.410533117,
+        0.5125133257,
+        0.9303964862,
+        1.165859495,
+        1.692938138,
+        1.90421985,
+        1.932613685,
+        2.273669871,
+        2.354332772,
+        2.464625269,
+        2.492441677,
+        2.820749482,
+        3.292914027,
+        3.777786437,
+        3.893870349,
+        4.108564852,
+        4.79762658,
+        5.99272817,
+        6.881902389,
+        8.132302347
+      ],
+      "y": [
+        "Genetics",
+        "MedicationsTreatmentsBloodPressureMedication",
+        "MedicationsTreatmentsSteroids",
+        "MedicalConditionsScalpInfection",
+        "MedicationsTreatmentsAntidepressants",
+        "NutritionalDeficienciesMagnesiumdeficiency",
+        "MedicationsTreatmentsChemotherapy",
+        "WeightLoss",
+        "HormonalChanges",
+        "MedicationsTreatmentsRogaine",
+        "MedicalConditionsAlopeciaAreata",
+        "Stress.Q",
+        "MedicalConditionsPsoriasis",
+        "EnvironmentalFactors",
+        "NutritionalDeficienciesProteindeficiency",
+        "NutritionalDeficienciesZincDeficiency",
+        "MedicationsTreatmentsImmunomodulators",
+        "Smoking",
+        "Age",
+        "Stress.L"
+      ],
+      "marker": {
+        "color": "#005289"
+      },
+      "hovertemplate": "(%{x:.4f}, %{y})<extra></extra>"
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "<br><b>𝗙𝗜𝗚. 𝟭𝟱﹕𝗙𝗘𝗔𝗧𝗨𝗥𝗘 𝗜𝗠𝗣𝗢𝗥𝗧𝗔𝗡𝗖𝗘 𝗕𝗬 𝗠𝗘𝗔𝗡 𝗗𝗘𝗖𝗥𝗘𝗔𝗦𝗘 𝗔𝗖𝗖𝗨𝗥𝗔𝗖𝗬</b>",
+      "font": {
+        "family": "ITC Officina Sans",
+        "size": 18
+      },
+      "x": 0.5,
+      "xanchor": "center"
+    },
+    "xaxis": {
+      "title": {
+        "text": "Absolute Mean Decrease Accuracy",
+        "font": {"family": "ITC Officina Sans", "size": 16.5}
+      },
+      "tickfont": {"family": "ITC Officina Sans", "size": 13.5}
+    },
+    "yaxis": {
+      "title": {"text": "Feature", "font": {"family": "ITC Officina Sans", "size": 16.5}},
+      "tickfont": {"family": "ITC Officina Sans", "size": 12}
+    },
+    "hoverlabel": {
+      "font": {"family": "ITC Officina Sans", "size": 15}
+    },
+    "plot_bgcolor": "#D5E4EB",
+    "paper_bgcolor": "#D5E4EB",
+    "margin": {"l": 120, "r": 30, "b": 25, "t": 70}
+  }
+}
+```
+
 - Stress in its linear form (represented by Stress.L) emerges as the most influential feature, closely followed by age and smoking.
 - Features related to medications and treatments (e.g., immunomodulators and Rogaine), nutritional deficiencies (e.g., zinc and protein deficiency), environmental factors, medical conditions (e.g., psoriasis and alopecia areata), and the quadratic form of stress also contribute substantially to the model's predictive capabilities.
-<br><br>
-
-On the other hand, Figure 16 presents the importance of various features in the dataset, measured by the Absolute Mean Decrease Gini. This metric shows how much the Gini impurity criterion decreases when a feature is included.
-
 
 ```R
 # Create a bar plot by MDG
@@ -2562,7 +2291,7 @@ style(
 ) %>%
 layout(
   title = list(
-    text = "\n𝗙𝗜𝗚. 𝟭𝟲﹕𝗕𝗔𝗥 𝗚𝗥𝗔𝗣𝗛 𝗢𝗙 𝗙𝗘𝗔𝗧𝗨𝗥𝗘 𝗜𝗠𝗣𝗢𝗥𝗧𝗔𝗡𝗖𝗘 𝗕𝗬 𝗠𝗘𝗔𝗡 𝗗𝗘𝗖𝗥𝗘𝗔𝗦𝗘 𝗚𝗜𝗡𝗜",
+    text = "<br><b>𝗙𝗜𝗚. 𝟭𝟲﹕𝗙𝗘𝗔𝗧𝗨𝗥𝗘 𝗜𝗠𝗣𝗢𝗥𝗧𝗔𝗡𝗖𝗘 𝗕𝗬 𝗠𝗘𝗔𝗡 𝗗𝗘𝗖𝗥𝗘𝗔𝗦𝗘 𝗚𝗜𝗡𝗜</b>",
     font = list(size = 18)
   ),
   paper_bgcolor = "#D5E4EB",
@@ -2579,6 +2308,104 @@ style(
 )
 ```
 
+```plotly
+{
+  "data": [
+    {
+      "type": "bar",
+      "orientation": "h",
+      "x": [
+        4.817058842,
+        4.97132955,
+        5.010535753,
+        5.242733869,
+        5.473402415,
+        5.487137944,
+        5.494365937,
+        5.650106685,
+        5.884044482,
+        5.93813728,
+        6.055257928,
+        6.092725361,
+        6.166038486,
+        6.199714443,
+        6.297927258,
+        7.332348932,
+        7.461353318,
+        8.314654369,
+        9.415563662,
+        9.520458455,
+        9.56931847,
+        10.25113637,
+        13.85153363,
+        51.08721356
+      ],
+      "y": [
+        "NutritionalDeficienciesSeleniumdeficiency",
+        "NutritionalDeficienciesMagnesiumdeficiency",
+        "MedicationsTreatmentsBloodPressureMedication",
+        "NutritionalDeficienciesVitaminDDeficiency",
+        "MedicationsTreatmentsChemotherapy",
+        "MedicalConditionsDermatosis",
+        "NutritionalDeficienciesOmega3fattyacids",
+        "MedicalConditionsScalpInfection",
+        "MedicationsTreatmentsSteroids",
+        "MedicationsTreatmentsAntidepressants",
+        "MedicationsTreatmentsImmunomodulators",
+        "MedicalConditionsAlopeciaAreata",
+        "NutritionalDeficienciesProteindeficiency",
+        "MedicalConditionsPsoriasis",
+        "MedicationsTreatmentsRogaine",
+        "NutritionalDeficienciesZincDeficiency",
+        "Stress.Q",
+        "Genetics",
+        "WeightLoss",
+        "HormonalChanges",
+        "Smoking",
+        "EnvironmentalFactors",
+        "Stress.L",
+        "Age"
+      ],
+      "marker": {
+        "color": "#01877C"
+      },
+      "hovertemplate": "(%{x:.2f}, %{y})<extra></extra>"
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "<br><b>𝗙𝗜𝗚. 𝟭𝟲﹕𝗙𝗘𝗔𝗧𝗨𝗥𝗘 𝗜𝗠𝗣𝗢𝗥𝗧𝗔𝗡𝗖𝗘 𝗕𝗬 𝗠𝗘𝗔𝗡 𝗗𝗘𝗖𝗥𝗘𝗔𝗦𝗘 𝗚𝗜𝗡𝗜</b>",
+      "font": {
+        "family": "ITC Officina Sans",
+        "size": 18
+      },
+      "x": 0.5,
+      "xanchor": "center"
+    },
+    "xaxis": {
+      "title": {
+        "text": "Absolute Mean Decrease Gini",
+        "font": {"family": "ITC Officina Sans", "size": 16.5}
+      },
+      "tickfont": {"family": "ITC Officina Sans", "size": 13.5}
+    },
+    "yaxis": {
+      "title": {"text": "Feature", "font": {"family": "ITC Officina Sans", "size": 16.5}},
+      "tickfont": {"family": "ITC Officina Sans", "size": 12}
+    },
+    "hoverlabel": {
+      "font": {"family": "ITC Officina Sans", "size": 15}
+    },
+    "plot_bgcolor": "#D5E4EB",
+    "paper_bgcolor": "#D5E4EB",
+    "margin": {"l": 150, "r": 30, "b": 25, "t": 70}
+  }
+}
+```
+<div style="margin: 16px 0 16px 0;">
+On the other hand, Figure 16 presents feature importance measured by the Absolute Mean Decrease Gini, that is, how much the Gini impurity criterion decreases when a feature is included.
+</div>
+
 - This time around, age emerges as the most influential feature, followed closely by the linear stress (Stress.L), underscoring their significant impact on the model's overall performance.
 - Features associated with lifestyle factors (e.g., environmental factors, smoking, weight loss, and poor hair care habits) and medical history (e.g., genetics and hormonal changes) also play critical roles in shaping the model's predictive capabilities.
 
@@ -2586,9 +2413,12 @@ style(
 
 To rank the features in terms of importance, both the Mean Decrease Accuracy (MDA) and Mean Decrease Gini (MDG) are integrated. The process involves the following steps:
 
-1. **Initial Selection:** Features must have a nonzero MDA and MDG to be included in the ranking.
-2. **Normalization:** Both MDA and MDG are normalized to ensure comparability across different scales. This normalized mean decrease measure is computed by: $$ MD_{norm} = \frac{MD - MD_{min}}{MD_{max} - MD_{min}} $$
-3. **Composite Importance (CI):** CI is calculated for each feature by averaging the normalized MDA and MDG.
+- **Initial Selection:** Features must have a nonzero MDA and MDG to be included in the ranking.
+- **Normalization:** Both MDA and MDG are normalized to ensure comparability across different scales. This normalized mean decrease measure is computed by: 
+
+$$ MD_{norm} = \frac{MD - MD_{min}}{MD_{max} - MD_{min}} $$
+
+- **Composite Importance (CI):** CI is calculated for each feature by averaging the normalized MDA and MDG.
 
 Based on the results, the following features are the key predictors of hair loss:  
 
@@ -2670,14 +2500,6 @@ Reusova, A. (2018). _Hierarchical Clustering on Categorical Data in R_. Towards 
 ### 6.1. Functions {#appendix-functions}
 
 ```R
-# Function to install missing packages
-install_if_missing <- function(p) {
-  if (!require(p, character.only = TRUE)) {
-    suppressWarnings(suppressMessages(install.packages(p, dependencies = TRUE)))
-    suppressPackageStartupMessages(library(p, character.only = TRUE))
-  }
-}
-
 # Function to tabularize summary statistics of a given variable in the dataset
 summarize_variable <- function(data, variable=NULL, caption=NULL, dom="t", searching=FALSE, rownames=FALSE, pageLength=10) {
   if (is.null(variable)) {
@@ -2713,15 +2535,7 @@ summarize_variable <- function(data, variable=NULL, caption=NULL, dom="t", searc
                   ) else NULL)
   }
 }
-        
-# Function to check if a package is installed, and install it if not
-install_if_missing <- function(package) {
-  if (!require(package, character.only = TRUE)) {
-    install.packages(package, dependencies = TRUE)
-    library(package, character.only = TRUE)
-  }
-}
-        
+           
 # Function to create a propotional stack bar plot (used for subplots of multiple variables)
 create_plotly_stackbar <- function(data = data, var, showlegend=FALSE, yaxis_text=NULL, yaxis_titleSize=11.5, yaxis_tickSize=10, tickangle=0) {
   yaxis_title <- ifelse(is.null(yaxis_text), var, yaxis_text)
@@ -3124,5 +2938,369 @@ output
 }			  		  
 ```
 
-<!-- ### 6.2. Tables
-#### 6.2.1. Summary Statistics by Factor -->
+### 6.2. Tables
+#### 6.2.1. Summary statistics of the surveyed individuals by factor
+
+```R
+# Tabularize summary statistics of Genetics
+summarize_variable(
+  data = data %>% rename(`Has a family history of baldness` = Genetics),
+  variable = "Has a family history of baldness",
+  rownames = FALSE
+)
+
+# Tabularize summary statistics of Hormonal Changes
+summarize_variable(
+  data %>% rename(`Has experienced hormonal changes` = `Hormonal Changes`),
+  variable = "Has experienced hormonal changes",
+  rownames = FALSE
+)
+
+# Tabularize summary statistics of Stress
+summarize_variable(
+  data %>% 
+    mutate(
+      Stress = factor(Stress, levels = c("High", "Moderate", "Low"), ordered = TRUE)
+    ) %>%
+    rename(`Stress level` = Stress),
+  variable = "Stress level",
+  rownames = FALSE
+)
+
+# Tabularize summary statistics of Poor Hair Care Habits
+summarize_variable(
+  data %>%
+    rename(
+      `Practices poor hair care habits` = `Poor Hair Care Habits`
+    ),
+  variable = "Practices poor hair care habits",
+  rownames = FALSE
+)
+
+# Tabularize summary statistics of Environmental Factors
+summarize_variable(
+  data %>%
+    rename(
+      `Exposed to environmental factors that may contribute to hair loss` = `Environmental Factors`
+    ),
+  variable = "Exposed to environmental factors that may contribute to hair loss",
+  rownames = FALSE
+)
+
+# Tabularize summary statistics of Smoking
+summarize_variable(
+  data,
+  variable = "Smoking",
+  rownames = FALSE
+)
+
+# Tabularize summary statistics of Weight Loss
+summarize_variable(
+  data %>%
+    rename(
+      `Has experienced significant weight loss` = `Weight Loss`
+    ),
+  variable = "Has experienced significant weight loss",
+  rownames = FALSE
+)
+```
+
+<!-- ```R
+# Tabularize summary statistics of Genetics
+summarize_variable(
+  data = data %>% rename(`Has a family history of baldness` = Genetics),
+  variable = "Has a family history of baldness",
+  rownames = FALSE
+)
+``` -->
+
+| Has a family history of baldness | Count | Percentage  |
+|:---------------------------------|------:|------------:|
+| Yes                              | 522   | 52.25%      |
+| No                               | 477   | 47.75%      |
+
+<!-- ```R
+# Tabularize summary statistics of Hormonal Changes
+summarize_variable(
+  data %>% rename(`Has experienced hormonal changes` = `Hormonal Changes`),
+  variable = "Has experienced hormonal changes",
+  rownames = FALSE
+)
+``` -->
+
+| Has experienced hormonal changes | Count | Percentage |
+|:---------------------------------|------:|------------:|
+| Yes                              | 509   | 50.95%      |
+| No                               | 490   | 49.05%      |
+
+<!-- ```R
+# Tabularize summary statistics of Stress
+summarize_variable(
+  data %>% 
+    mutate(
+      Stress = factor(Stress, levels = c("High", "Moderate", "Low"), ordered = TRUE)
+    ) %>%
+    rename(`Stress level` = Stress),
+  variable = "Stress level",
+  rownames = FALSE
+)
+``` -->
+
+| Stress level | Count | Percentage |
+|:-------------|------:|------------:|
+| Low          | 327   | 32.73%      |
+| Moderate     | 351   | 35.14%      |
+| High         | 321   | 32.13%      |
+
+<!-- ```R
+# Tabularize summary statistics of Poor Hair Care Habits
+summarize_variable(
+  data %>%
+    rename(
+      `Practices poor hair care habits` = `Poor Hair Care Habits`
+    ),
+  variable = "Practices poor hair care habits",
+  rownames = FALSE
+)
+``` -->
+
+| Practices poor hair care habits | Count | Percentage |
+|:--------------------------------|------:|------------:|
+| No                              | 507   | 50.75%      |
+| Yes                             | 492   | 49.25%      |
+
+<!-- ```R
+# Tabularize summary statistics of Environmental Factors
+summarize_variable(
+  data %>%
+    rename(
+      `Exposed to environmental factors that may contribute to hair loss` = `Environmental Factors`
+    ),
+  variable = "Exposed to environmental factors that may contribute to hair loss",
+  rownames = FALSE
+)
+``` -->
+
+| Exposed to environmental factors that may contribute to hair loss | Count | Percentage |
+|:------------------------------------------------------------------|------:|------------:|
+| Yes                                                               | 508   | 50.85%      |
+| No                                                                | 491   | 49.15%      |
+
+<!-- ```R
+# Tabularize summary statistics of Smoking
+summarize_variable(
+  data,
+  variable = "Smoking",
+  rownames = FALSE
+)
+``` -->
+
+| Smoking | Count | Percentage |
+|:--------|------:|------------:|
+| Yes     | 519   | 51.95%      |
+| No      | 480   | 48.05%      |
+
+<!-- ```R
+# Tabularize summary statistics of Weight Loss
+summarize_variable(
+  data %>%
+    rename(
+      `Has experienced significant weight loss` = `Weight Loss`
+    ),
+  variable = "Has experienced significant weight loss",
+  rownames = FALSE
+)
+``` -->
+
+| Has experienced significant weight loss | Count | Percentage   |
+|:----------------------------------------|-------:|------------:|
+| No                                      |   527  | 52.75%      |
+| Yes                                     |   472  | 47.25%      |
+
+#### 6.2.2. Summary statistics of the surveyed individuals by factorb and hair loss outcome
+
+```R
+# Tabularize summary statistics by Age Group and Hair Loss outcome
+summarize_variable(
+  age_table %>%
+    mutate(`Age Group` = factor(`Age Group`, levels = c("Young (17-30)", "Middle-aged (31-45)", "Old (>45)"), ordered = TRUE)) %>%
+    arrange(`Age Group`)
+)
+
+# Tabularize summary statistics by Stress and Hair Loss outcome
+summarize_variable(
+  stress_table %>%
+    mutate(`Stress` = factor(`Stress`, levels = c("Low", "Moderate", "High"), ordered = TRUE)) %>%
+    arrange(`Stress`) %>%
+    rename(`Stress level` = Stress)
+)
+
+# Tabularize summary statistics by Medical Conditions and Hair Loss outcome
+summarize_variable(
+  medical_conditions_table, 
+  dom = "tip", 
+  pageLength = 5
+)
+
+# Tabularize summary statistics by Medications & Treatments and Hair Loss outcome
+summarize_variable(
+  medications_table, 
+  dom = "tip", 
+  pageLength = 5
+)
+
+# Tabularize summary statistics by Nutritional Deficiencies and Hair Loss outcome
+summarize_variable(
+  nutritional_deficiencies_table, 
+  dom = "tip", 
+  pageLength = 5
+)
+
+# Tabularize the summary statistics by Genetics and Hair Loss outcome
+summarize_variable(genetics_table)
+
+# Tabularize the summary statistics by Hormonal Changes and Hair Loss outcome
+summarize_variable(hormonal_changes_table)
+
+# Tabularize the summary statistics by Poor Hair Care Habits and Hair Loss outcome
+summarize_variable(hair_care_table %>% arrange(desc(.[[1]])))
+
+# Tabularize the summary statistics by Environmental Factors and Hair Loss outcome
+summarize_variable(envi_factors_table %>% arrange(desc(.[[1]])))
+
+# Tabularize the summary statistics by Smoking and Hair Loss outcome
+summarize_variable(smoking_table %>% arrange(desc(.[[1]])))
+
+# Tabularize the summary statistics by Weight Loss and Hair Loss outcome
+summarize_variable(weight_loss_table %>% arrange(desc(.[[1]])))
+```
+
+
+| Age Group           | With baldness    | Without baldness   |
+|:--------------------|:-----------------|:-------------------|
+| Young (17–30)       | 193 (19.32%)     | 184 (18.42%)       |
+| Middle-aged (31–45) | 241 (24.12%)     | 232 (23.22%)       |
+| Old (>45)           | 63 (6.31%)       | 86 (8.61%)         |
+
+
+| Stress level | With baldness     | Without baldness  |
+|:-------------|:-----------------|:-------------------|
+| Low          | 159 (15.92%)     | 168 (16.82%)       |
+| Moderate     | 182 (18.22%)     | 169 (16.92%)       |
+| High         | 156 (15.62%)     | 165 (16.52%)       |
+
+
+| Medical condition that may lead to baldness | With baldness  | Without baldness |
+|:--------------------------------------------|:---------------|:-----------------|
+| Alopecia Areata                             | 61 (6.86%)     | 46 (5.17%)       |
+| Androgenetic Alopecia                       | 55 (6.19%)     | 43 (4.84%)       |
+| Psoriasis                                   | 50 (5.62%)     | 50 (5.62%)       |
+| Seborrheic Dermatitis                       | 50 (5.62%)     | 38 (4.27%)       |
+| Dermatitis                                  | 44 (4.95%)     | 48 (5.40%)       |
+| Dermatosis                                  | 43 (4.84%)     | 45 (5.06%)       |
+| Thyroid Problems                            | 43 (4.84%)     | 56 (6.30%)       |
+| Scalp Infection                             | 38 (4.27%)     | 41 (4.61%)       |
+| Eczema                                      | 33 (3.71%)     | 36 (4.05%)       |
+| Ringworm                                    | 33 (3.71%)     | 36 (4.05%)       |
+
+
+| Medication or treatment that may cause hair loss | With baldness  | Without baldness |
+|:------------------------------------------------|:----------------|:-----------------|
+| Rogaine                                         | 59 (5.92%)      | 57 (5.72%)       |
+| Steroids                                        | 59 (5.92%)      | 48 (4.81%)       |
+| Antidepressants                                 | 53 (5.32%)      | 57 (5.72%)       |
+| Heart Medication                                | 53 (5.32%)      | 51 (5.12%)       |
+| Accutane                                        | 50 (5.02%)      | 52 (5.22%)       |
+| Antibiotics                                     | 50 (5.02%)      | 44 (4.41%)       |
+| Chemotherapy                                    | 46 (4.61%)      | 44 (4.41%)       |
+| Antifungal Cream                                | 44 (4.41%)      | 50 (5.02%)       |
+| Blood Pressure Medication                       | 42 (4.21%)      | 48 (4.81%)       |
+| Immunomodulators                                | 40 (4.01%)      | 50 (5.02%)       |
+
+
+| Nutritional deficiency that may contribute to hair loss | With baldness  | Without baldness |
+|:-------------------------------------------------------|:----------------|:-----------------|
+| Vitamin D Deficiency                                   | 52 (5.66%)      | 52 (5.66%)       |
+| Vitamin A Deficiency                                   | 51 (5.55%)      | 48 (5.22%)       |
+| Zinc Deficiency                                        | 51 (5.55%)      | 57 (6.20%)       |
+| Protein deficiency                                     | 47 (5.11%)      | 43 (4.68%)       |
+| Biotin Deficiency                                      | 46 (5.01%)      | 53 (5.77%)       |
+| Magnesium deficiency                                   | 46 (5.01%)      | 38 (4.13%)       |
+| Omega-3 fatty acids                                    | 42 (4.57%)      | 50 (5.44%)       |
+| Selenium deficiency                                    | 42 (4.57%)      | 40 (4.35%)       |
+| Iron deficiency                                        | 40 (4.35%)      | 38 (4.13%)       |
+| Vitamin E deficiency                                   | 38 (4.13%)      | 45 (4.90%)       |
+
+
+| Has a family history of baldness | With baldness  | Without baldness |
+|:---------------------------------|:---------------|:-----------------|
+| Yes                              | 270 (27.03%)   | 252 (25.23%)     |
+| No                               | 227 (22.72%)   | 250 (25.03%)     |
+
+
+| Has experienced hormonal changes | With baldness  | Without baldness |
+|:---------------------------------|:---------------|:-----------------|
+| Yes                              | 255 (25.53%)   | 254 (25.43%)     |
+| No                               | 242 (24.22%)   | 248 (24.82%)     |
+
+
+| Practices poor hair care habits | With baldness   | Without baldness |
+|:--------------------------------|:----------------|:-----------------|
+| Yes                             | 235 (23.52%)    | 257 (25.73%)     |
+| No                              | 262 (26.23%)    | 245 (24.52%)     |
+
+
+| Exposed to environmental factors that may contribute to hair loss | With baldness  | Without baldness |
+|:------------------------------------------------------------------|:---------------|:-----------------|
+| Yes                                                               | 248 (24.82%)   | 260 (26.03%)     |
+| No                                                                | 249 (24.92%)   | 242 (24.22%)     |
+
+
+| Smoking | With baldness  | Without baldness |
+|:--------|:---------------|:-----------------|
+| Yes     | 244 (24.42%)   | 275 (27.53%)     |
+| No      | 253 (25.33%)   | 227 (22.72%)     |
+
+
+| Has experienced significant weight loss | With baldness  | Without baldness |
+|:----------------------------------------|:---------------|:-----------------|
+| Yes                                     | 246 (24.62%)   | 226 (22.62%)     |
+| No                                      | 251 (25.13%)   | 276 (27.63%)     |
+
+#### 6.2.3. Features Importance
+
+```R
+# Tabularize feature importances
+summarize_variable(
+	rf_importance_ranked[, c(1,3:5)],
+	dom = "tip",
+	pageLength = 5
+)
+```
+
+| Feature | CI | MeanDecreaseAccuracy | MeanDecreaseGini |
+|:---------|---:|---------------------:|-----------------:|
+| Age | 92.25 | 6.88 | 51.09 |
+| Stress.L | 59.76 | 8.13 | 13.85 |
+| Smoking | 41.88 | 5.99 | 9.57 |
+| MedicationsTreatmentsImmunomodulators | 30.67 | 4.80 | 6.06 |
+| EnvironmentalFactors | 28.89 | 3.78 | 10.25 |
+| NutritionalDeficienciesZincDeficiency | 27.78 | 4.11 | 7.33 |
+| NutritionalDeficienciesProteindeficiency | 25.19 | 3.89 | 6.17 |
+| MedicalConditionsPsoriasis | 21.50 | 3.29 | 6.20 |
+| Stress.Q | 19.94 | 2.82 | 7.46 |
+| HormonalChanges | 19.27 | 2.35 | 9.52 |
+| WeightLoss | 18.66 | 2.27 | 9.42 |
+| MedicationsTreatmentsRogaine | 16.48 | 2.46 | 6.30 |
+| MedicalConditionsAlopeciaAreata | 16.43 | 2.49 | 6.09 |
+| MedicationsTreatmentsChemotherapy | 12.29 | 1.93 | 5.47 |
+| NutritionalDeficienciesMagnesiumdeficiency | 11.57 | 1.90 | 4.97 |
+| MedicationsTreatmentsAntidepressants | 11.30 | 1.69 | 5.94 |
+| MedicalConditionsScalpInfection | 7.73 | 1.17 | 5.65 |
+| MedicationsTreatmentsSteroids | 6.52 | 0.93 | 5.88 |
+| Genetics | 5.93 | 0.41 | 8.31 |
+| NutritionalDeficienciesOmega3fattyacids | 3.38 | 0.49 | 5.49 |
+| MedicationsTreatmentsBloodPressureMedication | 2.99 | 0.51 | 5.01 |
+| MedicalConditionsDermatosis | 1.58 | 0.20 | 5.49 |
+| NutritionalDeficienciesVitaminDDeficiency | 1.47 | 0.23 | 5.24 |
+| NutritionalDeficienciesSeleniumdeficiency | 0.00 | 0.06 | 4.82 |
