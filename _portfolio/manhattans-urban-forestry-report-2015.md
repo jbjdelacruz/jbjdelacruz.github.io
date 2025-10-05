@@ -3,7 +3,7 @@ title: "Manhattan's Urban Forestry Report, 2015"
 collection: portfolio
 permalink: /portfolio/manhattans-urban-forestry-report-2015
 date: 2023-01-01
-last_updated: 2025-10-05
+last_updated: 2025-10-06
 excerpt: 'This analysis of census data on more than 60,000 street trees across Manhattan won first place in [Which Tree Species Should the City Plant?](https://www.datacamp.com/competitions/city-tree-species?entry=ba331d65-5607-4c69-adb4-406663585edc) competition. It evaluates spatial distribution, biological characteristics, and biodiversity while ranking species by median trunk diameter and health index, presenting evidence-based recommendations for future tree planting.'
 venue: 'DataCamp'
 categories:
@@ -22,8 +22,8 @@ images:
   - '/files/manhattans-urban-forestry-report-2015/images/page-8.png'
   - image: '/files/manhattans-urban-forestry-report-2015/images/page-9.png'
     link: 'https://www.datacamp.com/competitions/city-tree-species?entry=ba331d65-5607-4c69-adb4-406663585edc'
-link: 'https://www.datacamp.com/datalab/w/ba331d65-5607-4c69-adb4-406663585edc'
-url: 'https://www.datacamp.com/datalab/w/ba331d65-5607-4c69-adb4-406663585edc'
+# link: 'https://www.datacamp.com/datalab/w/ba331d65-5607-4c69-adb4-406663585edc'
+# url: 'https://www.datacamp.com/datalab/w/ba331d65-5607-4c69-adb4-406663585edc'
 thumbnail: '/images/projects/project4-cover.png'
 featured: true
 doc_type: 'Full Report'
@@ -78,10 +78,12 @@ library(dplyr)
 library(ggplot2)
 library(sf)
 library(geojsonsf)
+library(geojsonio)
 library(scales)
-library(remotes) # for generating random color scheme
-library(ggfun) # for round rectangle borders and backgrounds in ggplots
-library(ggchicklet) # for bar charts with rounded corners
+library(remotes)
+library(rwantshue)
+library(ggfun)
+library(ggchicklet)
 ```
 
 ### 1.4. Datasets
@@ -100,6 +102,10 @@ neighborhoods <- st_read("data/nta.shp", quiet=TRUE) %>%
 # Create a merged data frame for the 'trees' and 'neighborhoods' data sets
 merged_trees_and_neighborhoods <- trees %>%
   full_join(neighborhoods, by = c("nta"="ntacode", "nta_name"="ntaname"))
+
+# Total number of censused trees (Population)
+N_trees <- trees %>%
+  summarize(total_number_of_censused_trees = n())
 ```
 
 #### 1.4.1. Trees
@@ -148,21 +154,6 @@ Using descriptive and spatial analyses, the following information outlines the l
 #### 2.1.1. Spatial
 
 ##### 2.1.1.1. Tree Location by Neighborhood
-
-![Fig. 1: Map of the Tree Locations by Neighborhood in Manhattan](/files/manhattans-urban-forestry-report-2015/images/tree_locs_map_plot.png)
-
-While trees seem to cover much each of Manhattan's 28 neighborhoods, some of the southern ones, including MN13, MN17, MN24, MN25, MN27, MN28, and MN50, have empty areas. Interestingly, four of these aforementioned neighborhoods (indicated by *) are among the top ten in terms of land size, which are:
-
- 1. Hudson Yards-Chelsea-Flatiron-Union Square (MN13)*
- 2. Upper West Side (MN12)
- 3. Midtown-Midtown South (MN17)*
- 4. Central Harlem North-Polo Grounds (MN03)
- 5. West Village (MN23)
- 6. SoHo-TriBeCa-Civic Center-Little Italy (MN24)*
- 7. East Harlem North (MN34)
- 8. Lower East Side (MN28)*
- 9. Washington Heights South (MN36)
-10. Washington Heights North (MN35)
 
 ```R
 # Top 10 NTAs in terms of land size 
@@ -288,27 +279,22 @@ tree_locs_map_plot <- ggplot() +
   scale_color_manual(values = nta_colors)
 ```
 
+While trees seem to cover much each of Manhattan's 28 neighborhoods, some of the southern ones, including MN13, MN17, MN24, MN25, MN27, MN28, and MN50, have empty areas. Interestingly, four of these aforementioned neighborhoods (indicated by *) are among the top ten in terms of land size, which are:
+
+ 1. Hudson Yards-Chelsea-Flatiron-Union Square (MN13)*
+ 2. Upper West Side (MN12)
+ 3. Midtown-Midtown South (MN17)*
+ 4. Central Harlem North-Polo Grounds (MN03)
+ 5. West Village (MN23)
+ 6. SoHo-TriBeCa-Civic Center-Little Italy (MN24)*
+ 7. East Harlem North (MN34)
+ 8. Lower East Side (MN28)*
+ 9. Washington Heights South (MN36)
+10. Washington Heights North (MN35)
+
+![Fig. 1: Map of the Tree Locations by Neighborhood in Manhattan](/files/manhattans-urban-forestry-report-2015/images/tree_locs_map_plot.png)
+
 ##### 2.1.1.2. Tree Counts by Neighborhood
-
-![Fig. 2: Map of the Number of Trees in Manhattan's Neighborhoods](/files/manhattans-urban-forestry-report-2015/images/nbhs_tree_cnts_map_plot.png)
-
-The top ten neighborhoods by tree counts are:
- 
-| Rank | NTA  | NTA Name                                    | Number of Trees | Percentage  |
-|:-----|:-----|:--------------------------------------------|----------------:|------------:|
-| 1    | MN12 | Upper West Side*                            | 5,807           | 9.04%       |
-| 2    | MN40 | Upper East Side–Carnegie Hill               | 4,616           | 7.19%       |
-| 3    | MN23 | West Village*                               | 3,801           | 5.92%       |
-| 4    | MN03 | Central Harlem North–Polo Grounds*          | 3,469           | 5.40%       |
-| 5    | MN13 | Hudson Yards–Chelsea–Flatiron–Union Square* | 2,931           | 4.56%       |
-| 6    | MN36 | Washington Heights South*                   | 2,924           | 4.55%       | 
-| 7    | MN09 | Morningside Heights                         | 2,704           | 4.21%       |
-| 8    | MN11 | Central Harlem South                        | 2,643           | 4.11%       |
-| 9    | MN35 | Washington Heights North*                   | 2,612           | 4.07%       |
-| 10   | MN34 | East Harlem North*                          | 2,505           | 3.90%       |
-
-
-Seven of which (indicated by *\) are part of the ten largest.
 
 ```R
 # Table for Top 10 Tree-Producing Neighborhoods
@@ -318,11 +304,6 @@ for_table_nbh_tree_cnts <- nbh_tree_cnts %>%
   mutate(number_of_trees = prettyNum(number_of_trees, big.mark=","),
            percentage = label_percent(accuracy=0.01)(proportion)) %>%
   select(-proportion)
-
-# HTML Table for Top 10 Most Abundant Species
-#kable(for_table_nbh_tree_cnts, 
-#      caption = " ",
-#      label = "tables", format = "html", booktabs = TRUE)
 
 # Order by number of trees
 nbhs_map$nta_and_tree_cnt <- factor(
@@ -424,9 +405,26 @@ nbh_tree_cnts %>%
   select(-proportion)      
 ```
 
-##### 2.1.1.3. Trees by Curb Location
+The top ten neighborhoods by tree counts are:
+ 
+| Rank | NTA  | NTA Name                                    | Number of Trees | Percentage  |
+|:-----|:-----|:--------------------------------------------|----------------:|------------:|
+| 1    | MN12 | Upper West Side*                            | 5,807           | 9.04%       |
+| 2    | MN40 | Upper East Side–Carnegie Hill               | 4,616           | 7.19%       |
+| 3    | MN23 | West Village*                               | 3,801           | 5.92%       |
+| 4    | MN03 | Central Harlem North–Polo Grounds*          | 3,469           | 5.40%       |
+| 5    | MN13 | Hudson Yards–Chelsea–Flatiron–Union Square* | 2,931           | 4.56%       |
+| 6    | MN36 | Washington Heights South*                   | 2,924           | 4.55%       | 
+| 7    | MN09 | Morningside Heights                         | 2,704           | 4.21%       |
+| 8    | MN11 | Central Harlem South                        | 2,643           | 4.11%       |
+| 9    | MN35 | Washington Heights North*                   | 2,612           | 4.07%       |
+| 10   | MN34 | East Harlem North*                          | 2,505           | 3.90%       |
 
-Majority or 93.31% (59,932) of the tree beds are located on curb, while the remaining 6.69% (4,297) are located offset from curb.
+Seven of which (indicated by *\) are part of the ten largest.
+
+![Fig. 2: Map of the Number of Trees in Manhattan's Neighborhoods](/files/manhattans-urban-forestry-report-2015/images/nbhs_tree_cnts_map_plot.png)
+
+##### 2.1.1.3. Trees by Curb Location
 
 ```R
 # Tree count per location in relation to curb
@@ -437,16 +435,11 @@ number_of_trees_per_curb_loc <- merged_trees_and_neighborhoods %>%
   arrange(desc(number_of_trees)) %>%
     mutate(percentage = label_percent(accuracy=0.01)(number_of_trees/length(merged_trees_and_neighborhoods$tree_id)))
 
-# HTML Table for Curb Location
-#kable(number_of_trees_per_curb_loc,
-#      caption = "This is the caption.",
-#      label = "tables", format = "html", booktabs = TRUE) 
-
 on_curb_stat <- number_of_trees_per_curb_loc %>%
     mutate(proportion = number_of_trees/sum(number_of_trees)) %>% 
   filter(proportion == max(abs(proportion)))
 
-# Create a pie chart for the curb location
+# Create a chart for curb location
 curb_loc_stacked_bar_plot <- ggplot(number_of_trees_per_curb_loc) + 
   geom_chicklet(aes(x="", y = number_of_trees/sum(number_of_trees),
                       fill = curb_loc), 
@@ -505,128 +498,30 @@ curb_loc_stacked_bar_plot <- ggplot(number_of_trees_per_curb_loc) +
                             size=5, color="white", hjust=1)
 ```
 
-```R
-# Export plot as PNG
-ggsave(
-  plot = curb_loc_stacked_bar_plot,
-  filename = "documentation/curb_loc_stacked_bar_plot.png",
-  bg = "transparent"
-)
-```
+Majority or 93.31% (59,932) of the tree beds are located on curb, while the remaining 6.69% (4,297) are located offset from curb.
 
-<img src="documentation/curb_loc_stacked_bar_plot.png" alt="" title=""/>
+![Fig. 3: Proportional Stacked Bar Graph of Tree Bed Location](/files/manhattans-urban-forestry-report-2015/images/curb_loc_stacked_bar_plot.png)
 
 ##### 2.1.1.4. Tree Curb Location by Neigborhood
 
-Twenty neighborhoods have at least 90% of their trees being on curb, while 27 have at least 75%. The ten neighborhoods with the highest percentage of trees located on-curb are:
- 1. East Village (MN22)
- 2. Manhattanville (MN06)
- 3. Gramercy (MN21)
- 4. West Village (MN23)
- 5. Hudson Yards-Chelsea-Flatiron-Union Square (MN13)
- 6. Yorkville (MN32)
- 7. Clinton (MN15)
- 8. Washington Heights North (MN35)
- 9. Lenox Hill-Roosevelt Island (MN31)
-10. East Harlem North (MN34)
-
-Only Stuyvesant Town-Cooper Village has the majority of its trees being offset from curb. Including it, the neighborhoods with the highest percentage of trees located offset from curb are:
-
- 1. Stuyvesant Town-Cooper Village (MN50)
- 2. Battery Park City-Lower Manhattan (MN25)
- 3. Chinatown (MN27)
- 4. Morningside Heights (MN09)
- 5. East Harlem South (MN33)
- 6. Lower East Side (MN28)
- 7. SoHo-TriBeCa-Civic Center-Little Italy (MN24)
- 8. Upper West Side (MN12)
- 9. Lincoln Square (MN14)
-10. Upper East Side-Carnegie Hill (MN40)
-
-
 ```R
-#########################################
-#### Characteristics by Neighborhood ####
-#########################################
+### Characteristics by Neighborhood
 
-## Location ##
-
-# Location in relation with the curb 
-nta_curb_loc <- as.data.frame.matrix(table(trees$nta, trees$curb_loc)) %>%
-  rename_with( ~ paste0(.x, "_loc"))
-
-## Biology ##
-
-# Species
-nta_spc <- as.data.frame.matrix(table(trees$nta, trees$spc_common))
-
-# Tree size (in terms of trunk diameter)
-nta_tree_dbh <- as.data.frame.matrix(table(trees$nta, trees$tree_dbh)) %>%
-  rename_with( ~ paste0(.x, "_tree_dbh"))
-
-# Status and health 
-nta_status <- as.data.frame.matrix(table(trees$nta, trees$status)) %>%
-  rename_with( ~ paste0(.x, "_status"))
-nta_health <- as.data.frame.matrix(table(trees$nta, trees$health)) %>%
-  rename_with( ~ paste0(.x, "_health"))
-
-# Root problems
-nta_root_stone <- as.data.frame.matrix(table(trees$nta, trees$root_stone)) %>%
-  rename_with( ~ paste0(.x, "_root_stone"))
-nta_root_grate <- as.data.frame.matrix(table(trees$nta, trees$root_grate)) %>%
-  rename_with( ~ paste0(.x, "_root_grate"))
-nta_root_other <- as.data.frame.matrix(table(trees$nta, trees$root_other)) %>%
-  rename_with( ~ paste0(.x, "_root_other"))
-
-# Trunk problems
-nta_trunk_wire <- as.data.frame.matrix(table(trees$nta, trees$trunk_wire)) %>%
-  rename_with( ~ paste0(.x, "_trunk_wire"))
-nta_trnk_light <- as.data.frame.matrix(table(trees$nta, trees$trnk_light)) %>%
-  rename_with( ~ paste0(.x, "_trnk_light"))
-nta_trnk_other <- as.data.frame.matrix(table(trees$nta, trees$trnk_other)) %>%
-  rename_with( ~ paste0(.x, "_trnk_other"))
-
-# Branch problems
-nta_brch_light <- as.data.frame.matrix(table(trees$nta, trees$brch_light)) %>%
-  rename_with( ~ paste0(.x, "_brch_light"))
-nta_brch_shoe <- as.data.frame.matrix(table(trees$nta, trees$brch_shoe)) %>%
-  rename_with( ~ paste0(.x, "_brch_shoe"))
-nta_brch_other <- as.data.frame.matrix(table(trees$nta, trees$brch_other)) %>%
-  rename_with( ~ paste0(.x, "_brch_other"))
-
-# Table of biological attributes per species
-nta_bio <- bind_cols(list(nta_tree_dbh,
-                          nta_status,
-                          nta_health,
-                          nta_root_stone,
-                          nta_root_grate,
-                          nta_root_other,
-                          nta_trunk_wire,
-                          nta_trnk_light,
-                          nta_trnk_other,
-                          nta_brch_light,
-                          nta_brch_shoe,
-                          nta_brch_other)) %>%
-  rownames_to_column("nta")
-```
-
-
-```R
 # Curb location per neighborhood
 curb_loc_per_nbh <- merged_trees_and_neighborhoods %>% 
-  filter(str_detect(nta, "MN") & !(nta == "MN99")) %>%
-  group_by(nta, nta_name, curb_loc) %>%
-  summarize(number_of_trees=n(), .groups="keep") %>%
-  group_by(nta) %>%
-  mutate(proportion = number_of_trees/sum(number_of_trees),
+	filter(str_detect(nta, "MN") & !(nta == "MN99")) %>%
+	group_by(nta, nta_name, curb_loc) %>%
+	summarize(number_of_trees=n(), .groups="keep") %>%
+	group_by(nta) %>%
+	mutate(proportion = number_of_trees/sum(number_of_trees),
            percentage = label_percent(accuracy=0.01)(proportion)) %>%
-  arrange(desc(proportion)) %>%
-  ungroup()
+	arrange(desc(proportion)) %>%
+	ungroup()
 
 # Higher between OnCurb and OffsetFromCurb per neighborhood
 oncurb_vs_offset_per_nbh <- curb_loc_per_nbh %>% 
-  group_by(nta) %>%
-  filter(proportion == max(abs(proportion)))
+	group_by(nta) %>%
+	filter(proportion == max(abs(proportion)))
 
 # Order by NTA
 curb_loc_per_nbh$nta_name <- factor(
@@ -637,23 +532,26 @@ curb_loc_per_nbh$nta_name <- factor(
 
 # Table of Top 10 NTAs with the highest % of on-curb-located trees
 top_on_curb <- curb_loc_per_nbh %>%
-  filter(curb_loc=="OnCurb") %>%
-  top_n(10, proportion) %>%
-  arrange(desc(proportion)) %>%
+	filter(curb_loc=="OnCurb") %>%
+	top_n(10, proportion) %>%
+	arrange(desc(proportion)) %>%
     rownames_to_column("rank") %>%
-  rename(number_of_on_curb_trees = number_of_trees)
+	rename(number_of_on_curb_trees = number_of_trees)
 
-# HTML Table of Top 10 NTAs with the highest % of on-curb-located trees
-#kable(top_on_curb %>% 
-#      	 select(rank, nta, nta_name, number_of_on_curb_trees, percentage),
-#      caption = " ",
-#      label = "tables", format = "html", booktabs = TRUE) 
+# Table of Top 10 NTAs with the highest % of offset-from-curb-located trees
+top_offset <- curb_loc_per_nbh %>%
+	filter(curb_loc=="OffsetFromCurb") %>%
+	top_n(10, proportion) %>%
+	arrange(desc(proportion)) %>%
+    rownames_to_column("rank") %>%
+	rename(number_of_offset_from_curb_trees = number_of_trees)
 
+# Proportional stacked bar graph of curb location per neighborhood
 curb_loc_per_nbh_stacked_bar_plot <- ggplot(curb_loc_per_nbh) + 
-  geom_chicklet(aes(x = nta_name, y = proportion*100, fill = curb_loc), 
+	geom_chicklet(aes(x = nta_name, y = proportion*100, fill = curb_loc), 
                   radius = grid::unit(0.75, "mm"), position="stack") +
-  coord_flip() +
-  theme(legend.position="right",
+	coord_flip() +
+	theme(legend.position="right",
           legend.justification="top",
           legend.direction="vertical",
           legend.key.size = unit(0, "pt"),
@@ -665,7 +563,7 @@ curb_loc_per_nbh_stacked_bar_plot <- ggplot(curb_loc_per_nbh) +
                                       face="bold",
                                       size=9,
                                       family="sans serif"),
-      axis.title = element_text(color="#65707C",
+		  axis.title = element_text(color="#65707C",
                                     face="bold",
                                     family="sans serif"),
           axis.text.x = element_text(color="#65707C",
@@ -688,18 +586,18 @@ curb_loc_per_nbh_stacked_bar_plot <- ggplot(curb_loc_per_nbh) +
                                     hjust = 0.709,
                                     size= 12.2,
                                     family = "sans serif")) +
-  scale_fill_manual(values = c("#875826",
+	scale_fill_manual(values = c("#875826",
                                  "#10401B")) +     
-  ggtitle("\nFig. 4: Proportional Stacked Bar Graph of Each Neighborhood's Tree Bed Location",
+	ggtitle("\nFig. 4: Proportional Stacked Bar Graph of Each Neighborhood's Tree Bed Location",
             subtitle="               (in relation to the Curb)\n") +
-  labs(x="\nNTA name \n", y="\nNTA code - % of on trees\n", fill="Location: ") +
+	labs(x="\nNTA name \n", y="\nNTA code - % of on trees\n", fill="Location: ") +
     guides(fill = guide_legend(ncol=1,
                                reverse=TRUE,
                                override.aes = list(shape = 15,
                                                    size = 4))) +
-  scale_y_continuous(expand = c(0.01, 0),
+	scale_y_continuous(expand = c(0.01, 0),
                        breaks = seq(0, 100, by=10)) +
-  ggrepel::geom_text_repel(data = oncurb_vs_offset_per_nbh,
+	ggrepel::geom_text_repel(data = oncurb_vs_offset_per_nbh,
                              aes(label = paste(nta, " - ", 
                                                label_percent(accuracy=0.01)(proportion),
                                        sep=""),
@@ -707,22 +605,51 @@ curb_loc_per_nbh_stacked_bar_plot <- ggplot(curb_loc_per_nbh) +
                                  y = ifelse(nta=="MN50", 100*proportion+22,
                                             100*proportion-22)),
                              size=2.2, color="white", hjust=1)
-
-#curb_loc_per_nbh %>%
-#	arrange(desc(curb_loc), desc(proportion)) %>%
-#	mutate(number_of_trees = prettyNum(number_of_trees, big.mark=",")) %>%
-#	select(-proportion)
 ```
 
-<img src="documentation/curb_loc_per_nbh_stacked_bar_plot.png" alt="" title=""/>
+Twenty neighborhoods have at least 90% of their trees being on curb, while 27 have at least 75%. The ten neighborhoods with the highest percentage of trees located on-curb are:
 
-#### Biological
-**Size:** In terms of trunk diameter, the mean size of the tree population (red line in Fig. 5) is 8.6312 inches, with a standard deviation of 5.5906. Furthermore, its distribution is positively skewed, implying that the majority of trees have trunk diameters closer to the lower bound. In this case, we can use the median (blue line) of 8 inches (with an IQR of 7) as a better measure of central tendency (and spread).
+| Rank | NTA  | NTA Name                                   | Number of On-Curb Trees | Percentage  |
+|:-----|:-----|:-------------------------------------------|------------------------:|------------:|
+| 1    | MN22 | East Village                               | 1,533                   | 99.42%      |
+| 2    | MN06 | Manhattanville                             |   890                   | 98.67%      |
+| 3    | MN21 | Gramercy                                   | 1,119                   | 97.99%      |
+| 4    | MN23 | West Village                               | 3,721                   | 97.90%      |
+| 5    | MN13 | Hudson Yards–Chelsea–Flatiron–Union Square | 2,860                   | 97.58%      |
+| 6    | MN32 | Yorkville                                  | 2,127                   | 97.57%      |
+| 7    | MN15 | Clinton                                    | 1,906                   | 97.54%      |
+| 8    | MN35 | Washington Heights North                   | 2,528                   | 96.78%      |
+| 9    | MN31 | Lenox Hill–Roosevelt Island                | 2,198                   | 96.53%      |
+| 10   | MN34 | East Harlem North                          | 2,410                   |  96.21%     |
 
+Only Stuyvesant Town-Cooper Village has the majority of its trees being offset from curb. Including it, the neighborhoods with the highest percentage of trees located offset from curb are:
+
+| Rank | NTA  | NTA Name                                    | Number of Offset-from-Curb Trees | Percentage  |
+|:-----|:-----|:--------------------------------------------|---------------------------------:|------------:|
+| 1    | MN50 | Stuyvesant Town–Cooper Village              | 242                              | 54.88%      |
+| 2    | MN25 | Battery Park City–Lower Manhattan           | 285                              | 22.02%      |
+| 3    | MN27 | Chinatown                                   | 239                              | 16.40%      |
+| 4    | MN09 | Morningside Heights                         | 411                              | 15.20%      |
+| 5    | MN33 | East Harlem South                           | 220                              | 11.31%      |
+| 6    | MN28 | Lower East Side                             | 202                              | 10.54%      |
+| 7    | MN24 | SoHo–TriBeCa–Civic Center–Little Italy      | 220                              | 10.14%      |
+| 8    | MN12 | Upper West Side                             | 582                              | 10.02%      |
+| 9    | MN14 | Lincoln Square                              | 193                              | 9.44%       |
+| 10   | MN40 | Upper East Side–Carnegie Hill               | 315                              | 6.82%       |
+
+![Fig. 4: Proportional Stacked Bar Graph of Each Neighborhood's Tree Bed Location](/files/manhattans-urban-forestry-report-2015/images/curb_loc_per_nbh_stacked_bar_plot.png)
+
+#### 2.1.2. Biological
+
+##### 2.1.2.1. Tree Size
 
 ```R
-defaultW <- getOption("warn")
-options(warn=-1)
+# Species
+nta_spc <- as.data.frame.matrix(table(trees$nta, trees$spc_common))
+
+# Tree size (in terms of trunk diameter)
+nta_tree_dbh <- as.data.frame.matrix(table(trees$nta, trees$tree_dbh)) %>%
+  rename_with( ~ paste0(.x, "_tree_dbh"))
 
 # Summary statistics of the trunk diameter
 tree_dbh_stats <- data.frame(N = length(trees$tree_dbh),
@@ -734,11 +661,6 @@ tree_dbh_stats <- data.frame(N = length(trees$tree_dbh),
                              second_quartile = quantile(trees$tree_dbh, probs = 0.75),
                              max = max(trees$tree_dbh))
 row.names(tree_dbh_stats) <- "tree_dbh" 
-
-# HTML Table for Tree Size
-#kable(tree_dbh_stats %>%
-#	mutate_if(is.numeric, list(~prettyNum(., big.mark=",")))
-#     "html", caption = "Table _: Summary statistics of the tree diameter")
 
 # Density curve for 'tree_dbh'
 tree_dbh_dist_plot <- ggplot(trees, aes(x = tree_dbh)) + 
@@ -784,32 +706,13 @@ geom_vline(aes(xintercept = median(tree_dbh)), col="blue", size=0.6) +
   scale_y_continuous(expand = c(0.01, 0),
                        limits = c(0, 0.12), 
                        breaks = seq(0, 0.12, by=0.02))
-#tree_dbh_stats %>%
-#	mutate_if(is.numeric, list(~round(., digits=4))) %>%
-#	mutate_if(is.numeric, list(~prettyNum(., big.mark=",")))
-
-options(warn = defaultW)
 ```
 
+In terms of trunk diameter, the mean size of the tree population (red line in Fig. 5) is 8.6312 inches, with a standard deviation of 5.5906. Furthermore, its distribution is positively skewed, implying that the majority of trees have trunk diameters closer to the lower bound. In this case, we can use the median (blue line) of 8 inches (with an IQR of 7) as a better measure of central tendency (and spread).
 
-```R
-ggsave("dbh_dist.png", plot = tree_dbh_dist_plot, width = 6, height = 4, dpi = 300)
-```
+![Fig. 5: Distribution of the Trunk Diameter](/files/manhattans-urban-forestry-report-2015/images/tree_dbh_dist_plot.png)
 
-    Warning message:
-    “[1m[22mRemoved 5 rows containing non-finite outside the scale range (`stat_bin()`).”
-    Warning message:
-    “[1m[22mRemoved 5 rows containing non-finite outside the scale range
-    (`stat_density()`).”
-    Warning message:
-    “[1m[22mRemoved 3 rows containing missing values or values outside the scale range
-    (`geom_bar()`).”
-
-
-<img src="documentation/tree_dbh_dist_plot.png" alt="" title=""/>
-
-**Health-Related:** Nearly all of the trees in Manhattan have an "Alive" status, and majority are in a "Good" health condition. On the other hand, the minority of trees have problems with their roots, trunks, and branches. The most notable among these respective tree parts are caused by paving stones in the tree bed; trunk problems other than by wires/ropes and installed lighting; and branch problems other than by lights/wires and shoes.
-
+##### 2.1.2.2. Health-Related
 
 ```R
 # Status and health 
@@ -817,6 +720,7 @@ pop_status <- as.data.frame(table(trees$status)) %>%
   mutate(attribute = "status", proportion = Freq/sum(Freq)) %>%
   rename(category = Var1, number_of_trees = Freq) %>%
   select(attribute, everything())
+
 pop_health <- as.data.frame(table(trees$health)) %>%
   mutate(attribute = "health", proportion = Freq/sum(Freq)) %>%
   rename(category = Var1, number_of_trees = Freq) %>%
@@ -828,10 +732,12 @@ pop_root_stone <- as.data.frame(table(trees$root_stone)) %>%
   mutate(attribute = "root_stone", proportion = Freq/sum(Freq)) %>%
   rename(category = Var1, number_of_trees = Freq) %>%
   select(attribute, everything())
+
 pop_root_grate <- as.data.frame(table(trees$root_grate)) %>%
   mutate(attribute = "root_grate", proportion = Freq/sum(Freq)) %>%
   rename(category = Var1, number_of_trees = Freq) %>%
   select(attribute, everything())
+
 pop_root_other <- as.data.frame(table(trees$root_other)) %>%
   mutate(attribute = "root_other", proportion = Freq/sum(Freq)) %>%
   rename(category = Var1, number_of_trees = Freq) %>%
@@ -842,10 +748,12 @@ pop_trunk_wire <- as.data.frame(table(trees$trunk_wire)) %>%
   mutate(attribute = "trunk_wire", proportion = Freq/sum(Freq)) %>%
   rename(category = Var1, number_of_trees = Freq) %>%
   select(attribute, everything())
+
 pop_trnk_light <- as.data.frame(table(trees$trnk_light)) %>%
   mutate(attribute = "trnk_light", proportion = Freq/sum(Freq)) %>%
   rename(category = Var1, number_of_trees = Freq) %>%
   select(attribute, everything())
+
 pop_trnk_other <- as.data.frame(table(trees$trnk_other)) %>%
   mutate(attribute = "trnk_other", proportion = Freq/sum(Freq)) %>%
   rename(category = Var1, number_of_trees = Freq) %>%
@@ -856,10 +764,12 @@ pop_brch_light <- as.data.frame(table(trees$brch_light)) %>%
   mutate(attribute = "brch_light", proportion = Freq/sum(Freq)) %>%
   rename(category = Var1, number_of_trees = Freq) %>%
   select(attribute, everything())
+
 pop_brch_shoe <- as.data.frame(table(trees$brch_shoe)) %>%
   mutate(attribute = "brch_shoe", proportion = Freq/sum(Freq)) %>%
   rename(category = Var1, number_of_trees = Freq) %>%
   select(attribute, everything())
+  
 pop_brch_other <- as.data.frame(table(trees$brch_other)) %>%
   mutate(attribute = "brch_other", proportion = Freq/sum(Freq)) %>%
   rename(category = Var1, number_of_trees = Freq) %>%
@@ -877,11 +787,53 @@ pop_attributes <- bind_rows(pop_status,
                             pop_brch_light,
                             pop_brch_shoe,
                             pop_brch_other) %>%
-                  mutate(percentage = label_percent(accuracy = 0.01)(proportion))  				  
-```
+                  mutate(percentage = label_percent(accuracy = 0.01)(proportion))  		
 
+# Status and health 
+nta_status <- as.data.frame.matrix(table(trees$nta, trees$status)) %>%
+  rename_with( ~ paste0(.x, "_status"))
+nta_health <- as.data.frame.matrix(table(trees$nta, trees$health)) %>%
+  rename_with( ~ paste0(.x, "_health"))
 
-```R
+# Root problems
+nta_root_stone <- as.data.frame.matrix(table(trees$nta, trees$root_stone)) %>%
+  rename_with( ~ paste0(.x, "_root_stone"))
+nta_root_grate <- as.data.frame.matrix(table(trees$nta, trees$root_grate)) %>%
+  rename_with( ~ paste0(.x, "_root_grate"))
+nta_root_other <- as.data.frame.matrix(table(trees$nta, trees$root_other)) %>%
+  rename_with( ~ paste0(.x, "_root_other"))
+
+# Trunk problems
+nta_trunk_wire <- as.data.frame.matrix(table(trees$nta, trees$trunk_wire)) %>%
+  rename_with( ~ paste0(.x, "_trunk_wire"))
+nta_trnk_light <- as.data.frame.matrix(table(trees$nta, trees$trnk_light)) %>%
+  rename_with( ~ paste0(.x, "_trnk_light"))
+nta_trnk_other <- as.data.frame.matrix(table(trees$nta, trees$trnk_other)) %>%
+  rename_with( ~ paste0(.x, "_trnk_other"))
+
+# Branch problems
+nta_brch_light <- as.data.frame.matrix(table(trees$nta, trees$brch_light)) %>%
+  rename_with( ~ paste0(.x, "_brch_light"))
+nta_brch_shoe <- as.data.frame.matrix(table(trees$nta, trees$brch_shoe)) %>%
+  rename_with( ~ paste0(.x, "_brch_shoe"))
+nta_brch_other <- as.data.frame.matrix(table(trees$nta, trees$brch_other)) %>%
+  rename_with( ~ paste0(.x, "_brch_other"))
+
+# Table of biological attributes per species
+nta_bio <- bind_cols(list(nta_tree_dbh,
+                          nta_status,
+                          nta_health,
+                          nta_root_stone,
+                          nta_root_grate,
+                          nta_root_other,
+                          nta_trunk_wire,
+                          nta_trnk_light,
+                          nta_trnk_other,
+                          nta_brch_light,
+                          nta_brch_shoe,
+                          nta_brch_other)) %>%
+  rownames_to_column("nta")              		  
+
 # Highest category per attribute
 pop_attributes_highest_per_category <- pop_attributes %>%
   group_by(attribute) %>%
@@ -968,69 +920,17 @@ pop_attributes_stacked_bar_plot <- ggplot(pop_attributes) +
                                  y = 100*proportion-20),
                              size=3, color="white", hjust=1)
 ```
-    
-![png](notebook_files/notebook_27_1.png)
-    
-```R
-trees %>%
-  summarize(total_number_of_censused_trees = n())
 
-trees %>%
-  group_by(spc_common) %>%
-  summarize(number_of_trees_per_species = n()) %>%
-  filter(!is.na(spc_common)) %>%
-  summarize(number_of_identified_species = n())
+Nearly all of the trees in Manhattan have an "Alive" status, and majority are in a "Good" health condition. On the other hand, the minority of trees have problems with their roots, trunks, and branches. The most notable among these respective tree parts are caused by paving stones in the tree bed; trunk problems other than by wires/ropes and installed lighting; and branch problems other than by lights/wires and shoes.
 
-trees %>%
-  filter(is.na(spc_common)) %>%
-  summarize(number_of_trees_with_unidentified_species = n()) %>%
-  mutate(number_of_trees_with_identified_species = nrow(trees) - number_of_trees_with_unidentified_species) 
-```
+![Fig. 6: Proportional Stacked Bar Graph of the Tree Population's Attributes](/files/manhattans-urban-forestry-report-2015/images/pop_attributes_stacked_bar_plot.png)
 
-
-<table class="dataframe">
-<!-- <caption>A tibble: 1 × 1</caption> -->
-<thead>
-  <tr><th scope=col>total_number_of_censused_trees</th></tr>
-  <!-- <tr><th scope=col>&lt;int&gt;</th></tr> -->
-</thead>
-<tbody>
-  <tr><td>64229</td></tr>
-</tbody>
-</table>
-
-
-
-
-<table class="dataframe">
-<!-- <caption>A tibble: 1 × 1</caption> -->
-<thead>
-  <tr><th scope=col>number_of_identified_species</th></tr>
-  <!-- <tr><th scope=col>&lt;int&gt;</th></tr> -->
-</thead>
-<tbody>
-  <tr><td>128</td></tr>
-</tbody>
-</table>
-
-
-
-
-<table class="dataframe">
-<!-- <caption>A tibble: 1 × 2</caption> -->
-<thead>
-  <tr><th scope=col>number_of_trees_with_unidentified_species</th><th scope=col>number_of_trees_with_identified_species</th></tr>
-  <!-- <tr><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th></tr> -->
-</thead>
-<tbody>
-  <tr><td>1801</td><td>62428</td></tr>
-</tbody>
-</table>
-
-
-
+### 2.2. Tree Species
+Using spatial, descriptive, and correlation analyses, the following information outlines the biodiversity, biology, and ranking in terms of desirable traits of the tree species in Manhattan:
 
 ```R
+### Characteristics by Species
+
 nbh_spc_long <- nta_spc %>%
   rownames_to_column("nta") %>% 
   pivot_longer(cols = 2:129, 
@@ -1056,11 +956,7 @@ top_spc_per_nbh_short <- top_spc_per_nbh %>%
   mutate(percentage = label_percent(accuracy=0.01)(n/28)) %>% 
   rename(number_of_nta = n, most_common_spc = spc_common) 
 
-# HTML Table for the counts of neighborhood for the most common species
-#kable(top_spc_per_nbh_short,
-#   "html", caption = " ")
-
-#Counts of neighborhood for the most common species
+# Counts of neighborhood for the most common species
 spc_in_top_ten_per_nbh <- nbh_spc_long %>%
   group_by(nta) %>%
   top_n(10, number_of_trees) %>%
@@ -1071,21 +967,14 @@ spc_in_top_ten_per_nbh <- nbh_spc_long %>%
   mutate(percentage = label_percent(accuracy=0.01)(n/28)) %>% 
   arrange(desc(n)) %>%   
   rename(number_of_nta = n)
-```
 
-
-```R
-####################################
-#### Characteristics by species ####
-####################################
-
-## Location ##
+## Location
 
 # Location in relation with the curb 
 spc_curb_loc <- as.data.frame.matrix(table(trees$spc_common, trees$curb_loc)) %>%
   rename_with( ~ paste0(.x, "_loc"))
 
-## Biology ##
+## Biology
 
 # Tree size (in terms of trunk diameter)
 spc_tree_dbh <- as.data.frame.matrix(table(trees$spc_common, trees$tree_dbh)) %>%
@@ -1120,108 +1009,19 @@ spc_brch_shoe <- as.data.frame.matrix(table(trees$spc_common, trees$brch_shoe)) 
   rename_with( ~ paste0(.x, "_brch_shoe"))
 spc_brch_other <- as.data.frame.matrix(table(trees$spc_common, trees$brch_other)) %>%
   rename_with( ~ paste0(.x, "_brch_other"))
-```
 
+# Total number of identified species (Richness)
+n_species <- trees %>%
+  group_by(spc_common) %>%
+  summarize(number_of_trees_per_species = n()) %>%
+  filter(!is.na(spc_common)) %>%
+  summarize(number_of_identified_species = n())
 
-```R
-trees %>% group_by(spc_common) %>% filter(spc_common != 'null') %>% count() %>% ungroup() %>% mutate(perc=round(n*100/sum(n),2)) %>% arrange(desc(n))
-```
-
-
-<table class="dataframe">
-<!-- <caption>A tibble: 128 × 3</caption> -->
-<thead>
-  <tr><th scope=col>spc_common</th><th scope=col>n</th><th scope=col>perc</th></tr>
-  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
-</thead>
-<tbody>
-  <tr><td>Honeylocust        </td><td>13176</td><td>21.11</td></tr>
-  <tr><td>Callery pear       </td><td> 7297</td><td>11.69</td></tr>
-  <tr><td>Ginkgo             </td><td> 5859</td><td> 9.39</td></tr>
-  <tr><td>Pin oak            </td><td> 4584</td><td> 7.34</td></tr>
-  <tr><td>Sophora            </td><td> 4453</td><td> 7.13</td></tr>
-  <tr><td>London planetree   </td><td> 4122</td><td> 6.60</td></tr>
-  <tr><td>Japanese zelkova   </td><td> 3596</td><td> 5.76</td></tr>
-  <tr><td>Littleleaf linden  </td><td> 3333</td><td> 5.34</td></tr>
-  <tr><td>American elm       </td><td> 1698</td><td> 2.72</td></tr>
-  <tr><td>American linden    </td><td> 1583</td><td> 2.54</td></tr>
-  <tr><td>Northern red oak   </td><td> 1143</td><td> 1.83</td></tr>
-  <tr><td>Willow oak         </td><td>  889</td><td> 1.42</td></tr>
-  <tr><td>Cherry             </td><td>  869</td><td> 1.39</td></tr>
-  <tr><td>Chinese elm        </td><td>  785</td><td> 1.26</td></tr>
-  <tr><td>Green ash          </td><td>  770</td><td> 1.23</td></tr>
-  <tr><td>Swamp white oak    </td><td>  681</td><td> 1.09</td></tr>
-  <tr><td>Silver linden      </td><td>  541</td><td> 0.87</td></tr>
-  <tr><td>Crab apple         </td><td>  437</td><td> 0.70</td></tr>
-  <tr><td>Golden raintree    </td><td>  359</td><td> 0.58</td></tr>
-  <tr><td>Red maple          </td><td>  356</td><td> 0.57</td></tr>
-  <tr><td>Sawtooth oak       </td><td>  353</td><td> 0.57</td></tr>
-  <tr><td>Kentucky coffeetree</td><td>  348</td><td> 0.56</td></tr>
-  <tr><td>Norway maple       </td><td>  290</td><td> 0.46</td></tr>
-  <tr><td>Black locust       </td><td>  259</td><td> 0.41</td></tr>
-  <tr><td>White oak          </td><td>  241</td><td> 0.39</td></tr>
-  <tr><td>Sweetgum           </td><td>  227</td><td> 0.36</td></tr>
-  <tr><td>Hawthorn           </td><td>  219</td><td> 0.35</td></tr>
-  <tr><td>Shingle oak        </td><td>  205</td><td> 0.33</td></tr>
-  <tr><td>Dawn redwood       </td><td>  199</td><td> 0.32</td></tr>
-  <tr><td>English oak        </td><td>  197</td><td> 0.32</td></tr>
-  <tr><td>⋮</td><td>⋮</td><td>⋮</td></tr>
-  <tr><td>Two-winged silverbell</td><td>8</td><td>0.01</td></tr>
-  <tr><td>American larch       </td><td>7</td><td>0.01</td></tr>
-  <tr><td>Eastern hemlock      </td><td>7</td><td>0.01</td></tr>
-  <tr><td>Southern red oak     </td><td>7</td><td>0.01</td></tr>
-  <tr><td>Crimson king maple   </td><td>6</td><td>0.01</td></tr>
-  <tr><td>European beech       </td><td>6</td><td>0.01</td></tr>
-  <tr><td>Himalayan cedar      </td><td>6</td><td>0.01</td></tr>
-  <tr><td>Arborvitae           </td><td>5</td><td>0.01</td></tr>
-  <tr><td>Bigtooth aspen       </td><td>5</td><td>0.01</td></tr>
-  <tr><td>Crepe myrtle         </td><td>5</td><td>0.01</td></tr>
-  <tr><td>Pitch pine           </td><td>5</td><td>0.01</td></tr>
-  <tr><td>Blue spruce          </td><td>4</td><td>0.01</td></tr>
-  <tr><td>Black pine           </td><td>3</td><td>0.00</td></tr>
-  <tr><td>Cockspur hawthorn    </td><td>3</td><td>0.00</td></tr>
-  <tr><td>Norway spruce        </td><td>3</td><td>0.00</td></tr>
-  <tr><td>Pine                 </td><td>3</td><td>0.00</td></tr>
-  <tr><td>Virginia pine        </td><td>3</td><td>0.00</td></tr>
-  <tr><td>Boxelder             </td><td>2</td><td>0.00</td></tr>
-  <tr><td>Douglas-fir          </td><td>2</td><td>0.00</td></tr>
-  <tr><td>European alder       </td><td>2</td><td>0.00</td></tr>
-  <tr><td>Quaking aspen        </td><td>2</td><td>0.00</td></tr>
-  <tr><td>Scots pine           </td><td>2</td><td>0.00</td></tr>
-  <tr><td>Osage-orange         </td><td>1</td><td>0.00</td></tr>
-  <tr><td>Persian ironwood     </td><td>1</td><td>0.00</td></tr>
-  <tr><td>Pignut hickory       </td><td>1</td><td>0.00</td></tr>
-  <tr><td>Red horse chestnut   </td><td>1</td><td>0.00</td></tr>
-  <tr><td>Red pine             </td><td>1</td><td>0.00</td></tr>
-  <tr><td>Smoketree            </td><td>1</td><td>0.00</td></tr>
-  <tr><td>Spruce               </td><td>1</td><td>0.00</td></tr>
-  <tr><td>White pine           </td><td>1</td><td>0.00</td></tr>
-</tbody>
-</table>
-
-<img src="documentation/pop_attributes_stacked_bar_plot.png" alt="" title=""/>
-
-### Tree Species
-Using spatial, descriptive, and correlation analyses, the following information outlines the biodiversity, biology, and ranking in terms of desirable traits of the tree species in Manhattan:
-
-#### Biodiversity
-##### Richness
-Richness is referred to as the number of species within a defined region. With respect to Manhattan, 128 species were identified among $${N_{I} =}$$ 62,428 trees, while the remaining $${N_{U} =}$$ 1,801 have species which are unidentified in the census. In terms of the neighborhoods, the ten with the highest richness (of identified species) are:
-
- 1. Washington Heights North (MN35)
- 2. Lower East Side (MN28)
- 3. Washington Heights South (MN36)
- 4. West Village (MN23)
- 5. Central Harlem North-Polo Grounds (MN03)
- 6. Hamilton Heights (MN04)
- 7. Upper West Side (MN12)
- 8. Upper East Side-Carnegie Hill (MN40)
- 9. Central Harlem South (MN11)
-10. East Village (MN22)
-
-```R
-defaultW <- getOption("warn")
-options(warn=-1)
+# Total number of trees with identified species (N_I) and unidentified species (N_U)
+N_I_and_U <- trees %>%
+  filter(is.na(spc_common)) %>%
+  summarize(number_of_trees_with_unidentified_species = n()) %>%
+  mutate(number_of_trees_with_identified_species = nrow(trees) - number_of_trees_with_unidentified_species) 
 
 # Top 10 NTAs with the highest species richness
 top_ten_nbh_rchns <- nbh_rchns %>%
@@ -1318,53 +1118,30 @@ nbh_rchns_map_plot2 <- nbh_rchns_map_plot +
                                                     fill = color_scheme_3,
                                                     linewidth=0))
           )
-
-options(warn = defaultW)
 ```
 
+#### 2.2.1. Biodiversity
 
-```R
-top_ten_nbh_rchns
-```
+##### 2.2.1.1. Richness
 
+Richness is referred to as the number of species within a defined region. With respect to Manhattan, 128 species were identified among $${N_{I} =}$$ 62,428 trees, while the remaining $${N_{U} =}$$ 1,801 have species which are unidentified in the census. In terms of the neighborhoods, the ten with the highest richness (of identified species) are:
 
-<table class="dataframe">
-<!-- <caption>A tibble: 10 × 4</caption> -->
-<thead>
-  <tr><th scope=col>rank</th><th scope=col>nta</th><th scope=col>nta_name</th><th scope=col>richness</th></tr>
-  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th></tr> -->
-</thead>
-<tbody>
-  <tr><td>1 </td><td>MN35</td><td>Washington Heights North         </td><td>81</td></tr>
-  <tr><td>2 </td><td>MN28</td><td>Lower East Side                  </td><td>78</td></tr>
-  <tr><td>3 </td><td>MN36</td><td>Washington Heights South         </td><td>77</td></tr>
-  <tr><td>4 </td><td>MN23</td><td>West Village                     </td><td>76</td></tr>
-  <tr><td>5 </td><td>MN03</td><td>Central Harlem North-Polo Grounds</td><td>75</td></tr>
-  <tr><td>6 </td><td>MN04</td><td>Hamilton Heights                 </td><td>73</td></tr>
-  <tr><td>7 </td><td>MN12</td><td>Upper West Side                  </td><td>73</td></tr>
-  <tr><td>8 </td><td>MN40</td><td>Upper East Side-Carnegie Hill    </td><td>73</td></tr>
-  <tr><td>9 </td><td>MN11</td><td>Central Harlem South             </td><td>71</td></tr>
-  <tr><td>10</td><td>MN22</td><td>East Village                     </td><td>68</td></tr>
-</tbody>
-</table>
+| Rank | NTA  | NTA Name                                  | Richness |
+|:-----|:-----|:------------------------------------------|---------:|
+| 1    | MN35 | Washington Heights North                  | 81       |
+| 2    | MN28 | Lower East Side                           | 78       |
+| 3    | MN36 | Washington Heights South                  | 77       |
+| 4    | MN23 | West Village                              | 76       |
+| 5    | MN03 | Central Harlem North–Polo Grounds         | 75       |
+| 6    | MN04 | Hamilton Heights                          | 73       |
+| 7    | MN12 | Upper West Side                           | 73       |
+| 8    | MN40 | Upper East Side–Carnegie Hill             | 73       |
+| 9    | MN11 | Central Harlem South                      | 71       |
+| 10   | MN22 | East Village                              | 68       |
 
+![Fig. 7: Map of Tree Species Richness of Manhattan's Neighborhoods](/files/manhattans-urban-forestry-report-2015/images/nbh_rchns_map_plot2.png)
 
-
-<img src="documentation/nbh_rchns_map_plot2.png" alt="" title=""/>
-
-##### Abundance
-
-In this context, abundance is defined as the number of Manhattan trees per species, while relative abundance is the share of trees a certain species has in relation to the total number of trees in Manhattan. Among the 128 and other unidentified tree species in Manhattan, the ten most abundant are:
- 1. Honeylocust
- 2. Callery pea
- 3. Ginkgo
- 4. Pin oak
- 5. Sophora
- 6. London planetree
- 7. Japanese zelkova
- 8. Littleleaf linden
- 9. American elm
-10. American linden
+##### 2.2.1.2. Abundance
 
 ```R
 # Species abundance and relative abundance
@@ -1376,17 +1153,22 @@ spc_abd <- trees %>%
   mutate(relative_abundance = abundance/sum(abundance)) %>%
   arrange(desc(abundance))
 
+# Species abundance and relative abundance by NTA
+spc_abd_nbh <- nbh_spc_long %>%
+  group_by(nta, nta_name) %>%
+  filter(!(number_of_trees == 0)) %>%
+  rename(abundance_wrt_nta = number_of_trees) %>%
+  select(starts_with("nta"), spc_common, everything()) %>%
+  mutate(relative_abundance_wrt_nta = label_percent(accuracy=0.01)(abundance_wrt_nta/sum(abundance_wrt_nta))) %>% 
+  arrange(nta, desc(abundance_wrt_nta)) %>%
+  ungroup()
+
 # Table for Top 10 Most Abundant Species
 for_table_spc_abd <- spc_abd %>%
   slice(1:10) %>%
   rownames_to_column("rank") %>%
   mutate(abundance = prettyNum(abundance,big.mark=","),
            perc_relative_abundance = label_percent(accuracy=0.01)(relative_abundance))
-
-# HTML Table for Top 10 Most Abundant Species
-#kable(for_table_spc_abd, 
-#      caption = " ",
-#      label = "tables", format = "html", booktabs = TRUE)
 
 # Bar graph for Top 25 tree species
 top_species_bar_plot <- ggplot(spc_abd %>% slice(1:25)) + 
@@ -1436,98 +1218,24 @@ top_species_bar_plot <- ggplot(spc_abd %>% slice(1:25)) +
               size = 2) +
 scale_color_manual(values=c("#65707C","white"))
 ```
+In this context, abundance is defined as the number of Manhattan trees per species, while relative abundance is the share of trees a certain species has in relation to the total number of trees in Manhattan. Among the 128 and other unidentified tree species in Manhattan, the ten most abundant are:
 
-<img src="documentation/top_species_bar_plot.png" alt="" title=""/>
+| Rank | Species (Common Name)  | Abundance  | Relative Abundance (%) |
+|:-----|:-----------------------|-----------:|-----------------------:|
+| 1    | Honeylocust            | 13,176     | 21.11%                 |
+| 2    | Callery pear           | 7,297      | 11.69%                 |
+| 3    | Ginkgo                 | 5,859      | 9.39%                  |
+| 4    | Pin oak                | 4,584      | 7.34%                  |
+| 5    | Sophora                | 4,453      | 7.13%                  |
+| 6    | London planetree       | 4,122      | 6.60%                  |
+| 7    | Japanese zelkova       | 3,596      | 5.76%                  |
+| 8    | Littleleaf linden      | 3,333      | 5.34%                  |
+| 9    | American elm           | 1,698      | 2.72%                  |
+| 10   | American linden        | 1,583      | 2.54%                  |
 
-You can see in more details using the table below the species and their abundances (and relative abundances) with respect to the neighborhoods they belong to:
+![Fig. 8: Bar Graph of the 25 Most Abundant Tree Species in Manhattan](/files/manhattans-urban-forestry-report-2015/images/top_species_bar_plot.png)
 
-```R
-spc_abd_nbh <- nbh_spc_long %>%
-  group_by(nta, nta_name) %>%
-  filter(!(number_of_trees == 0)) %>%
-  rename(abundance_wrt_nta = number_of_trees) %>%
-  select(starts_with("nta"), spc_common, everything()) %>%
-  mutate(relative_abundance_wrt_nta = label_percent(accuracy=0.01)(abundance_wrt_nta/sum(abundance_wrt_nta))) %>% 
-  arrange(nta, desc(abundance_wrt_nta)) %>%
-  ungroup()
-
-spc_abd_nbh
-```
-
-<table class="dataframe">
-<!-- <caption>A tibble: 1664 × 5</caption> -->
-<thead>
-  <tr><th scope=col>nta</th><th scope=col>nta_name</th><th scope=col>spc_common</th><th scope=col>abundance_wrt_nta</th><th scope=col>relative_abundance_wrt_nta</th></tr>
-  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr> -->
-</thead>
-<tbody>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Japanese zelkova    </td><td>225</td><td>15.65%</td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Honeylocust         </td><td>175</td><td>12.17%</td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Sophora             </td><td>131</td><td>9.11% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Ginkgo              </td><td>115</td><td>8.00% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Pin oak             </td><td>110</td><td>7.65% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Littleleaf linden   </td><td>104</td><td>7.23% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Callery pear        </td><td> 74</td><td>5.15% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>American linden     </td><td> 61</td><td>4.24% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>American elm        </td><td> 48</td><td>3.34% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Northern red oak    </td><td> 48</td><td>3.34% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>London planetree    </td><td> 46</td><td>3.20% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Sawtooth oak        </td><td> 29</td><td>2.02% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Silver linden       </td><td> 26</td><td>1.81% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Swamp white oak     </td><td> 19</td><td>1.32% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Green ash           </td><td> 18</td><td>1.25% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Norway maple        </td><td> 17</td><td>1.18% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Willow oak          </td><td> 17</td><td>1.18% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Shingle oak         </td><td> 13</td><td>0.90% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Sassafras           </td><td> 12</td><td>0.83% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Tulip-poplar        </td><td> 11</td><td>0.76% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Cherry              </td><td> 10</td><td>0.70% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Common hackberry    </td><td>  9</td><td>0.63% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Dawn redwood        </td><td>  8</td><td>0.56% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Red maple           </td><td>  8</td><td>0.56% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>American hophornbeam</td><td>  7</td><td>0.49% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Black walnut        </td><td>  7</td><td>0.49% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Chinese tree lilac  </td><td>  7</td><td>0.49% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Empress tree        </td><td>  7</td><td>0.49% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Eastern hemlock     </td><td>  6</td><td>0.42% </td></tr>
-  <tr><td>MN01</td><td>Marble Hill-Inwood</td><td>Japanese snowbell   </td><td>  5</td><td>0.35% </td></tr>
-  <tr><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr>
-  <tr><td>MN40</td><td>Upper East Side-Carnegie Hill </td><td>Hedge maple          </td><td>  1</td><td>0.02% </td></tr>
-  <tr><td>MN40</td><td>Upper East Side-Carnegie Hill </td><td>Horse chestnut       </td><td>  1</td><td>0.02% </td></tr>
-  <tr><td>MN40</td><td>Upper East Side-Carnegie Hill </td><td>Japanese maple       </td><td>  1</td><td>0.02% </td></tr>
-  <tr><td>MN40</td><td>Upper East Side-Carnegie Hill </td><td>Japanese snowbell    </td><td>  1</td><td>0.02% </td></tr>
-  <tr><td>MN40</td><td>Upper East Side-Carnegie Hill </td><td>Mulberry             </td><td>  1</td><td>0.02% </td></tr>
-  <tr><td>MN40</td><td>Upper East Side-Carnegie Hill </td><td>Pagoda dogwood       </td><td>  1</td><td>0.02% </td></tr>
-  <tr><td>MN40</td><td>Upper East Side-Carnegie Hill </td><td>Paper birch          </td><td>  1</td><td>0.02% </td></tr>
-  <tr><td>MN40</td><td>Upper East Side-Carnegie Hill </td><td>Southern red oak     </td><td>  1</td><td>0.02% </td></tr>
-  <tr><td>MN40</td><td>Upper East Side-Carnegie Hill </td><td>Two-winged silverbell</td><td>  1</td><td>0.02% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Honeylocust          </td><td>279</td><td>63.70%</td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>London planetree     </td><td> 81</td><td>18.49%</td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Japanese zelkova     </td><td> 11</td><td>2.51% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Sophora              </td><td> 11</td><td>2.51% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Ginkgo               </td><td>  6</td><td>1.37% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Pin oak              </td><td>  6</td><td>1.37% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>American linden      </td><td>  5</td><td>1.14% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Callery pear         </td><td>  5</td><td>1.14% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Common hackberry     </td><td>  5</td><td>1.14% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Littleleaf linden    </td><td>  5</td><td>1.14% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Swamp white oak      </td><td>  5</td><td>1.14% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Kentucky coffeetree  </td><td>  4</td><td>0.91% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>American elm         </td><td>  3</td><td>0.68% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Northern red oak     </td><td>  3</td><td>0.68% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>White oak            </td><td>  3</td><td>0.68% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Amur maackia         </td><td>  1</td><td>0.23% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Amur maple           </td><td>  1</td><td>0.23% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Green ash            </td><td>  1</td><td>0.23% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Sawtooth oak         </td><td>  1</td><td>0.23% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Shingle oak          </td><td>  1</td><td>0.23% </td></tr>
-  <tr><td>MN50</td><td>Stuyvesant Town-Cooper Village</td><td>Tree of heaven       </td><td>  1</td><td>0.23% </td></tr>
-</tbody>
-</table>
-
-
-
-##### Diversity
+##### 2.2.1.3. Diversity
 To describe the overall species diversity in Manhattan, a quantitative measure called Simpson's Diversity Index (SDI) is used, which takes into account the species richness and evenness (or the distribution of abundance across the tree species in a community). The formula is given by:
 
 <div align="center">
@@ -1540,9 +1248,6 @@ where $${D} =$$ Simpson's Diversity Index (SDI);<br/>
            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $${n_{i} = i^{th}}$$ species abundance;<br/>
            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $${N_{I} =}$$ number of trees with identified species = 62,428
            
-With that, the computed SDI value is 0.909. This means that there is a very high diversity of tree species in Manhattan, and the chance of distinct species among two randomly selected trees from a sample is 90.9%. 
-
-
 ```R
 # Simpson's Diversity Index (SDI)
 mnh_sdi <- spc_abd %>%
@@ -1554,16 +1259,13 @@ mnh_sdi <- spc_abd %>%
                richness = n())
 ```
 
-#### Biology
+With that, the computed SDI value is 0.909. This means that there is a very high diversity of tree species in Manhattan, and the chance of distinct species among two randomly selected trees from a sample is 90.9%. 
 
-**Size:** Tree sizes of the species were compared through their median trunk diameter at breast height $(DBH)$. 
+#### 2.2.2. Biology
 
-Fig. 9 shows the Top 25 largest species in terms of this metric:
-
+##### 2.2.2.1. Tree Size
 
 ```R
-# The table below shows each species' summary statistics and is arranged by descending median $dbh$, while 
-
 # Summary statistics of species' tree dbh
 spc_tree_dbh_stats <- trees %>% 
   group_by(spc_common) %>%
@@ -1624,32 +1326,13 @@ top_spc_dbh_plot <- ggplot(top_spc_tree_dbh_stats %>% slice(1:25)) +
                                  x = spc_common,
                                  y = median_tree_dbh-0.4),
               size = 3, color = "white")
-
-#spc_tree_dbh_stats %>% mutate_if(is.numeric, #list(~prettyNum(., big.mark=","))) %>% select(spc_common, abundance, #median_tree_dbh, everything())
-
-#summary(lm(spc_tree_dbh_stats$abundance~spc_tree_dbh_stats$median_tree_dbh))
-#shapiro.test(lm(spc_tree_dbh_stats$abundance~spc_tree_dbh_stats$median_tree_dbh)$residuals)
-#abd_dbh_corr <- cor(spc_tree_dbh_stats$abundance, spc_tree_dbh_stats$median_tree_dbh, method="kendall")
-#abd_dbh_corr
 ```
 
-<img src="documentation/top_spc_dbh_plot.png" alt="" title=""/>
+Tree sizes of the species were compared through their median trunk diameter at breast height (DBH). Fig. 9 shows the Top 25 largest species in terms of this metric:
 
-**Health-Related**: Out of the 128 species that have been identified, 127 have 100% of their trees being alive, while the remaining one, honeylocust, has $99.99%$. As for the health, a numerical value called health index ($$HI$$) was computed for each species. This was done by assigning a number, $${j} ∈ \{1,2,3\}$$, to the categories of "$Poor$", "$Fair$", and "$Good$" health, respectively, and then using the formula:
+![Fig. 9: Bar Graph of the Top 25 Largest Tree Species in Manhattan](/files/manhattans-urban-forestry-report-2015/images/top_spc_dbh_plot.png)
 
-<div align="center">
-    
-${HI_{i}} =  \frac {\sum \limits _{j=1} ^{3} j{a}_{j}}{3 n_{i}} $
-    
-</div>
-<br/>
-    
-where $${HI_{i}} =$$ health index of the $i^{th}$ species;<br/>
-               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${a_{j}}$ = species abundance with respect to the $j^{th}$ health category;<br/>
-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${n_{i}}$ =  ${i^{th}}$ species abundance
- 
-Fig. 10 shows the $25$ species with the highest $HI$ value as well as the distribution of their relative abundances across health categories.
-
+##### 2.2.2.2. Health-Related
 
 ```R
 # Status per species
@@ -1665,6 +1348,13 @@ spc_status <- trees %>%
   ungroup()
 ```
 
+Out of the 128 species that have been identified, 127 have 100% of their trees being alive, while the remaining one, honeylocust, has 99.99%. As for the health, a numerical value called health index ($$HI$$) was computed for each species. This was done by assigning a number, $${j} ∈ \{1,2,3\}$$, to the categories of `Poor`, `Fair`, and `Good` health, respectively, and then using the formula:
+
+$$ {HI_{i}} =  \frac {\sum \limits _{j=1} ^{3} j{a}_{j}}{3 n_{i}} $$
+    
+where $${HI_{i}} =$$ health index of the $$i^{th}$$ species;<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$${a_{j}} =$$ species abundance with respect to the $$j^{th}$$ health category;<br/>
+           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$${n_{i}} =$$ $${i^{th}}$$ species abundance
 
 ```R
 # Health per species
@@ -1678,7 +1368,6 @@ spc_health <- trees %>%
            health = as.factor(health)) %>%
   arrange(spc_common, desc(proportion)) %>%
   ungroup()
-
 
 spc_health_index <- spc_health %>%
   group_by(spc_common) %>%
@@ -1780,20 +1469,15 @@ top_spc_health_stacked_bar_plot <- ggplot(for_graph_top_spc_health) +
                                  y = ifelse(proportion==1, 100*proportion-21.5,
                                             100*proportion-22)),
                              size=2.2, color="white", hjust=1)
-
-#spc_health_index
-#summary(lm(spc_health_index$abundance~spc_health_index$health_index))
-#shapiro.test(lm(spc_health_index$abundance~spc_health_index$health_index)$residuals)
-#abd_hi_corr <- cor(spc_health_index$abundance, spc_health_index$health_index, method="kendall")
-#abd_hi_corr
 ```
 
-<img src="documentation/top_spc_health_stacked_bar_plot.png" alt="" title=""/>
+Fig. 10 shows the 25 species with the highest HI value as well as the distribution of their relative abundances across health categories.
+
+![Fig. 10: Proportional Stacked Bar Graph of the Top 25 Healthiest Tree Species](/files/manhattans-urban-forestry-report-2015/images/top_spc_health_stacked_bar_plot.png)
 
 Paving stones as well as other trunk and branch problems also affect major tree parts (root, trunk, and branch) the most at a species level, similar to what is observed in the analysis of tree population.
 
 Figs. 11 to 13 show the top 25 species with the highest percentage of their trees having at least one problem for each tree part.
-
 
 ```R
 # For root problems' graph
@@ -1821,83 +1505,9 @@ spc_root_problems <- trees %>%
   pivot_longer(cols = c(3:5), 
                  names_to = "Root problem",
                  values_to = "% of trees")
-spc_root_problems
 ```
 
-
-<table class="dataframe">
-<!-- <caption>A tibble: 69 × 4</caption> -->
-<thead>
-  <tr><th scope=col>Common name of the species</th><th scope=col>none</th><th scope=col>Root problem</th><th scope=col>% of trees</th></tr>
-  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
-</thead>
-<tbody>
-  <tr><td>White pine       </td><td> 0.00</td><td>''Paving stones</td><td>100.00</td></tr>
-  <tr><td>White pine       </td><td> 0.00</td><td>'Metal grates  </td><td>  0.00</td></tr>
-  <tr><td>White pine       </td><td> 0.00</td><td>Others         </td><td>  0.00</td></tr>
-  <tr><td>European beech   </td><td>16.67</td><td>''Paving stones</td><td> 50.00</td></tr>
-  <tr><td>European beech   </td><td>16.67</td><td>'Metal grates  </td><td>  0.00</td></tr>
-  <tr><td>European beech   </td><td>16.67</td><td>Others         </td><td> 50.00</td></tr>
-  <tr><td>Tartar maple     </td><td>16.67</td><td>''Paving stones</td><td> 66.67</td></tr>
-  <tr><td>Tartar maple     </td><td>16.67</td><td>'Metal grates  </td><td>  0.00</td></tr>
-  <tr><td>Tartar maple     </td><td>16.67</td><td>Others         </td><td> 16.67</td></tr>
-  <tr><td>Southern magnolia</td><td>26.32</td><td>''Paving stones</td><td> 57.89</td></tr>
-  <tr><td>Southern magnolia</td><td>26.32</td><td>'Metal grates  </td><td>  0.00</td></tr>
-  <tr><td>Southern magnolia</td><td>26.32</td><td>Others         </td><td> 21.05</td></tr>
-  <tr><td>Norway spruce    </td><td>33.33</td><td>''Paving stones</td><td>  0.00</td></tr>
-  <tr><td>Norway spruce    </td><td>33.33</td><td>'Metal grates  </td><td>  0.00</td></tr>
-  <tr><td>Norway spruce    </td><td>33.33</td><td>Others         </td><td> 66.67</td></tr>
-  <tr><td>Katsura tree     </td><td>42.11</td><td>''Paving stones</td><td> 28.95</td></tr>
-  <tr><td>Katsura tree     </td><td>42.11</td><td>'Metal grates  </td><td> 21.05</td></tr>
-  <tr><td>Katsura tree     </td><td>42.11</td><td>Others         </td><td>  7.89</td></tr>
-  <tr><td>Tree of heaven   </td><td>45.19</td><td>''Paving stones</td><td> 43.27</td></tr>
-  <tr><td>Tree of heaven   </td><td>45.19</td><td>'Metal grates  </td><td>  1.92</td></tr>
-  <tr><td>Tree of heaven   </td><td>45.19</td><td>Others         </td><td> 12.50</td></tr>
-  <tr><td>Sassafras        </td><td>47.06</td><td>''Paving stones</td><td> 35.29</td></tr>
-  <tr><td>Sassafras        </td><td>47.06</td><td>'Metal grates  </td><td>  0.00</td></tr>
-  <tr><td>Sassafras        </td><td>47.06</td><td>Others         </td><td> 23.53</td></tr>
-  <tr><td>Boxelder         </td><td>50.00</td><td>''Paving stones</td><td> 50.00</td></tr>
-  <tr><td>Boxelder         </td><td>50.00</td><td>'Metal grates  </td><td>  0.00</td></tr>
-  <tr><td>Boxelder         </td><td>50.00</td><td>Others         </td><td>  0.00</td></tr>
-  <tr><td>Cucumber magnolia</td><td>50.00</td><td>''Paving stones</td><td> 16.67</td></tr>
-  <tr><td>Cucumber magnolia</td><td>50.00</td><td>'Metal grates  </td><td> 33.33</td></tr>
-  <tr><td>Cucumber magnolia</td><td>50.00</td><td>Others         </td><td> 33.33</td></tr>
-  <tr><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr>
-  <tr><td>Ohio buckeye       </td><td>58.33</td><td>''Paving stones</td><td>29.17</td></tr>
-  <tr><td>Ohio buckeye       </td><td>58.33</td><td>'Metal grates  </td><td> 0.00</td></tr>
-  <tr><td>Ohio buckeye       </td><td>58.33</td><td>Others         </td><td>12.50</td></tr>
-  <tr><td>Empress tree       </td><td>58.82</td><td>''Paving stones</td><td>41.18</td></tr>
-  <tr><td>Empress tree       </td><td>58.82</td><td>'Metal grates  </td><td> 0.00</td></tr>
-  <tr><td>Empress tree       </td><td>58.82</td><td>Others         </td><td> 0.00</td></tr>
-  <tr><td>Cornelian cherry   </td><td>59.26</td><td>''Paving stones</td><td> 3.70</td></tr>
-  <tr><td>Cornelian cherry   </td><td>59.26</td><td>'Metal grates  </td><td>33.33</td></tr>
-  <tr><td>Cornelian cherry   </td><td>59.26</td><td>Others         </td><td> 3.70</td></tr>
-  <tr><td>Crepe myrtle       </td><td>60.00</td><td>''Paving stones</td><td>40.00</td></tr>
-  <tr><td>Crepe myrtle       </td><td>60.00</td><td>'Metal grates  </td><td> 0.00</td></tr>
-  <tr><td>Crepe myrtle       </td><td>60.00</td><td>Others         </td><td> 0.00</td></tr>
-  <tr><td>Eastern cottonwood </td><td>60.00</td><td>''Paving stones</td><td>30.00</td></tr>
-  <tr><td>Eastern cottonwood </td><td>60.00</td><td>'Metal grates  </td><td> 0.00</td></tr>
-  <tr><td>Eastern cottonwood </td><td>60.00</td><td>Others         </td><td>20.00</td></tr>
-  <tr><td>Black walnut       </td><td>60.61</td><td>''Paving stones</td><td>39.39</td></tr>
-  <tr><td>Black walnut       </td><td>60.61</td><td>'Metal grates  </td><td> 3.03</td></tr>
-  <tr><td>Black walnut       </td><td>60.61</td><td>Others         </td><td> 0.00</td></tr>
-  <tr><td>Japanese tree lilac</td><td>62.02</td><td>''Paving stones</td><td>22.48</td></tr>
-  <tr><td>Japanese tree lilac</td><td>62.02</td><td>'Metal grates  </td><td> 8.53</td></tr>
-  <tr><td>Japanese tree lilac</td><td>62.02</td><td>Others         </td><td>10.85</td></tr>
-  <tr><td>Honeylocust        </td><td>62.15</td><td>''Paving stones</td><td>25.50</td></tr>
-  <tr><td>Honeylocust        </td><td>62.15</td><td>'Metal grates  </td><td> 6.28</td></tr>
-  <tr><td>Honeylocust        </td><td>62.15</td><td>Others         </td><td>10.66</td></tr>
-  <tr><td>Japanese hornbeam  </td><td>64.52</td><td>''Paving stones</td><td>25.81</td></tr>
-  <tr><td>Japanese hornbeam  </td><td>64.52</td><td>'Metal grates  </td><td> 3.23</td></tr>
-  <tr><td>Japanese hornbeam  </td><td>64.52</td><td>Others         </td><td> 9.68</td></tr>
-  <tr><td>Green ash          </td><td>65.45</td><td>''Paving stones</td><td>26.88</td></tr>
-  <tr><td>Green ash          </td><td>65.45</td><td>'Metal grates  </td><td> 1.04</td></tr>
-  <tr><td>Green ash          </td><td>65.45</td><td>Others         </td><td> 8.83</td></tr>
-</tbody>
-</table>
-
-
-
+![Fig. 11: Bar Graph of the Top 25 Tree Species with the Highest Percentage of Trees Having Root Problems](/files/manhattans-urban-forestry-report-2015/images/ root_problems_plot.png)
 
 ```R
 # For trunk problems' graph
@@ -1925,83 +1535,9 @@ spc_trunk_problems <- trees %>%
   pivot_longer(cols = c(3:5), 
                  names_to = "Trunk problem",
                  values_to = "% of trees")
-spc_trunk_problems
 ```
 
-
-<table class="dataframe">
-<!-- <caption>A tibble: 75 × 4</caption> -->
-<thead>
-  <tr><th scope=col>Common name of the species</th><th scope=col>none</th><th scope=col>Trunk problem</th><th scope=col>% of trees</th></tr>
-  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
-</thead>
-<tbody>
-  <tr><td>Tartar maple      </td><td>41.67</td><td>''Wires or rope    </td><td> 0.00</td></tr>
-  <tr><td>Tartar maple      </td><td>41.67</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Tartar maple      </td><td>41.67</td><td>Others             </td><td>58.33</td></tr>
-  <tr><td>Oklahoma redbud   </td><td>44.44</td><td>''Wires or rope    </td><td>11.11</td></tr>
-  <tr><td>Oklahoma redbud   </td><td>44.44</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Oklahoma redbud   </td><td>44.44</td><td>Others             </td><td>44.44</td></tr>
-  <tr><td>Horse chestnut    </td><td>63.64</td><td>''Wires or rope    </td><td>18.18</td></tr>
-  <tr><td>Horse chestnut    </td><td>63.64</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Horse chestnut    </td><td>63.64</td><td>Others             </td><td>18.18</td></tr>
-  <tr><td>Cockspur hawthorn </td><td>66.67</td><td>''Wires or rope    </td><td>33.33</td></tr>
-  <tr><td>Cockspur hawthorn </td><td>66.67</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Cockspur hawthorn </td><td>66.67</td><td>Others             </td><td> 0.00</td></tr>
-  <tr><td>Crimson king maple</td><td>66.67</td><td>''Wires or rope    </td><td> 0.00</td></tr>
-  <tr><td>Crimson king maple</td><td>66.67</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Crimson king maple</td><td>66.67</td><td>Others             </td><td>33.33</td></tr>
-  <tr><td>Paperbark maple   </td><td>66.67</td><td>''Wires or rope    </td><td> 0.00</td></tr>
-  <tr><td>Paperbark maple   </td><td>66.67</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Paperbark maple   </td><td>66.67</td><td>Others             </td><td>33.33</td></tr>
-  <tr><td>Hedge maple       </td><td>69.57</td><td>''Wires or rope    </td><td> 4.35</td></tr>
-  <tr><td>Hedge maple       </td><td>69.57</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Hedge maple       </td><td>69.57</td><td>Others             </td><td>26.09</td></tr>
-  <tr><td>Japanese snowbell </td><td>73.33</td><td>''Wires or rope    </td><td> 0.00</td></tr>
-  <tr><td>Japanese snowbell </td><td>73.33</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Japanese snowbell </td><td>73.33</td><td>Others             </td><td>26.67</td></tr>
-  <tr><td>Pond cypress      </td><td>75.00</td><td>''Wires or rope    </td><td> 0.00</td></tr>
-  <tr><td>Pond cypress      </td><td>75.00</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Pond cypress      </td><td>75.00</td><td>Others             </td><td>25.00</td></tr>
-  <tr><td>Silver maple      </td><td>77.46</td><td>''Wires or rope    </td><td> 8.45</td></tr>
-  <tr><td>Silver maple      </td><td>77.46</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Silver maple      </td><td>77.46</td><td>Others             </td><td>14.08</td></tr>
-  <tr><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr>
-  <tr><td>Tulip-poplar     </td><td>82.35</td><td>''Wires or rope    </td><td> 0.00</td></tr>
-  <tr><td>Tulip-poplar     </td><td>82.35</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Tulip-poplar     </td><td>82.35</td><td>Others             </td><td>17.65</td></tr>
-  <tr><td>Paper birch      </td><td>82.98</td><td>''Wires or rope    </td><td> 2.13</td></tr>
-  <tr><td>Paper birch      </td><td>82.98</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Paper birch      </td><td>82.98</td><td>Others             </td><td>14.89</td></tr>
-  <tr><td>European beech   </td><td>83.33</td><td>''Wires or rope    </td><td> 0.00</td></tr>
-  <tr><td>European beech   </td><td>83.33</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>European beech   </td><td>83.33</td><td>Others             </td><td>16.67</td></tr>
-  <tr><td>Mimosa           </td><td>83.33</td><td>''Wires or rope    </td><td>16.67</td></tr>
-  <tr><td>Mimosa           </td><td>83.33</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Mimosa           </td><td>83.33</td><td>Others             </td><td> 0.00</td></tr>
-  <tr><td>Green ash        </td><td>84.16</td><td>''Wires or rope    </td><td> 3.77</td></tr>
-  <tr><td>Green ash        </td><td>84.16</td><td>'Lighting installed</td><td> 0.39</td></tr>
-  <tr><td>Green ash        </td><td>84.16</td><td>Others             </td><td>12.21</td></tr>
-  <tr><td>Dawn redwood     </td><td>84.92</td><td>''Wires or rope    </td><td> 2.01</td></tr>
-  <tr><td>Dawn redwood     </td><td>84.92</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Dawn redwood     </td><td>84.92</td><td>Others             </td><td>13.57</td></tr>
-  <tr><td>Japanese hornbeam</td><td>85.48</td><td>''Wires or rope    </td><td> 4.84</td></tr>
-  <tr><td>Japanese hornbeam</td><td>85.48</td><td>'Lighting installed</td><td> 1.61</td></tr>
-  <tr><td>Japanese hornbeam</td><td>85.48</td><td>Others             </td><td> 8.06</td></tr>
-  <tr><td>Eastern hemlock  </td><td>85.71</td><td>''Wires or rope    </td><td> 0.00</td></tr>
-  <tr><td>Eastern hemlock  </td><td>85.71</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Eastern hemlock  </td><td>85.71</td><td>Others             </td><td>14.29</td></tr>
-  <tr><td>Southern red oak </td><td>85.71</td><td>''Wires or rope    </td><td> 0.00</td></tr>
-  <tr><td>Southern red oak </td><td>85.71</td><td>'Lighting installed</td><td> 0.00</td></tr>
-  <tr><td>Southern red oak </td><td>85.71</td><td>Others             </td><td>14.29</td></tr>
-  <tr><td>Sweetgum         </td><td>86.78</td><td>''Wires or rope    </td><td> 2.64</td></tr>
-  <tr><td>Sweetgum         </td><td>86.78</td><td>'Lighting installed</td><td> 0.44</td></tr>
-  <tr><td>Sweetgum         </td><td>86.78</td><td>Others             </td><td>10.13</td></tr>
-</tbody>
-</table>
-
-
-
+![Fig. 12: Bar Graph of the Top 25 Tree Species with the Highest Percentage of Trees Having Trunk Problems](/files/manhattans-urban-forestry-report-2015/images/trunk_ploblems_plot.png)
 
 ```R
 # For branch problems' graph
@@ -2029,88 +1565,11 @@ brch_trunk_problems <- trees %>%
   pivot_longer(cols = c(3:5), 
                  names_to = "Branch problem",
                  values_to = "% of trees")
-brch_trunk_problems
 ```
+![Fig. 13: Bar Graph of the Top 25 Tree Species with the Highest Percentage of Trees Having Branch Problems](/files/manhattans-urban-forestry-report-2015/images/branch_problems_plot.png)
 
-
-<table class="dataframe">
-<!-- <caption>A tibble: 75 × 4</caption> -->
-<thead>
-  <tr><th scope=col>Common name of the species</th><th scope=col>none</th><th scope=col>Branch problem</th><th scope=col>% of trees</th></tr>
-  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
-</thead>
-<tbody>
-  <tr><td>Boxelder          </td><td>50.00</td><td>''Lights or wires </td><td> 0.00</td></tr>
-  <tr><td>Boxelder          </td><td>50.00</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Boxelder          </td><td>50.00</td><td>Others            </td><td>50.00</td></tr>
-  <tr><td>Crimson king maple</td><td>50.00</td><td>''Lights or wires </td><td> 0.00</td></tr>
-  <tr><td>Crimson king maple</td><td>50.00</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Crimson king maple</td><td>50.00</td><td>Others            </td><td>50.00</td></tr>
-  <tr><td>European alder    </td><td>50.00</td><td>''Lights or wires </td><td> 0.00</td></tr>
-  <tr><td>European alder    </td><td>50.00</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>European alder    </td><td>50.00</td><td>Others            </td><td>50.00</td></tr>
-  <tr><td>Tartar maple      </td><td>50.00</td><td>''Lights or wires </td><td> 8.33</td></tr>
-  <tr><td>Tartar maple      </td><td>50.00</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Tartar maple      </td><td>50.00</td><td>Others            </td><td>50.00</td></tr>
-  <tr><td>Maple             </td><td>67.57</td><td>''Lights or wires </td><td>10.81</td></tr>
-  <tr><td>Maple             </td><td>67.57</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Maple             </td><td>67.57</td><td>Others            </td><td>21.62</td></tr>
-  <tr><td>Southern magnolia </td><td>68.42</td><td>''Lights or wires </td><td> 0.00</td></tr>
-  <tr><td>Southern magnolia </td><td>68.42</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Southern magnolia </td><td>68.42</td><td>Others            </td><td>31.58</td></tr>
-  <tr><td>Sassafras         </td><td>70.59</td><td>''Lights or wires </td><td> 5.88</td></tr>
-  <tr><td>Sassafras         </td><td>70.59</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Sassafras         </td><td>70.59</td><td>Others            </td><td>29.41</td></tr>
-  <tr><td>Turkish hazelnut  </td><td>70.59</td><td>''Lights or wires </td><td> 0.00</td></tr>
-  <tr><td>Turkish hazelnut  </td><td>70.59</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Turkish hazelnut  </td><td>70.59</td><td>Others            </td><td>29.41</td></tr>
-  <tr><td>American beech    </td><td>72.73</td><td>''Lights or wires </td><td> 4.55</td></tr>
-  <tr><td>American beech    </td><td>72.73</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>American beech    </td><td>72.73</td><td>Others            </td><td>22.73</td></tr>
-  <tr><td>Paperbark maple   </td><td>73.33</td><td>''Lights or wires </td><td> 0.00</td></tr>
-  <tr><td>Paperbark maple   </td><td>73.33</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Paperbark maple   </td><td>73.33</td><td>Others            </td><td>26.67</td></tr>
-  <tr><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr>
-  <tr><td>Arborvitae        </td><td>80.00</td><td>''Lights or wires </td><td> 0.00</td></tr>
-  <tr><td>Arborvitae        </td><td>80.00</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Arborvitae        </td><td>80.00</td><td>Others            </td><td>20.00</td></tr>
-  <tr><td>Crepe myrtle      </td><td>80.00</td><td>''Lights or wires </td><td> 0.00</td></tr>
-  <tr><td>Crepe myrtle      </td><td>80.00</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Crepe myrtle      </td><td>80.00</td><td>Others            </td><td>20.00</td></tr>
-  <tr><td>Eastern cottonwood</td><td>80.00</td><td>''Lights or wires </td><td> 0.00</td></tr>
-  <tr><td>Eastern cottonwood</td><td>80.00</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Eastern cottonwood</td><td>80.00</td><td>Others            </td><td>20.00</td></tr>
-  <tr><td>Silver birch      </td><td>80.00</td><td>''Lights or wires </td><td>20.00</td></tr>
-  <tr><td>Silver birch      </td><td>80.00</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Silver birch      </td><td>80.00</td><td>Others            </td><td> 0.00</td></tr>
-  <tr><td>Sugar maple       </td><td>81.25</td><td>''Lights or wires </td><td> 2.08</td></tr>
-  <tr><td>Sugar maple       </td><td>81.25</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Sugar maple       </td><td>81.25</td><td>Others            </td><td>16.67</td></tr>
-  <tr><td>Cornelian cherry  </td><td>81.48</td><td>''Lights or wires </td><td> 3.70</td></tr>
-  <tr><td>Cornelian cherry  </td><td>81.48</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Cornelian cherry  </td><td>81.48</td><td>Others            </td><td>14.81</td></tr>
-  <tr><td>Horse chestnut    </td><td>81.82</td><td>''Lights or wires </td><td> 0.00</td></tr>
-  <tr><td>Horse chestnut    </td><td>81.82</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Horse chestnut    </td><td>81.82</td><td>Others            </td><td>18.18</td></tr>
-  <tr><td>Amur maple        </td><td>83.33</td><td>''Lights or wires </td><td> 0.00</td></tr>
-  <tr><td>Amur maple        </td><td>83.33</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>Amur maple        </td><td>83.33</td><td>Others            </td><td>16.67</td></tr>
-  <tr><td>European beech    </td><td>83.33</td><td>''Lights or wires </td><td> 0.00</td></tr>
-  <tr><td>European beech    </td><td>83.33</td><td>'Shoes            </td><td> 0.00</td></tr>
-  <tr><td>European beech    </td><td>83.33</td><td>Others            </td><td>16.67</td></tr>
-  <tr><td>Callery pear      </td><td>83.92</td><td>''Lights or wires </td><td> 2.32</td></tr>
-  <tr><td>Callery pear      </td><td>83.92</td><td>'Shoes            </td><td> 0.11</td></tr>
-  <tr><td>Callery pear      </td><td>83.92</td><td>Others            </td><td>14.13</td></tr>
-</tbody>
-</table>
-
-
-
-#### Ranking
-As suggested by the urban design team, tree size and health are used to determine which species have the most desirable characteristics. The two metrics used are health index $(HI)$ and median trunk diameter at breast height $(DBH)$ of $54$ inches, respectively. 
-
-With that, it is confirmed through a correlation analysis that they have a [high to very high positive](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3576830/table/T1/?report=objectonly) correlation. This means that an increase in median trunk diameter is associated to an increase in the health index of a species. Below are the results of the correlation tests using three methods:
-
+#### 2.2.3. Ranking
+As suggested by the urban design team, tree size and health are used to determine which species have the most desirable characteristics. The two metrics used are health index (HI) and median trunk diameter at breast height (DBH) of 54 inches, respectively. 
 
 ```R
 spearman_corr <- data.frame(
@@ -2145,58 +1604,26 @@ corr_coeffs <- spearman_corr %>%
 
 rownames(corr_coeffs) <- 1:nrow(corr_coeffs)
 
-# HTML Table for correlation results
-#kable(corr_coeffs, 
-#      caption = " ",#
-#      label = "tables", format = "html", booktabs = TRUE)
-```
-
-
-```R
 corr_coeffs %>%
   mutate_if(is.numeric, list(~round(., digits=4))) %>%
   mutate_if(is.numeric, list(~prettyNum(., big.mark=",")))
 ```
+With that, it is confirmed through a correlation analysis that they have a [high to very high positive](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3576830/table/T1/?report=objectonly) correlation. This means that an increase in median trunk diameter is associated to an increase in the health index of a species. Below are the results of the correlation tests using three methods:
 
-
-<table class="dataframe">
-<caption>A data.frame: 3 × 4</caption>
-<thead>
-  <tr><th></th><th scope=col>method</th><th scope=col>test_stat</th><th scope=col>corr_coeff</th><th scope=col>p_value</th></tr>
-  <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><th scope=row>1</th><td>Spearman</td><td>4,759.501</td><td>0.9864</td><td>1.2123e-100</td></tr>
-  <tr><th scope=row>2</th><td>Kendall </td><td>14.7812  </td><td>0.9361</td><td>1.9379e-49 </td></tr>
-  <tr><th scope=row>3</th><td>Pearson </td><td>15.4671  </td><td>0.8093</td><td>6.6475e-31 </td></tr>
-</tbody>
-</table>
-
-
+| Method    | Test Statistic | Correlation Coefficient | p-value        |
+|:----------|---------------:|------------------------:|---------------:|
+| Spearman  | 4,759.501      | 0.9864                  | 1.2123e-100    |
+| Kendall   | 14.7812        | 0.9361                  | 1.9379e-49     |
+| Pearson   | 15.4671        | 0.8093                  | 6.6475e-31     |
 
 To determine species ranking, the sum of ranks for health index and median trunk diameter was computed to quantify each species' overall rank relative to others. 
 
-Additionally, two ranking systems were produced. The first encompassed all $128$ species. The second, however, adjusted for abundance by including only species with tree counts of at least $29$, representing the median species abundance.
+Additionally, two ranking systems were produced. The first encompassed all 128 species. The second, however, adjusted for abundance by including only species with tree counts of at least 29, representing the median species abundance.
 
 Figures 14 and 15 provide [dashboard](https://public.tableau.com/app/profile/jbjdelacruz/viz/NYCURBANPLANNINGFORESTRYREPORT2015/Dashboard) snapshots illustrating the results from both ranking systems.
 
-
 ```R
-# spc_first_ranking <- spc_health_index %>%
-# 	select(spc_common, abundance, health_index) %>%
-# 	inner_join(trees %>% 
-#                group_by(spc_common) %>%
-#                filter(spc_common != "null", health != "null") %>%
-#                summarize(abundance = n(),
-#                          median_tree_dbh = median(tree_dbh)),
-#     	by=c("spc_common", "abundance")) %>%
-# 	mutate(dbh_rank = percent_rank(median_tree_dbh),
-# 		   hi_rank = percent_rank(health_index),
-# 		   ps = (dbh_rank+hi_rank)/2) %>%
-# 	arrange(desc(ps))
-
-# spc_first_ranking
-
+# First Ranking System
 spc_first_ranking <- spc_health_index %>%
   select(spc_common, abundance, health_index) %>%
   inner_join(trees %>% 
@@ -2211,6 +1638,7 @@ spc_first_ranking <- spc_health_index %>%
        rank_sum = (hi_rank + dbh_rank)/2) %>%
   arrange(rank_sum)
 
+# Second Ranking System
 spc_second_ranking <- spc_health_index %>%
   select(spc_common, abundance, health_index) %>%
   inner_join(trees %>% 
@@ -2219,6 +1647,7 @@ spc_second_ranking <- spc_health_index %>%
                summarize(abundance = n(),
                          median_tree_dbh = median(tree_dbh)),
       by=c("spc_common", "abundance")) %>%
+      
 # Filter out species with abundances less than the median abundances
   filter(abundance >= median(spc_tree_dbh_stats$abundance)
           ) %>% 
@@ -2227,14 +1656,6 @@ mutate(abd_rank = rank(desc(abundance)),
           dbh_rank = rank(desc(median_tree_dbh)),
        rank_sum = (hi_rank + dbh_rank)) %>%
   arrange(rank_sum)
-
-## Top species by rank sums (health index and median tree dbh)
-
-#spc_first_ranking %>%
-#select(spc_common, abundance, rank_sum, everything())
-
-#spc_second_ranking %>%
-#select(spc_common, abundance, #rank_sum, everything())
 
 # For graphs
 spc_first_ranking_long <- spc_first_ranking %>%
@@ -2252,13 +1673,6 @@ spc_second_ranking_long <- spc_second_ranking %>%
   pivot_longer(cols = c(3:4), 
                  names_to = "Measurement",
                  values_to = "Value")
-
-
-#spc_second_ranking_long$`Common name of the species` <- factor(
-#    spc_second_ranking_long$`Common name of the species`,
-#	levels = (spc_second_ranking)$spc_common,
-    #ordered = TRUE
-#)
 
 # Tree size and Health 
 top_spc_first_ranking <- spc_first_ranking_long %>%
@@ -2282,131 +1696,62 @@ top_hi_spc <- spc_second_ranking_long %>%
   rename(`Health index` = Value) %>%
   filter(`Measurement` == "Health index",
            `Common name of the species` %in% (spc_second_ranking %>% slice(1:10))$spc_common) 
-
-spc_first_ranking_long %>%
-  select(-(abd_rank))
 ```
 
-
-<table class="dataframe">
-<!-- <caption>A tibble: 256 × 7</caption> -->
-<thead>
-  <tr><th scope=col>Common name of the species</th><th scope=col>abundance</th><th scope=col>hi_rank</th><th scope=col>dbh_rank</th><th scope=col>rank_sum</th><th scope=col>Measurement</th><th scope=col>Value</th></tr>
-  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
-</thead>
-<tbody>
-  <tr><td>Smoketree         </td><td>    1</td><td> 6.5</td><td> 8.0</td><td> 7.25</td><td>Health index    </td><td> 1.0000000</td></tr>
-  <tr><td>Smoketree         </td><td>    1</td><td> 6.5</td><td> 8.0</td><td> 7.25</td><td>Median trunk dbh</td><td>11.0000000</td></tr>
-  <tr><td>Black maple       </td><td>   10</td><td>13.0</td><td> 8.0</td><td>10.50</td><td>Health index    </td><td> 0.9666667</td></tr>
-  <tr><td>Black maple       </td><td>   10</td><td>13.0</td><td> 8.0</td><td>10.50</td><td>Median trunk dbh</td><td>11.0000000</td></tr>
-  <tr><td>Amur cork tree    </td><td>    8</td><td>14.0</td><td> 8.0</td><td>11.00</td><td>Health index    </td><td> 0.9583333</td></tr>
-  <tr><td>Amur cork tree    </td><td>    8</td><td>14.0</td><td> 8.0</td><td>11.00</td><td>Median trunk dbh</td><td>11.0000000</td></tr>
-  <tr><td>Siberian elm      </td><td>  156</td><td>23.0</td><td> 8.0</td><td>15.50</td><td>Health index    </td><td> 0.9316239</td></tr>
-  <tr><td>Siberian elm      </td><td>  156</td><td>23.0</td><td> 8.0</td><td>15.50</td><td>Median trunk dbh</td><td>11.0000000</td></tr>
-  <tr><td>Pitch pine        </td><td>    5</td><td> 6.5</td><td>26.5</td><td>16.50</td><td>Health index    </td><td> 1.0000000</td></tr>
-  <tr><td>Pitch pine        </td><td>    5</td><td> 6.5</td><td>26.5</td><td>16.50</td><td>Median trunk dbh</td><td> 8.0000000</td></tr>
-  <tr><td>Red horse chestnut</td><td>    1</td><td> 6.5</td><td>26.5</td><td>16.50</td><td>Health index    </td><td> 1.0000000</td></tr>
-  <tr><td>Red horse chestnut</td><td>    1</td><td> 6.5</td><td>26.5</td><td>16.50</td><td>Median trunk dbh</td><td> 8.0000000</td></tr>
-  <tr><td>Willow oak        </td><td>  889</td><td>21.0</td><td>13.0</td><td>17.00</td><td>Health index    </td><td> 0.9366329</td></tr>
-  <tr><td>Willow oak        </td><td>  889</td><td>21.0</td><td>13.0</td><td>17.00</td><td>Median trunk dbh</td><td>10.0000000</td></tr>
-  <tr><td>Honeylocust       </td><td>13175</td><td>20.0</td><td>19.5</td><td>19.75</td><td>Health index    </td><td> 0.9387223</td></tr>
-  <tr><td>Honeylocust       </td><td>13175</td><td>20.0</td><td>19.5</td><td>19.75</td><td>Median trunk dbh</td><td> 9.0000000</td></tr>
-  <tr><td>American elm      </td><td> 1698</td><td>36.0</td><td> 4.0</td><td>20.00</td><td>Health index    </td><td> 0.9185316</td></tr>
-  <tr><td>American elm      </td><td> 1698</td><td>36.0</td><td> 4.0</td><td>20.00</td><td>Median trunk dbh</td><td>12.0000000</td></tr>
-  <tr><td>Pin oak           </td><td> 4584</td><td>27.0</td><td>19.5</td><td>23.25</td><td>Health index    </td><td> 0.9282286</td></tr>
-  <tr><td>Pin oak           </td><td> 4584</td><td>27.0</td><td>19.5</td><td>23.25</td><td>Median trunk dbh</td><td> 9.0000000</td></tr>
-  <tr><td>Tree of heaven    </td><td>  104</td><td>39.0</td><td> 8.0</td><td>23.50</td><td>Health index    </td><td> 0.9134615</td></tr>
-  <tr><td>Tree of heaven    </td><td>  104</td><td>39.0</td><td> 8.0</td><td>23.50</td><td>Median trunk dbh</td><td>11.0000000</td></tr>
-  <tr><td>White ash         </td><td>   50</td><td>33.0</td><td>15.0</td><td>24.00</td><td>Health index    </td><td> 0.9200000</td></tr>
-  <tr><td>White ash         </td><td>   50</td><td>33.0</td><td>15.0</td><td>24.00</td><td>Median trunk dbh</td><td> 9.5000000</td></tr>
-  <tr><td>Black locust      </td><td>  259</td><td>37.0</td><td>13.0</td><td>25.00</td><td>Health index    </td><td> 0.9176319</td></tr>
-  <tr><td>Black locust      </td><td>  259</td><td>37.0</td><td>13.0</td><td>25.00</td><td>Median trunk dbh</td><td>10.0000000</td></tr>
-  <tr><td>Black walnut      </td><td>   33</td><td>34.0</td><td>19.5</td><td>26.75</td><td>Health index    </td><td> 0.9191919</td></tr>
-  <tr><td>Black walnut      </td><td>   33</td><td>34.0</td><td>19.5</td><td>26.75</td><td>Median trunk dbh</td><td> 9.0000000</td></tr>
-  <tr><td>Sophora           </td><td> 4453</td><td>35.0</td><td>19.5</td><td>27.25</td><td>Health index    </td><td> 0.9187813</td></tr>
-  <tr><td>Sophora           </td><td> 4453</td><td>35.0</td><td>19.5</td><td>27.25</td><td>Median trunk dbh</td><td> 9.0000000</td></tr>
-  <tr><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr>
-  <tr><td>Turkish hazelnut   </td><td> 17</td><td>103.5</td><td> 87.0</td><td> 95.25</td><td>Health index    </td><td>0.7843137</td></tr>
-  <tr><td>Turkish hazelnut   </td><td> 17</td><td>103.5</td><td> 87.0</td><td> 95.25</td><td>Median trunk dbh</td><td>4.0000000</td></tr>
-  <tr><td>Tulip-poplar       </td><td> 34</td><td>112.0</td><td> 87.0</td><td> 99.50</td><td>Health index    </td><td>0.7647059</td></tr>
-  <tr><td>Tulip-poplar       </td><td> 34</td><td>112.0</td><td> 87.0</td><td> 99.50</td><td>Median trunk dbh</td><td>4.0000000</td></tr>
-  <tr><td>Common hackberry   </td><td>170</td><td> 87.0</td><td>113.0</td><td>100.00</td><td>Health index    </td><td>0.8352941</td></tr>
-  <tr><td>Common hackberry   </td><td>170</td><td> 87.0</td><td>113.0</td><td>100.00</td><td>Median trunk dbh</td><td>3.0000000</td></tr>
-  <tr><td>Maple              </td><td> 37</td><td>117.0</td><td> 87.0</td><td>102.00</td><td>Health index    </td><td>0.7027027</td></tr>
-  <tr><td>Maple              </td><td> 37</td><td>117.0</td><td> 87.0</td><td>102.00</td><td>Median trunk dbh</td><td>4.0000000</td></tr>
-  <tr><td>Himalayan cedar    </td><td>  6</td><td> 90.0</td><td>125.5</td><td>107.75</td><td>Health index    </td><td>0.8333333</td></tr>
-  <tr><td>Himalayan cedar    </td><td>  6</td><td> 90.0</td><td>125.5</td><td>107.75</td><td>Median trunk dbh</td><td>2.0000000</td></tr>
-  <tr><td>Sassafras          </td><td> 17</td><td>103.5</td><td>113.0</td><td>108.25</td><td>Health index    </td><td>0.7843137</td></tr>
-  <tr><td>Sassafras          </td><td> 17</td><td>103.5</td><td>113.0</td><td>108.25</td><td>Median trunk dbh</td><td>3.0000000</td></tr>
-  <tr><td>Kentucky yellowwood</td><td> 18</td><td>109.0</td><td>113.0</td><td>111.00</td><td>Health index    </td><td>0.7777778</td></tr>
-  <tr><td>Kentucky yellowwood</td><td> 18</td><td>109.0</td><td>113.0</td><td>111.00</td><td>Median trunk dbh</td><td>3.0000000</td></tr>
-  <tr><td>Norway spruce      </td><td>  3</td><td>109.0</td><td>113.0</td><td>111.00</td><td>Health index    </td><td>0.7777778</td></tr>
-  <tr><td>Norway spruce      </td><td>  3</td><td>109.0</td><td>113.0</td><td>111.00</td><td>Median trunk dbh</td><td>3.0000000</td></tr>
-  <tr><td>Horse chestnut     </td><td> 11</td><td>114.0</td><td>113.0</td><td>113.50</td><td>Health index    </td><td>0.7575758</td></tr>
-  <tr><td>Horse chestnut     </td><td> 11</td><td>114.0</td><td>113.0</td><td>113.50</td><td>Median trunk dbh</td><td>3.0000000</td></tr>
-  <tr><td>Pagoda dogwood     </td><td> 18</td><td>115.0</td><td>113.0</td><td>114.00</td><td>Health index    </td><td>0.7407407</td></tr>
-  <tr><td>Pagoda dogwood     </td><td> 18</td><td>115.0</td><td>113.0</td><td>114.00</td><td>Median trunk dbh</td><td>3.0000000</td></tr>
-  <tr><td>Paperbark maple    </td><td> 15</td><td>120.5</td><td>113.0</td><td>116.75</td><td>Health index    </td><td>0.6666667</td></tr>
-  <tr><td>Paperbark maple    </td><td> 15</td><td>120.5</td><td>113.0</td><td>116.75</td><td>Median trunk dbh</td><td>3.0000000</td></tr>
-  <tr><td>Spruce             </td><td>  1</td><td>120.5</td><td>113.0</td><td>116.75</td><td>Health index    </td><td>0.6666667</td></tr>
-  <tr><td>Spruce             </td><td>  1</td><td>120.5</td><td>113.0</td><td>116.75</td><td>Median trunk dbh</td><td>3.0000000</td></tr>
-  <tr><td>Eastern hemlock    </td><td>  7</td><td>126.0</td><td>113.0</td><td>119.50</td><td>Health index    </td><td>0.5238095</td></tr>
-  <tr><td>Eastern hemlock    </td><td>  7</td><td>126.0</td><td>113.0</td><td>119.50</td><td>Median trunk dbh</td><td>3.0000000</td></tr>
-  <tr><td>Douglas-fir        </td><td>  2</td><td>120.5</td><td>125.5</td><td>123.00</td><td>Health index    </td><td>0.6666667</td></tr>
-  <tr><td>Douglas-fir        </td><td>  2</td><td>120.5</td><td>125.5</td><td>123.00</td><td>Median trunk dbh</td><td>2.0000000</td></tr>
-  <tr><td>Pond cypress       </td><td> 12</td><td>124.5</td><td>122.0</td><td>123.25</td><td>Health index    </td><td>0.5555556</td></tr>
-  <tr><td>Pond cypress       </td><td> 12</td><td>124.5</td><td>122.0</td><td>123.25</td><td>Median trunk dbh</td><td>2.5000000</td></tr>
-</tbody>
-</table>
-
-
-
 **Fig. 14: Dashboard Results Using 'Rank All Species, by Size & Health' System**
-<img src="documentation/Dashboard1.png"/>
+
+![Fig. 14: Dashboard Results Using 'Rank All Species, by Size & Health' System](/files/manhattans-urban-forestry-report-2015/images/Dashboard1.png)
 
 **Fig. 15: Dashboard Results Using 'Rank Species with Abundance ≥ 29, by Size & Health'**
-<img src="documentation/Dashboard2.png"/>
 
-## Recommendations
+![Fig. 15: Dashboard Results Using 'Rank Species with Abundance ≥ 29, by Size & Health](/files/manhattans-urban-forestry-report-2015/images/Dashboard2.png)
+
+## 3. Recommendations
 The following are some potential courses of action for Manhattan's urban planning department:
 
-- Large southern neighborhoods such as Midtown-Midtown South (MN17), SoHo-TriBeCa-Civic Center-Little Italy (MN24), and Lower East Side (MN28), which are ranked third, sixth, and eighth in terms of land area, respectively, but only ranked $25$th, $15$th, and $19$th in terms of tree counts, can be ideal locations for planting trees.
+* Large southern neighborhoods such as Midtown-Midtown South (MN17), SoHo–TriBeCa–Civic Center–Little Italy (MN24), and Lower East Side (MN28), which are ranked third, sixth, and eighth in terms of land area, respectively, but only ranked 25th, 15th, and 19th in terms of tree counts, can be ideal locations for planting trees.
 
 - Some of the issues that need to be prioritized in the Stuyvesant Town-Cooper Village neighborhood include low tree counts, species richness, and a high number of trees that are offset from curb.
 
 - Although two rankings were produced, the second one has a better rank estimation due to large sample size per species; thus, the top five species (out of the 64 included) in terms of size and health that are recommended to be planted on the streets of Manhattan are:
 
-  1. Siberian elm<br/>
-     - Abundance: $156$ 
-     - Median trunk diameter: $11$ $(3$rd$)$
-     - Heath index: $0.9316$ $(6$th$)$
-  
-  2. Willow oak<br/>
-     - Abundance: $889$
-     - Median trunk diameter: $10$ $(6$th$)$
-     - Heath index: $0.9366$ $(5$th$)$
-  
-  3. Honeylocust<br/>
-     - Abundance: $13,176$
-     - Median trunk diameter: $9$ $(12$th$)$
-     - Heath index: $0.9387$ $(4$th$)$
-     
-  4. American elm<br/>
-     - Abundance: $1,698$
-     - Median trunk diameter: $12$ $(2$nd$)$
-     - Heath index: $0.9185$ $(17$th$)$
-  
-  5. Pin oak<br/>
-     - Abundance: $4,584$
-     - Median trunk diameter: $9$ $(12$th$)$
-     - Heath index: $0.9282$ $(9$th$)$
-  
+1. **Siberian elm**
+
+   * Abundance: 156
+   * Median trunk diameter: 11 (3rd)
+   * Heath index: 0.9316 (6th)
+
+2. **Willow oak**
+
+   * Abundance: 889
+   * Median trunk diameter: 10 (6th)
+   * Heath index: 0.9366 (5th)
+
+3. **Honeylocust**
+
+   * Abundance: 13,176
+   * Median trunk diameter: 9 (12th)
+   * Heath index: 0.9387 (4th)
+
+4. **American elm**
+
+   * Abundance: 1,698
+   * Median trunk diameter: 12 (2nd)
+   * Heath index: 0.9185 (17th)
+
+5. **Pin oak**
+
+   * Abundance: 4,584
+   * Median trunk diameter: 9 (12th)
+   * Heath index: 0.9282 (9th)
+
 - Trees of species *Smoketree*, *Black maple*, *Amur cork tree*, *Pitch pine*, and *Red horse chestnut* from the first ranking can also be considered as they have shown superior sizes and health. However, it is also suggested looking into related literature and/or more adequate data about them. 
 
-## Appendix
-### Tables & Figures
-#### ***Shape area per neighborhood***
+## 4. Appendix
 
+### 4.1. Tables & Figures
+
+#### 4.1.1. ***Shape area per neighborhood***
 
 ```R
 neighborhoods %>%
@@ -2416,12 +1761,11 @@ neighborhoods %>%
   select(-boroname)
 ```
 
-
 <table class="dataframe">
-<caption>A data.frame: 28 × 3</caption>
+<!-- <caption>A data.frame: 28 × 3</caption> -->
 <thead>
   <tr><th></th><th scope=col>ntacode</th><th scope=col>ntaname</th><th scope=col>shape_area</th></tr>
-  <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+  <!-- <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><th scope=row>1</th><td>MN13</td><td>Hudson Yards-Chelsea-Flatiron-Union Square</td><td>37029727</td></tr>
@@ -2457,7 +1801,7 @@ neighborhoods %>%
 
 
 
-#### ***Tree count per neighborhood***
+#### 4.1.2. ***Tree count per neighborhood***
 
 
 ```R
@@ -2508,7 +1852,7 @@ nbh_tree_cnts %>%
 
 
 
-#### ***Tree count per curb location***
+#### 4.1.3. ***Tree count per curb location***
 
 
 ```R
@@ -2530,7 +1874,7 @@ number_of_trees_per_curb_loc
 
 
 
-#### ***Curb location per neighborhood***
+#### 4.1.4. ***Curb location per neighborhood***
 
 
 ```R
@@ -2609,7 +1953,7 @@ curb_loc_per_nbh %>%
 
 
 
-#### ***Tree population's categorical, health-related attributes***
+#### 4.1.5. ***Tree population's categorical, health-related attributes***
 
 
 ```R
@@ -2620,10 +1964,10 @@ pop_attributes %>%
 
 
 <table class="dataframe">
-<caption>A data.frame: 23 × 4</caption>
+<!-- <caption>A data.frame: 23 × 4</caption> -->
 <thead>
   <tr><th scope=col>attribute</th><th scope=col>category</th><th scope=col>number_of_trees</th><th scope=col>percentage</th></tr>
-  <tr><th scope=col>&lt;ord&gt;</th><th scope=col>&lt;ord&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
+  <!-- <tr><th scope=col>&lt;ord&gt;</th><th scope=col>&lt;ord&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><td>status    </td><td>Alive</td><td>62427</td><td>97.19%</td></tr>
@@ -2654,7 +1998,7 @@ pop_attributes %>%
 
 
 
-#### ***Richness (number of tree species) per neighborhood***
+#### 4.1.3. ***Richness (number of tree species) per neighborhood***
 
 
 ```R
@@ -2701,10 +2045,7 @@ nbh_rchns
 </table>
 
 
-
-#### ***Species abundances***
-
-#### ***Summary statistics of species abundances (number of trees per species)***
+#### 4.1.6. ***Summary statistics of species abundances (number of trees per species)***
 
 
 ```R
@@ -2793,10 +2134,10 @@ options(warn = defaultW)
 
 
 <table class="dataframe">
-<caption>A data.frame: 1 × 8</caption>
+<!-- <caption>A data.frame: 1 × 8</caption> -->
 <thead>
   <tr><th></th><th scope=col>number_of_identified_spc</th><th scope=col>mean</th><th scope=col>sd</th><th scope=col>min</th><th scope=col>first_quartile</th><th scope=col>median</th><th scope=col>third_quartile</th><th scope=col>max</th></tr>
-  <tr><th></th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th></tr>
+  <!-- <tr><th></th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th></tr> -->
 </thead>
 <tbody>
   <tr><th scope=row>spc_abundance</th><td>128</td><td>487.7188</td><td>1597.828</td><td>1</td><td>8.75</td><td>28.5</td><td>167.75</td><td>13176</td></tr>
@@ -2805,7 +2146,7 @@ options(warn = defaultW)
 
 
 
-#### ***Summary statistics of species' tree DBHs***
+#### 4.1.7. ***Summary statistics of species' tree DBHs***
 
 
 ```R
@@ -2887,7 +2228,7 @@ spc_tree_dbh_stats
 
 
 
-#### ***Status per species***
+#### 4.1.8. ***Status per species***
 
 
 ```R
@@ -2969,7 +2310,7 @@ spc_status
 
 
 
-#### ***Health per species***
+#### 4.1.9. ***Health per species***
 
 
 ```R
@@ -3052,7 +2393,7 @@ spc_health %>%
 
 
 
-#### ***Health index per species***
+#### 4.1.10. ***Health index per species***
 
 
 ```R
@@ -3134,7 +2475,7 @@ spc_health_index %>%
 
 
 
-#### ***Species' distribution of root problems***
+#### 4.1.11. ***Species' distribution of root problems***
 
 
 ```R
@@ -3228,8 +2569,7 @@ trees %>%
 </table>
 
 
-
-#### ***Species' distribution of trunk problems***
+#### 4.1.12. ***Species' distribution of trunk problems***
 
 
 ```R
@@ -3324,7 +2664,7 @@ trees %>%
 
 
 
-#### ***Species' distribution of branch problems***
+#### 4.1.13. ***Species' distribution of branch problems***
 
 
 ```R
@@ -3419,7 +2759,7 @@ trees %>%
 
 
 
-#### ***Ranking of all 128 tree species***
+#### 4.1.14. ***Ranking of all 128 tree species***
 
 
 ```R
@@ -3500,8 +2840,7 @@ spc_first_ranking %>%
 </table>
 
 
-
-#### ***Ranking of all tree species with at least 29 abundances***
+#### 4.1.15. ***Ranking of all tree species with at least 29 abundances***
 
 
 ```R
