@@ -52,7 +52,7 @@ library(mlbench)
 ### 1.4. Dataset
 The [dataset](https://archive.ics.uci.edu/ml/datasets/Diabetes+130-US+hospitals+for+years+1999-2008) referenced was part of the clinical care system at 130 hospitals and integrated delivery networks in the United States ([Strack et al., 2014](#reference)).
 
-<img src="https://i.ibb.co/pbk1JXM/vars-desc.png" alt="vars-desc" border="0">
+![Variable Descriptions](/files/patient-characteristics-and-readmission-modeling//images/vars-desc.png)
 
 ```R                     
 # Read 'readmissions' dataset
@@ -2551,4 +2551,5 @@ Nevertheless, it is also advised to explore for additional characteristics that 
 ## Reference
 
 Strack, B., DeShazo, J. P., Gennings, C., Olmo, J. L., Ventura, S., Cios, K. J., & Clore, J. N. (2014). *Impact of HbA1c measurement on hospital readmission rates: Analysis of 70,000 clinical database patient records.* *BioMed Research International, 2014,* 781670, 11 pages. [https://doi.org/10.1155/2014/781670](https://doi.org/10.1155/2014/781670)
+
 
