@@ -11,8 +11,8 @@ categories:
 slidesurl: []
 images:
   - '/files/patient-characteristics-and-readmission-modeling/images/page-1.png'
-# link: 'https://www.datacamp.com/datalab/w/25b9af80-8fb3-4b12-a863-2188ee07d059'
-# url: 'https://www.datacamp.com/datalab/w/25b9af80-8fb3-4b12-a863-2188ee07d059'
+link: 'https://www.datacamp.com/datalab/w/25b9af80-8fb3-4b12-a863-2188ee07d059'
+url: 'https://www.datacamp.com/datalab/w/25b9af80-8fb3-4b12-a863-2188ee07d059'
 thumbnail: '/images/projects/project5-cover.png'
 featured: false
 doc_type: 'Full Report'
