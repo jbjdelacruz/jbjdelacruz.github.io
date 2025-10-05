@@ -27,7 +27,7 @@ author:
   avatar           : "profile.png"
   name             : "Jon Bon Jovi Dela Cruz"
   pronouns         : # example: "she/her"  
-  bio              : "Statistician | Data Analyst"
+  bio              : "Statistical Consultant"
   location         : "Quezon City, PH"
   employer         : # "Red Brick University"
   uri              : # URL
@@ -357,4 +357,5 @@ tag_archive:
 compress_html:
   clippings: all
   ignore:
+
     envs: development
