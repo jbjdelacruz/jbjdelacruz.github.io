@@ -3,7 +3,7 @@ title: "Manhattan's Urban Forestry Report, 2015"
 collection: portfolio
 permalink: /portfolio/manhattans-urban-forestry-report-2015
 date: 2023-01-01
-last_updated: 2025-09-30
+last_updated: 2025-10-05
 excerpt: 'This analysis of census data on more than 60,000 street trees across Manhattan won first place in [Which Tree Species Should the City Plant?](https://www.datacamp.com/competitions/city-tree-species?entry=ba331d65-5607-4c69-adb4-406663585edc) competition. It evaluates spatial distribution, biological characteristics, and biodiversity while ranking species by median trunk diameter and health index, presenting evidence-based recommendations for future tree planting.'
 venue: 'DataCamp'
 categories:
@@ -22,8 +22,8 @@ images:
   - '/files/manhattans-urban-forestry-report-2015/images/page-8.png'
   - image: '/files/manhattans-urban-forestry-report-2015/images/page-9.png'
     link: 'https://www.datacamp.com/competitions/city-tree-species?entry=ba331d65-5607-4c69-adb4-406663585edc'
-# link: 'https://www.datacamp.com/datalab/w/ba331d65-5607-4c69-adb4-406663585edc'
-# url: 'https://www.datacamp.com/datalab/w/ba331d65-5607-4c69-adb4-406663585edc'
+link: 'https://www.datacamp.com/datalab/w/ba331d65-5607-4c69-adb4-406663585edc'
+url: 'https://www.datacamp.com/datalab/w/ba331d65-5607-4c69-adb4-406663585edc'
 thumbnail: '/images/projects/project4-cover.png'
 featured: true
 doc_type: 'Full Report'
@@ -148,6 +148,8 @@ Using descriptive and spatial analyses, the following information outlines the l
 #### 2.1.1. Spatial
 
 ##### 2.1.1.1. Tree Location by Neighborhood
+
+![Fig. 1: Map of the Tree Locations by Neighborhood in Manhattan](/files/manhattans-urban-forestry-report-2015/images/tree_locs_map_plot.png)
 
 While trees seem to cover much each of Manhattan's 28 neighborhoods, some of the southern ones, including MN13, MN17, MN24, MN25, MN27, MN28, and MN50, have empty areas. Interestingly, four of these aforementioned neighborhoods (indicated by *) are among the top ten in terms of land size, which are:
 
@@ -292,16 +294,19 @@ tree_locs_map_plot <- ggplot() +
 
 The top ten neighborhoods by tree counts are:
  
- 1. Upper West Side (MN12)*
- 2. Upper East Side-Carnegie Hill (MN40)
- 3. West Village (MN23)*
- 4. Central Harlem North-Polo Grounds (MN03)*
- 5. Hudson Yards-Chelsea-Flatiron-Union Square (MN13)*
- 6. Washington Heights South (MN36)*
- 7. Morningside Heights (MN09)
- 8. Central Harlem South (MN11)
- 9. Washington Heights North (MN35)*
-10. East Harlem North (MN34)*
+| Rank | NTA  | NTA Name                                    | Number of Trees | Percentage  |
+|:-----|:-----|:--------------------------------------------|----------------:|------------:|
+| 1    | MN12 | Upper West Side*                            | 5,807           | 9.04%       |
+| 2    | MN40 | Upper East Side–Carnegie Hill               | 4,616           | 7.19%       |
+| 3    | MN23 | West Village*                               | 3,801           | 5.92%       |
+| 4    | MN03 | Central Harlem North–Polo Grounds*          | 3,469           | 5.40%       |
+| 5    | MN13 | Hudson Yards–Chelsea–Flatiron–Union Square* | 2,931           | 4.56%       |
+| 6    | MN36 | Washington Heights South*                   | 2,924           | 4.55%       | 
+| 7    | MN09 | Morningside Heights                         | 2,704           | 4.21%       |
+| 8    | MN11 | Central Harlem South                        | 2,643           | 4.11%       |
+| 9    | MN35 | Washington Heights North*                   | 2,612           | 4.07%       |
+| 10   | MN34 | East Harlem North*                          | 2,505           | 3.90%       |
+
 
 Seven of which (indicated by *\) are part of the ten largest.
 
@@ -410,36 +415,14 @@ nbhs_tree_cnts_map_plot1 <- nbhs_tree_cnts_map_plot +
                                                     fill = color_scheme_2,
                                                     linewidth=0))
           )
-```
 
-```R
 nbh_tree_cnts %>%
   slice(1:10) %>%
   rownames_to_column("rank") %>%
   mutate(number_of_trees = prettyNum(number_of_trees, big.mark=","),
           percentage = label_percent(accuracy=0.01)(proportion)) %>%
-  select(-proportion)
+  select(-proportion)      
 ```
-
-<table class="dataframe">
-<!-- <caption>A tibble: 10 × 5</caption> -->
-<thead>
-  <tr><th scope=col>rank</th><th scope=col>nta</th><th scope=col>nta_name</th><th scope=col>number_of_trees</th><th scope=col>percentage</th></tr>
-  <!-- <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr> -->
-</thead>
-<tbody>
-  <tr><td>1 </td><td>MN12</td><td>Upper West Side                           </td><td>5,807</td><td>9.04%</td></tr>
-  <tr><td>2 </td><td>MN40</td><td>Upper East Side-Carnegie Hill             </td><td>4,616</td><td>7.19%</td></tr>
-  <tr><td>3 </td><td>MN23</td><td>West Village                              </td><td>3,801</td><td>5.92%</td></tr>
-  <tr><td>4 </td><td>MN03</td><td>Central Harlem North-Polo Grounds         </td><td>3,469</td><td>5.40%</td></tr>
-  <tr><td>5 </td><td>MN13</td><td>Hudson Yards-Chelsea-Flatiron-Union Square</td><td>2,931</td><td>4.56%</td></tr>
-  <tr><td>6 </td><td>MN36</td><td>Washington Heights South                  </td><td>2,924</td><td>4.55%</td></tr>
-  <tr><td>7 </td><td>MN09</td><td>Morningside Heights                       </td><td>2,704</td><td>4.21%</td></tr>
-  <tr><td>8 </td><td>MN11</td><td>Central Harlem South                      </td><td>2,643</td><td>4.11%</td></tr>
-  <tr><td>9 </td><td>MN35</td><td>Washington Heights North                  </td><td>2,612</td><td>4.07%</td></tr>
-  <tr><td>10</td><td>MN34</td><td>East Harlem North                         </td><td>2,505</td><td>3.90%</td></tr>
-</tbody>
-</table>
 
 ##### 2.1.1.3. Trees by Curb Location
 
@@ -1244,11 +1227,6 @@ options(warn=-1)
 top_ten_nbh_rchns <- nbh_rchns %>%
   slice(1:10) %>%
   rownames_to_column("rank")
-
-# HTML Table for Top 10 Most Abundant Species
-#kable(for_table_nbh_rchns, 
-#      caption = " ",
-#      label = "tables", format = "html", booktabs = TRUE)
 
 # Order by richness
 nbhs_map$nta_and_rchns <- factor(
