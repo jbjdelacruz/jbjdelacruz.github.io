@@ -3,7 +3,7 @@ title: 'Patient Characteristics and Readmission Modeling'
 collection: portfolio
 permalink: /portfolio/patient-characteristics-and-readmission-modeling
 date: 2023-03-06
-last_updated: 2025-10-06
+last_updated: 2024-11-06
 excerpt: 'This report analyzes ten years of hospital data (n ≈ 25,000) from 130 US hospitals to identify high-risk groups for readmission. Using multivariate logistic regression, it measures the effects of variables such as age, diabetes diagnosis or medication, and length of stay on patient readmission, supporting targeted follow-up care after discharge.'
 venue: 'DataCamp'
 categories:
@@ -2551,5 +2551,6 @@ Nevertheless, it is also advised to explore for additional characteristics that 
 ## Reference
 
 Strack, B., DeShazo, J. P., Gennings, C., Olmo, J. L., Ventura, S., Cios, K. J., & Clore, J. N. (2014). *Impact of HbA1c measurement on hospital readmission rates: Analysis of 70,000 clinical database patient records.* *BioMed Research International, 2014,* 781670, 11 pages. [https://doi.org/10.1155/2014/781670](https://doi.org/10.1155/2014/781670)
+
 
 
