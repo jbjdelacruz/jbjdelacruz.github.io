@@ -3,7 +3,7 @@ title: 'Patient Characteristics and Readmission Modeling'
 collection: portfolio
 permalink: /portfolio/patient-characteristics-and-readmission-modeling
 date: 2023-03-06
-last_updated: 2025-09-29
+last_updated: 2025-10-06
 excerpt: 'This report analyzes ten years of hospital data (n ≈ 25,000) from 130 US hospitals to identify high-risk groups for readmission. Using multivariate logistic regression, it measures the effects of variables such as age, diabetes diagnosis or medication, and length of stay on patient readmission, supporting targeted follow-up care after discharge.'
 venue: 'DataCamp'
 categories:
@@ -21,7 +21,7 @@ doc_type: 'Full Report'
 
 # Patient Characteristics and Readmission Modeling
 
-## 1.0 Background
+## 1. Background
 ### 1.1. Introduction
 A healthcare organization has engaged our team to conduct a comprehensive analysis of ten years of patient readmission data following discharge. The objective is to evaluate whether factors such as initial diagnoses, number of procedures, and other clinical variables can improve the prediction of readmission likelihood. The insights from this analysis will support more proactive patient care strategies, enabling targeted follow-up and resource allocation for individuals at higher risk of readmission.
 
@@ -40,15 +40,13 @@ library(tidyverse)
 library(dplyr)
 library(ggplot2)
 library(scales)
-library(ggfun) # for round rectangle borders and backgrounds in ggplots
-library(ggchicklet) # for bar charts with rounded corners
-library(ggthemes) # for using the look of a plot theme
-library(patchwork) # for combining ggplots into the same graphic		
-library(ggpubr) # for boxplots
+library(ggfun)
+library(ggchicklet)
+library(ggthemes)
+library(patchwork)
+library(ggpubr)
+library(mlbench)
 
-# Install and load the "mlbench" package							   
-#suppressWarnings(suppressMessages(install.packages("mlbench")))
-#suppressPackageStartupMessages(library(mlbench))
 ```
 
 ### 1.4. Dataset
@@ -75,65 +73,12 @@ readmissions <- readr::read_csv('data/hospital_readmissions.csv', show_col_types
 #}
 ```
 
-    The following package(s) will be installed:
-    - ggthemes [5.1.0]
-    These packages will be installed into "~/renv/library/linux-ubuntu-jammy/R-4.4/x86_64-pc-linux-gnu".
-    
-    # Installing packages --------------------------------------------------------
-    - Installing ggthemes ...                       OK [linked from cache]
-    Successfully installed 1 package in 6.4 milliseconds.
-    The following package(s) will be installed:
-    - ggpubr [0.6.0]
-    These packages will be installed into "~/renv/library/linux-ubuntu-jammy/R-4.4/x86_64-pc-linux-gnu".
-    
-    # Installing packages --------------------------------------------------------
-    - Installing ggpubr ...                         OK [linked from cache]
-    Successfully installed 1 package in 6.3 milliseconds.
-
-
-
-```R
-# ----- For link's image thumbnail
-
-# Install and load the 'png' package
-# For superimposing PNG images in a ggplot								   
-suppressWarnings(suppressMessages(install.packages("png", verbose=TRUE, quiet=TRUE)))       
-suppressPackageStartupMessages(library(png))  
-
-# Create a data
-data <- data.frame(x = 1:3,
-                   y = 1:3)
-
-# Read the PNG file
-my_image <- readPNG("documentation/cover_Fig10_diag_stacked_bar_plot.png", native = TRUE)
-
-# Create a plot and combine with the image
-ggplot(data, aes(x, y)) +
-  geom_point() +
-  theme_minimal() +
-  theme(axis.title = element_blank(),
-          axis.text = element_blank(),
-          axis.line = element_blank(),
-          axis.ticks = element_blank()) +
-  inset_element(p = my_image,
-                  left = -0.52,
-                  bottom = -0.03,
-                  right = 1.52,
-                  top = 1.02)
-```
-
-
-    
-![png](notebook_files/notebook_2_0.png)
-    
-
-
-## Results and Discussion
-### Patient Characteristics
+## 2. Results and Discussion
+### 2.1. Patient Characteristics
 The following information describe the characteristics of the sample composing of 25,000 patients admitted to the hospital after being discharged.
 
-#### Overall
-##### Numerical
+#### 2.1.1. Overall
+##### 2.1.1.1. Numerical
 **Age**: The grouped mean and median ages are approximately 68 and 69, respectively, with a standard deviation of ~13, indicating that the hospital primarily admitted elderly patients. As shown in Figure 1, the distribution of patients across age groups is approximately symmetric at the mean.
 
 
@@ -2606,3 +2551,4 @@ Nevertheless, it is also advised to explore for additional characteristics that 
 ## Reference
 
 Strack, B., DeShazo, J. P., Gennings, C., Olmo, J. L., Ventura, S., Cios, K. J., & Clore, J. N. (2014). *Impact of HbA1c measurement on hospital readmission rates: Analysis of 70,000 clinical database patient records.* *BioMed Research International, 2014,* 781670, 11 pages. [https://doi.org/10.1155/2014/781670](https://doi.org/10.1155/2014/781670)
+
