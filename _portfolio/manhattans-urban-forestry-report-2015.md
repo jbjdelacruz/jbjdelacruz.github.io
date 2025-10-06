@@ -3,7 +3,7 @@ title: "Manhattan's Urban Forestry Report, 2015"
 collection: portfolio
 permalink: /portfolio/manhattans-urban-forestry-report-2015
 date: 2023-01-01
-last_updated: 2025-10-06
+last_updated: 2025-10-07
 excerpt: 'This analysis of census data on more than 60,000 street trees across Manhattan won first place in [Which Tree Species Should the City Plant?](https://www.datacamp.com/competitions/city-tree-species?entry=ba331d65-5607-4c69-adb4-406663585edc) competition. It evaluates spatial distribution, biological characteristics, and biodiversity while ranking species by median trunk diameter and health index, presenting evidence-based recommendations for future tree planting.'
 venue: 'DataCamp'
 categories:
@@ -92,12 +92,12 @@ The datasets presented below are sourced from the [NYC Open Data](https://openda
 
 ```R
 # Read the 'trees' data set from the CSV file
-trees <- readr::read_csv("data/trees.csv", show_col_types=FALSE) %>%
+trees <- read_csv("data/trees.csv", show_col_types=FALSE) %>%
   mutate(spc_common = str_to_sentence(spc_common))
 
 # Read the 'neighborhoods' data set from the SHP file
 neighborhoods <- st_read("data/nta.shp", quiet=TRUE) %>% 
-  dplyr::select(boroname, ntacode, ntaname, geometry, shape_area)
+  select(boroname, ntacode, ntaname, geometry, shape_area)
 
 # Create a merged data frame for the 'trees' and 'neighborhoods' data sets
 merged_trees_and_neighborhoods <- trees %>%
@@ -156,7 +156,7 @@ Using descriptive and spatial analyses, the following information outlines the l
 ##### 2.1.1.1. Tree Location by Neighborhood
 
 ```R
-# Top 10 NTAs in terms of land size 
+# Top 10 NTAs in terms of shape size 
 top_nta_area <- neighborhoods %>%
   filter(boroname == "Manhattan", ntacode != "MN99") %>%
   arrange(desc(shape_area)) %>%
