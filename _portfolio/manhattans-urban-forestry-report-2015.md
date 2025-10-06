@@ -279,7 +279,7 @@ tree_locs_map_plot <- ggplot() +
   scale_color_manual(values = nta_colors)
 ```
 
-While trees seem to cover much each of Manhattan's 28 neighborhoods, some of the southern ones, including MN13, MN17, MN24, MN25, MN27, MN28, and MN50, have empty areas. Interestingly, four of these aforementioned neighborhoods (indicated by *) are among the top ten in terms of land size, which are:
+While trees seem to cover much each of Manhattan's 28 neighborhoods, some of the southern ones, including MN13, MN17, MN24, MN25, MN27, MN28, and MN50, have empty areas. Interestingly, four of these aforementioned neighborhoods (indicated by *) are among the top ten in terms of shape size, which are:
 
  1. Hudson Yards-Chelsea-Flatiron-Union Square (MN13)*
  2. Upper West Side (MN12)
@@ -2919,3 +2919,4 @@ spc_second_ranking %>%
   <tr><td>Common hackberry      </td><td> 170</td><td>0.8352941</td><td>3</td><td>55</td><td>62.5</td><td>117.5</td></tr>
 </tbody>
 </table>
+
