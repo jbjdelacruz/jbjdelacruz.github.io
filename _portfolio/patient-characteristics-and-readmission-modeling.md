@@ -48,16 +48,17 @@ library(ggpubr)
 library(ggfun) # for round rectangle borders and backgrounds in ggplots
 library(patchwork) # for combining ggplots into the same graphic		
 
+library(rwantshue)
+
 # Install and load the "mlbench" package							   
 #suppressWarnings(suppressMessages(install.packages("mlbench")))
 #suppressPackageStartupMessages(library(mlbench))
 
-
-# ==========================================================
+# ========================================================
 # Function: GroupedMedian()
-# Purpose: Compute the median of grouped (interval) data
+# Purpose: Compute the median of grouped data
 # Reference: http://stackoverflow.com/a/18931054/1270695
-# ==========================================================
+# ========================================================
 
 GroupedMedian <- function(frequencies, intervals, sep = NULL, trim = NULL) {
   
@@ -107,6 +108,65 @@ GroupedMedian <- function(frequencies, intervals, sep = NULL, trim = NULL) {
 
   # Return unformatted numeric median
   unname(median_value)
+}
+
+# ======================================================
+# Function: plot_distribution()
+# Purpose: Create standardized histogram + density plots
+# ======================================================
+
+plot_distribution <- function(data, var, 
+                              fig_title, x_label,
+                              binwidth = 1,
+                              x_breaks = NULL, y_breaks = NULL,
+                              x_limits = NULL, y_limits = NULL,
+                              mean_x_offset = 0, mean_y = NULL,
+                              fill_color = "#5AA7A7", density_color = "#FF6666",
+                              mean_color = "red") {
+  
+  # Ensure tidy evaluation works for variable input
+  var <- rlang::enquo(var)
+  
+  # Compute variable mean
+  var_mean <- mean(dplyr::pull(data, !!var), na.rm = TRUE)
+  
+  # Build the plot
+  p <- ggplot(data, aes(x = !!var)) +
+    geom_histogram(aes(y = after_stat(density)),
+                   colour = "white",
+                   fill = fill_color,
+                   binwidth = binwidth) +
+    geom_density(alpha = 0.2, fill = density_color) +
+    geom_vline(aes(xintercept = var_mean),
+               col = mean_color,
+               linewidth = 0.6) +
+    ggtitle(fig_title) +
+    labs(x = x_label, y = "Density\n") +
+    scale_x_continuous(expand = c(0.01, 0),
+                       breaks = x_breaks,
+                       limits = x_limits) +
+    scale_y_continuous(expand = c(0.01, 0),
+                       breaks = y_breaks,
+                       limits = y_limits) +
+    theme_economist() +
+    scale_color_economist() +
+    theme(
+      plot.title = element_text(size = 12),
+      panel.grid.minor = element_line(color = "grey",
+                                      linetype = "dashed",
+                                      linewidth = 0.3),
+      panel.grid.major = element_line(color = "grey",
+                                      linetype = "dashed",
+                                      linewidth = 0.3)
+    ) +
+    annotate("text",
+             x = var_mean + mean_x_offset,
+             y = mean_y,
+             label = paste("Mean =", round(var_mean, 4)),
+             color = mean_color,
+             size = 3.5)
+  
+  return(p)
 }
 ```
 
@@ -166,67 +226,9 @@ The following information describe the characteristics of the sample composing o
 
 #### 2.1.1. Numerical
 
-##### 2.1.1.1. Age
-
-![Fig. 1: Bar Graph of the Patients' Age Groups](/files/patient-characteristics-and-readmission-modeling/images/Fig1_age_bar_plot.png)
-
-The grouped mean and median ages are approximately 68 and 69, respectively, with a standard deviation of ~13, indicating that the hospital primarily admitted elderly patients. As shown in Figure 1, the distribution of patients across age groups is approximately symmetric at the mean.
-
-| Variable | Mean  | Std. Dev.  | Med.  |
-|---|---|---|---|
-| Age group | 68.4412 | 13.15607 | 69.3286 |
-
-```R
-# Frequency Distribution Table (FDT) for Age
-age_fdt <- readmissions %>%
-	select(age) %>%
-	group_by(age) %>%
-	count() %>%
-	mutate(
-		class_interval = paste(as.numeric(unlist(regmatches(age, gregexpr("[[:digit:]]+", age)))), collapse = "-"),
-        class_mark = mean(as.numeric(unlist(regmatches(age, gregexpr("[[:digit:]]+", age)))))
-	) %>%
-	ungroup() %>%
-	mutate(cum_freq = cumsum(n),
-           n_times_cm = n*class_mark) %>%
-	select(age, class_interval, everything())
-
-# Bar plot
-age_bar_plot <- ggplot(age_fdt, aes(group=1)) + 
-	geom_chicklet(aes(x = age,
-                      y = n,
-					  group=1), 
-                  color="white",
-                  fill="#6C8CBF",
-                  radius = grid::unit(1, "mm"), position="stack") +
-    
-	# Plot mean line
-	geom_vline(xintercept=3.344, color="red", linewidth=0.6) +
- 
-	ggtitle("Fig. 1: Bar Graph of the Patients' Age Groups\n") +
-	labs(x="\nAge group", y="Number of patients\n") +
-	scale_y_continuous(expand = c(0.01, 0), limits = c(0,7000),
-                      breaks = seq(0, 7000, by=1000)) +
-	theme_economist() + 
-	scale_color_economist() +
-	theme(plot.title = element_text(size= 12),
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-		  panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-          axis.ticks = element_blank()
-         ) +
-	annotate("text", x=2.7, y=6500, 
-			 label=paste("Mean = ",sum(age_fdt$n_times_cm)/sum(age_fdt$n)),
-			 color="red",
-			 size=3.5)
-```
-
 ##### 2.1.1.2. Time in Hospital
 
-![Fig. 2: Distribution of the Time Length in Hospital](/files/patient-characteristics-and-readmission-modeling/images/Fig2_time_in_hospital_dst_plot.png)
+![Fig. 1: Distribution of the Time Length in Hospital](/files/patient-characteristics-and-readmission-modeling/images/Fig1_time_in_hospital_dst_plot.png)
 
 The mean and median lengths of stay in the hospital are 4.4533 and 4, respectively, with a standard deviation of ~3. Figure 2 shows a positively skewed distribution for this patient feature.
 
@@ -258,41 +260,16 @@ sum_stats <- data.frame(
                      `Max.` = V5))
 rownames(sum_stats) <- 1: nrow(sum_stats)
 
-## Time in hospital
-
-# Plot
-time_in_hospital_dst_plot <- ggplot(readmissions, aes(x = time_in_hospital)) +
-  geom_histogram(aes(y=after_stat(density)),
-                   colour="white",
-                   fill="#5AA7A7",
-                   binwidth=1) +
-  geom_density(alpha=0.2,
-                 fill="#FF6666") +
-
-  # Mean line
-  geom_vline(aes(xintercept = mean(time_in_hospital)), col="red", linewidth=0.6) +
-  
-  ggtitle("Fig. 2: Distribution of the Time Length in Hospital\n") +
-  labs(x="\nNumber of days (from 1 to 14)", y="Density\n") +
-  scale_x_continuous(expand = c(0.01, 0), 
-                       breaks = seq(0, 14, by=2)) +
-  scale_y_continuous(expand = c(0.01, 0),
-                       limits = c(0,0.20),
-                       breaks = seq(0,0.20, by=0.025)) +
-  theme_economist() + 
-  scale_color_economist() +
-  theme(plot.title = element_text(size= 12),
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3)
-         ) +
-  annotate("text", x=mean(readmissions$time_in_hospital)+1.45, y=(0.200+0.175)/2, 
-       label=paste("Mean = ",round(mean(readmissions$time_in_hospital),4)),
-       color="red",
-       size=3.5)
+# Fig. 1: Time in Hospital
+plot_distribution(readmissions, time_in_hospital,
+  fig_title = "Fig. 1: Distribution of the Time Length in Hospital\n",
+  x_label = "\nNumber of days (from 1 to 14)",
+  binwidth = 1,
+  x_breaks = seq(0, 14, 2),
+  y_breaks = seq(0, 0.20, 0.025),
+  mean_x_offset = 1.45,
+  mean_y = 0.1875
+)
 
 # Summary statistics
 sum_stats %>% filter(Variable == "time_in_hospital")
@@ -300,7 +277,7 @@ sum_stats %>% filter(Variable == "time_in_hospital")
 
 ##### 2.1.1.3. Number of Procedures
 
-![Fig. 3: Distribution of the Number of Medical Procedures, Fig. 4: Distribution of the Number of Laboratory Procedures](/files/patient-characteristics-and-readmission-modeling/images/Fig3-4_n_procedures_dst_plot.png)
+![Fig. 2: Distribution of the Number of Medical Procedures, Fig. 4: Distribution of the Number of Laboratory Procedures](/files/patient-characteristics-and-readmission-modeling/images/Fig2-3_n_procedures_dst_plot.png)
 
 The mean and median number of medical procedures performed during the hospital stay are 1.3524 and 1, with a standard deviation of 1.7152, respectively, whereas the mean and median numbers of laboratory procedures performed are 43.2408 and 44, respectively, with a standard deviation of 19.8186. This implies that throughout their hospitalization, patients underwent laboratory procedures more frequently than medical procedures.
 
@@ -312,73 +289,30 @@ Based on Figures 3 and 4, the two types of procedures exhibit dissimilar distrib
 | n_procedures     |  1.35236 |  1.715179 | 0 |  1 |   6 |
 
 ```R
-## Number of Procedures
+# Fig. 2: Number of Procedures
+n_procedures_hs_dst_plot <- plot_distribution(readmissions, n_procedures,
+  fig_title = "Fig. 2: Distribution of the Number of Medical Procedures\n",
+  x_label = "\nNumber of procedures performed during the hospital stay",
+  binwidth = 0.5,
+  x_breaks = seq(0, 7, 2),
+  y_breaks = seq(0, 1, 0.25),
+  mean_x_offset = 0.72,
+  mean_y = 0.7
+)
 
-# Plot
-n_procedures_hs_dst_plot <- ggplot(readmissions, aes(x = n_procedures)) + 
-	geom_histogram(aes(y=after_stat(density)),
+# Fig. 3: Number of Lab Procedures
+n_lab_procedures_hs_dst_plot <- plot_distribution(readmissions, n_lab_procedures,
+  fig_title = "Fig. 3: Distribution of the Number of Laboratory Procedures\n",
+  x_label = "\nNumber of lab procedures performed during the hospital stay",
+  binwidth = 3,
+  x_breaks = seq(0, 120, 30),
+  y_breaks = seq(0, 0.025, 0.005),
+  y_limits = c(0, 0.025),
+  mean_x_offset = 14,
+  mean_y = 0.024
+)
 
-                   colour="white",
-                   fill="#5AA7A7",
-                   binwidth=0.5
-                  ) +
-	geom_density(alpha=0.2,
-                 fill="#FF6666") +
-
-	# Mean line
-	geom_vline(aes(xintercept = mean(n_procedures)), col="red", linewidth=0.6) +
-
-	ggtitle("Fig. 3: Distribution of the Number of Medical Procedures\n") +
-	labs(x="\nNumber of procedures performed during the hospital stay", y="Density\n") +
-	theme_economist() + 
-	scale_color_economist() +
-	theme(plot.title = element_text(size= 12),
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-		  panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3)
-         ) +
-	annotate("text", x=mean(readmissions$n_procedures)+0.72, y=0.7, 
-			 label=paste("Mean = ",round(mean(readmissions$n_procedures),4)),
-			 color="red",
-			 size=3.5)
-
-## Number of Lab Procedures
-
-# Plot
-n_lab_procedures_hs_dst_plot <- ggplot(readmissions, aes(x = n_lab_procedures)) + 
-  geom_histogram(aes(y=after_stat(density)),
-                   colour="white",
-                   fill="#5AA7A7",
-                   binwidth=3
-                  ) +
-	geom_density(alpha=0.2,
-                 fill="#FF6666") +
-
-	# Mean line
-	geom_vline(aes(xintercept = mean(n_lab_procedures)), col="red", linewidth=0.6) +
-	
-	ggtitle("Fig. 4: Distribution of the Number of Laboratory Procedures\n") +
-	labs(x="\nNumber of lab procedures performed during the hospital stay", y="Density\n") +
-	theme_economist() + 
-	scale_color_economist() +
-	theme(plot.title = element_text(size= 12),
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-		  panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3)
-         ) +
-	annotate("text", x=mean(readmissions$n_lab_procedures)+14, y=0.025, 
-			 label=paste("Mean = ",round(mean(readmissions$n_lab_procedures),4)),
-			 color="red",
-			 size=3.5)
-
-ggarrange(n_procedures_hs_dst_plot, n_lab_procedures_hs_dst_plot, 
-          ncol = 1, nrow = 2)
+ggarrange(n_procedures_hs_dst_plot, n_lab_procedures_hs_dst_plot, ncol = 1, nrow = 2)
 
 # Summary statistics
 sum_stats %>% filter(str_detect(Variable, "procedures"))
@@ -386,7 +320,7 @@ sum_stats %>% filter(str_detect(Variable, "procedures"))
 
 ##### 2.1.1.4. Number of Medications
 
-![Fig. 5: Distribution of the Number of Medications](/files/patient-characteristics-and-readmission-modeling/images/Fig5_n_medications_hs_dst_plot.png)
+![Fig. 4: Distribution of the Number of Medications](/files/patient-characteristics-and-readmission-modeling/images/Fig4_n_medications_hs_dst_plot.png)
 
 The mean and median numbers of medications administered during the hospital stay are 16.2524 and 15, with a standard deviation of 8.0605, as well as a slightly skewed distribution to the right.
 
@@ -395,40 +329,17 @@ The mean and median numbers of medications administered during the hospital stay
 | n_medications | 16.2524 | 8.060532 | 1 | 15 | 79 |
 
 ```R
-## Number of Medications
-
-# Plot
-n_medications_hs_dst_plot <- ggplot(readmissions, aes(x = n_medications)) + 
-	geom_histogram(aes(y=after_stat(density)),
-                   colour="white",
-                   fill="#5AA7A7",
-                   binwidth=1
-                  ) +
-	geom_density(alpha=0.2,
-                 fill="#FF6666") +
-
-	# Mean line
-	geom_vline(aes(xintercept = mean(n_medications)), col="red", linewidth=0.6) +
-	
-	ggtitle("Fig. 5: Distribution of the Number of Medications\n") +
-	labs(x="\nNumber of medications administered during the hospital stay", y="Density\n") +
-	scale_y_continuous(expand = c(0.01, 0),
-                       limits = c(0,0.065),
-                       breaks = seq(0,0.065, by=0.01)) +
-	theme_economist() + 
-	scale_color_economist() +
-	theme(plot.title = element_text(size= 12),
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-		  panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3)
-         ) +
-	annotate("text", x=mean(readmissions$n_medications)+9, y=0.065, 
-			 label=paste("Mean = ",round(mean(readmissions$n_medications),4)),
-			 color="red",
-			 size=3.5)
+# Fig. 4: Number of Medications
+plot_distribution(readmissions, n_medications,
+  fig_title = "Fig. 4: Distribution of the Number of Medications\n",
+  x_label = "\nNumber of medications administered during the hospital stay",
+  binwidth = 1,
+  x_breaks = seq(0, 80, 20),
+  y_breaks = seq(0, 0.065, 0.01),
+  y_limits = c(0, 0.065),
+  mean_x_offset = 9,
+  mean_y = 0.065
+)
 
 # Summary statistics
 sum_stats %>% filter(Variable == "n_medications")
@@ -436,7 +347,7 @@ sum_stats %>% filter(Variable == "n_medications")
 
 ##### 2.1.1.5. Number of Visits
 
-![Fig. 6: Distribution of the Number of Outpatient Visits, Fig. 7: Distribution of the Number of Inpatient Visits, Fig. 8: Distribution of the Number of Emergency Room Visits](/files/patient-characteristics-and-readmission-modeling/images/Fig6-8_n_visits_dst_plot.png)
+![Fig. 5: Distribution of the Number of Outpatient Visits, Fig. 6: Distribution of the Number of Inpatient Visits, Fig. 7: Distribution of the Number of Emergency Room Visits](/files/patient-characteristics-and-readmission-modeling/images/Fig5-7_n_visits_dst_plot.png)
 
 The mean numbers of outpatient, inpatient, and emergency room visits in the year preceding a hospital stay are 0.3664, 0.616, and 0.1866, with medians of 0 for all types, and standard deviations of 1.1955, 1.178, and 0.8859, respectively. The numbers of visits for all types are positively skewed, indicating that visitation is not much frequent among patients a year prior to their hospitalization.
 
@@ -447,134 +358,113 @@ The mean numbers of outpatient, inpatient, and emergency room visits in the year
 | n_emergency  | 0.18660 | 0.8858735 | 0 | 0 | 64 |
 
 ```R
-## Outpatient
+# Fig. 5: Outpatient Visits
+n_outpatient_hs_dst_plot <- plot_distribution(readmissions, n_outpatient,
+  fig_title = "Fig. 5: Distribution of the Number of Outpatient Visits\n",
+  x_label = "\nNumber of outpatient visits in the year before a hospital stay",
+  binwidth = 1,
+  x_breaks = seq(0, 35, 5),
+  y_breaks = seq(0, 1, 0.2),
+  y_limits = c(0, 1),
+  mean_x_offset = 3.6,
+  mean_y = 0.97
+)
 
-# Plot
-n_outpatient_hs_dst_plot <- ggplot(readmissions, aes(x = n_outpatient)) + 
-	geom_histogram(aes(y=after_stat(density)),
-                   colour="white",
-                   fill="#5AA7A7",
-                   binwidth=1
-                  ) +
-	geom_density(alpha=0.2,
-                 fill="#FF6666") +
+# Fig. 6: Inpatient Visits
+n_inpatient_hs_dst_plot <- plot_distribution(readmissions, n_inpatient,
+  fig_title = "Fig. 6: Distribution of the Number of Inpatient Visits\n",
+  x_label = "\nNumber of inpatient visits in the year before the hospital stay",
+  binwidth = 1,
+  x_breaks = seq(0, 18, 3),
+  y_breaks = seq(0, 1, 0.2),
+  y_limits = c(0, 1),
+  mean_x_offset = 2,
+  mean_y = 0.97
+)
 
-	# Mean line
-	geom_vline(aes(xintercept = mean(n_outpatient)), col="red", linewidth=0.6) +
-	
-	ggtitle("Fig. 6: Distribution of the Number of Outpatient Visits\n") +
-	labs(x="\nNumber of outpatient visits in the year before a hospital stay", y="Density\n") +
-	scale_y_continuous(expand = c(0.01, 0),
-                       limits = c(0,1),
-                       breaks = seq(0,1, by=0.2)) +
-	scale_x_continuous(expand = c(0.01, 0),
-                       #limits = c(0,75),
-                       breaks = seq(0,35, by=5)) +
-	theme_economist() + 
-	scale_color_economist() +
-	theme(plot.title = element_text(size= 12),
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-		  panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3)
-         ) +
-	annotate("text", x=3.6, y=0.97, 
-			 label=paste("Mean = ",round(mean(readmissions$n_outpatient),4)),
-			 color="red",
-			 size=3.5)
+# Fig. 7: Emergency Room Visits
+n_emergency_hs_dst_plot <- plot_distribution(readmissions, n_emergency,
+  fig_title = "Fig. 7: Distribution of the Number of Emergency Room Visits\n",
+  x_label = "\nNumber of visits to the emergency room in the year before the hospital stay",
+  binwidth = 1,
+  x_breaks = seq(0, 65, 10),
+  y_breaks = seq(0, 1, 0.2),
+  y_limits = c(0, 1),
+  mean_x_offset = 6.7,
+  mean_y = 0.97
+)
 
-## Inpatient
-
-# Plot
-n_inpatient_hs_dst_plot <- ggplot(readmissions, aes(x = n_inpatient)) + 
-	geom_histogram(aes(y=after_stat(density)),
-                   colour="white",
-                   fill="#5AA7A7",
-                   binwidth=1
-                  ) +
-	geom_density(alpha=0.2,
-                 fill="#FF6666") +
-
-	# Mean line
-	geom_vline(aes(xintercept = mean(n_inpatient)), col="red", linewidth=0.6) +
-	
-	ggtitle("Fig. 7: Distribution of the Number of Inpatient Visits\n") +
-	labs(x="\nNumber of inpatient visits in the year before the hospital stay", y="Density\n") +
-	scale_y_continuous(expand = c(0.01, 0),
-                       limits = c(0,1),
-                       breaks = seq(0,1, by=0.2)) +
-	scale_x_continuous(expand = c(0.01, 0),
-                       #limits = c(0,75),
-                       breaks = seq(0,18, by=3)) +
-	theme_economist() + 
-	scale_color_economist() +
-	theme(plot.title = element_text(size= 12),
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-		  panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3)
-         ) +
-	annotate("text", x=2, y=0.97, 
-			 label=paste("Mean = ",round(mean(readmissions$n_inpatient),4)),
-			 color="red",
-			 size=3.5)
-
-## Emergency
-
-# Plot
-n_emergency_hs_dst_plot <- ggplot(readmissions, aes(x = n_emergency)) + 
-	geom_histogram(aes(y=after_stat(density)),
-                   colour="white",
-                   fill="#5AA7A7",
-                   binwidth=1
-                   ) +
-	geom_density(alpha=0.2,
-                 fill="#FF6666") +
-
-	# Mean line
-	geom_vline(aes(xintercept = mean(n_emergency)), col="red", linewidth=0.6) +
-	
-	ggtitle("Fig. 8: Distribution of the Number of Emergency Room Visits\n") +
-	labs(x="\nNumber of visits to the emergency room in the year before the hospital stay", y="Density\n") +
-	scale_y_continuous(expand = c(0.01, 0),
-                       limits = c(0,1),
-                       breaks = seq(0,1, by=0.2)) +
-	scale_x_continuous(expand = c(0.01, 0),
-                       #limits = c(0,75),
-                       breaks = seq(0,75, by=10)) +
-	theme_economist() + 
-	scale_color_economist() +
-	theme(plot.title = element_text(size= 12),
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-		  panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3)
-         ) +
-	annotate("text", x=6.7, y=0.97, 
-			 label=paste("Mean = ",round(mean(readmissions$n_emergency),4)),
-			 color="red",
-			 size=3.5)
-
-ggarrange(n_outpatient_hs_dst_plot, 
-         n_inpatient_hs_dst_plot,
-         n_emergency_hs_dst_plot, 
-         ncol = 1, nrow = 3)
+ggarrange(n_outpatient_hs_dst_plot, n_inpatient_hs_dst_plot, n_emergency_hs_dst_plot, ncol = 1, nrow = 3)
 
 # Summary statistics
 sum_stats %>% filter(Variable %in% c("n_outpatient", "n_inpatient", "n_emergency"))
 ```
 
-
 #### 2.1.2. Categorical
 
-**Medical Specialty**: Of the 12,618 (50.47%) patients with a recorded admitting physician, 3,565 had an admitting physician whose specialty was Internal Medicine.
+##### 2.1.2.1. Age
 
+![Fig. 8: Bar Graph of the Patients' Age Groups](/files/patient-characteristics-and-readmission-modeling/images/Fig8_age_bar_plot.png)
+
+The grouped mean and median ages are approximately 68 and 69, respectively, with a standard deviation of ~13, indicating that the hospital primarily admitted elderly patients. As shown in Figure 1, the distribution of patients across age groups is approximately symmetric at the mean.
+
+| Variable | Mean  | Std. Dev.  | Med.  |
+|---|---|---|---|
+| Age group | 68.4412 | 13.15607 | 69.3286 |
+
+```R
+# Frequency Distribution Table (FDT) for Age
+age_fdt <- readmissions %>%
+	select(age) %>%
+	group_by(age) %>%
+	count() %>%
+	mutate(
+		class_interval = paste(as.numeric(unlist(regmatches(age, gregexpr("[[:digit:]]+", age)))), collapse = "-"),
+        class_mark = mean(as.numeric(unlist(regmatches(age, gregexpr("[[:digit:]]+", age)))))
+	) %>%
+	ungroup() %>%
+	mutate(cum_freq = cumsum(n),
+           n_times_cm = n*class_mark) %>%
+	select(age, class_interval, everything())
+
+# Figure 8: Age
+age_bar_plot <- ggplot(age_fdt, aes(group=1)) + 
+	geom_chicklet(aes(x = age,
+                      y = n,
+					  group=1), 
+                  color="white",
+                  fill="#6C8CBF",
+                  radius = grid::unit(1, "mm"), position="stack") +
+    
+	# Plot mean line
+	geom_vline(xintercept=3.344, color="red", linewidth=0.6) +
+ 
+	ggtitle("Fig. 8: Bar Graph of the Patients' Age Groups\n") +
+	labs(x="\nAge group", y="Number of patients\n") +
+	scale_y_continuous(expand = c(0.01, 0), limits = c(0,7000),
+                      breaks = seq(0, 7000, by=1000)) +
+	theme_economist() + 
+	scale_color_economist() +
+	theme(plot.title = element_text(size= 12),
+          panel.grid.minor = element_line(color="grey",
+                                          linetype="dashed",
+                                          linewidth=0.3),
+		  panel.grid.major = element_line(color="grey",
+                                          linetype="dashed",
+                                          linewidth=0.3),
+          axis.ticks = element_blank()
+         ) +
+	annotate("text", x=2.7, y=6500, 
+			 label=paste("Mean = ",sum(age_fdt$n_times_cm)/sum(age_fdt$n)),
+			 color="red",
+			 size=3.5)
+```
+
+##### 2.1.2.1. Medical Specialty
+
+<img src="documentation/Fig9_medical_specialty_bar_plot.png"/>
+
+Of the 12,618 (50.47%) patients with a recorded admitting physician, 3,565 had an admitting physician whose specialty was Internal Medicine.
 
 ```R
 # Frequency Distribution Table (FDT) for the Specialty of the Admitting Physician
@@ -629,9 +519,11 @@ medical_specialty_bar_plot <- ggplot(medical_specialty_fdt %>%
            )
 ```
 
-<img src="documentation/Fig9_medical_specialty_bar_plot.png"/>
+##### 2.1.2.2. Diagnoses
 
-**Diagnoses**: Most of the circulatory diagnoses or 7,824 (31.30%) were identified as primary, whereas most of the patients who had a diagnosis other than circulatory, diabetes, digestive, injury, musculoskeletal, or respiratory received it as a secondary (9,056 or 36.22%) and additional secondary (9,107 or 36.43%).
+<img src="documentation/Fig10_diag_stacked_bar_plot.png"/>
+
+Most of the circulatory diagnoses or 7,824 (31.30%) were identified as primary, whereas most of the patients who had a diagnosis other than circulatory, diabetes, digestive, injury, musculoskeletal, or respiratory received it as a secondary (9,056 or 36.22%) and additional secondary (9,107 or 36.43%).
 
 
 ```R
@@ -647,13 +539,6 @@ diag_tbl <- readmissions %>%
   mutate(perc=label_percent(accuracy = 0.01)(n/sum(n))) %>%
   arrange(diag_type, desc(n)) %>%
   ungroup()
-
-
-# Install and load the 'rwantshue' package
-# For generating random color scheme
-suppressWarnings(suppressMessages(install.packages("remotes")))
-suppressWarnings(suppressMessages(remotes::install_github("hoesler/rwantshue", auth_token = "")))
-suppressPackageStartupMessages(library(rwantshue))
 
 # Colorize the Physician's Specialty
 color_scheme1 <- iwanthue(seed=1234, force_init=TRUE)
@@ -713,32 +598,11 @@ diag_stacked_bar_plot <- ggplot(diag_tbl %>% filter(!is.na(diag))) +
                     labels = c("Additional\nSecondary", "Secondary", "Primary")) 
 ```
 
-    The following package(s) will be installed:
-    - remotes [2.5.0]
-    These packages will be installed into "~/renv/library/linux-ubuntu-jammy/R-4.4/x86_64-pc-linux-gnu".
-    
-    # Installing packages --------------------------------------------------------
-    - Installing remotes ...                        OK [linked from cache]
-    Successfully installed 1 package in 6.1 milliseconds.
-    curl     (5.2.1  -> 5.2.3   ) [CRAN]
-    jsonlite (1.8.8  -> 1.8.9   ) [CRAN]
-    Rcpp     (1.0.12 -> 1.0.13-1) [CRAN]
-    V8       (4.4.2  -> 6.0.0   ) [CRAN]
-    [36m──[39m [36mR CMD build[39m [36m─────────────────────────────────────────────────────────────────[39m
-    * checking for file ‘/tmp/Rtmpvo1Xrr/remotes193d3d1cdf74/hoesler-rwantshue-07a58c7/DESCRIPTION’ ... OK
-    * preparing ‘rwantshue’:
-    * checking DESCRIPTION meta-information ... OK
-    * checking for LF line-endings in source and make files and shell scripts
-    * checking for empty or unneeded directories
-    Omitted ‘LazyData’ from DESCRIPTION
-    * building ‘rwantshue_0.0.3.tar.gz’
-    
+##### 2.1.2.3. Prediabetes Test
 
+<img src="documentation/Fig11_diab_test_stacked_bar_plot.png"/>
 
-<img src="documentation/Fig10_diag_stacked_bar_plot.png"/>
-
-**Prediabetes test results**: A total of 20,938 (83.75%) had not performed an A1C test, while 23,625 (94.50%) had not performed a glucose test. For those who had performed, however, a high result was seen more than a normal one for A1C tests and almost equal number in high and normal results for glucose test.
-
+A total of 20,938 (83.75%) had not performed an A1C test, while 23,625 (94.50%) had not performed a glucose test. For those who had performed, however, a high result was seen more than a normal one for A1C tests and almost equal number in high and normal results for glucose test.
 
 ```R
 # Table for Prediabetes tests
@@ -801,10 +665,11 @@ diab_test_stacked_bar_plot <- ggplot(diab_test_tbl) +
   scale_x_discrete(expand = c(0.5, 0))
 ```
 
-<img src="documentation/Fig11_diab_test_stacked_bar_plot.png"/>
+##### 2.1.2.4. Diabetes Medication
 
-**Diabetes medication**: Among all the patients, 19,228 (76.91%) had been prescribed a diabetes medication, while 13,497 (53.99%) had not changed diabetes medication.
+<img src="documentation/Fig12_diab_ques_stacked_bar_plot.png"/>
 
+Among all the patients, 19,228 (76.91%) had been prescribed a diabetes medication, while 13,497 (53.99%) had not changed diabetes medication.
 
 ```R
 # Table for change
@@ -894,10 +759,6 @@ medication?   </td><td>no </td><td> 5772</td><td>23.09%</td></tr>
 </table>
 
 
-
-<img src="documentation/Fig12_diab_ques_stacked_bar_plot.png"/>
-
-
 ```R
 # Table for change in diabetes medication
 change_tbl <- readmissions %>%
@@ -955,7 +816,11 @@ change_pie_chart <- ggplot(change_tbl, aes(x = "", y = proportion, fill = change
 
 <img src="documentation/Fig13_change_pie_chart.png"/>
 
-**Readmission**: A slightly higher number of patients were not readmitted to the hospital compared to those who were readmitted. The blue bar represents the number of patients who were readmitted, which is 11,754 (47.02%), while the orange bar represents the number of patients who were not readmitted, which is 13,246 (52.98%)
+##### 2.1.2.5. Readmission
+
+<img src="documentation/Fig13_readmitted_bar_plot.png"/>
+
+A slightly higher number of patients were not readmitted to the hospital compared to those who were readmitted. The blue bar represents the number of patients who were readmitted, which is 11,754 (47.02%), while the orange bar represents the number of patients who were not readmitted, which is 13,246 (52.98%)
 
 
 ```R
@@ -1007,7 +872,6 @@ readmitted_bar_plot <- ggplot(readmitted_fdt) +
 readmitted_fdt
 ```
 
-
 <table class="dataframe">
 <caption>A tibble: 2 × 3</caption>
 <thead>
@@ -1020,1054 +884,10 @@ readmitted_fdt
 </tbody>
 </table>
 
-
-
-<img src="documentation/Fig13_readmitted_bar_plot.png"/>
-
-#### 2.1.2. By Age
-##### 2.1.2.1. Numerical
-
-The following statements can be said about the age groups' hospital stay through the comparisons of their seven (7) discrete numerical features. In general,
-
-**Time in hospital**: Groups within the age of [60-100) had the most number of hospital days of about four.</br>
-**Number of procedures**: Groups aged [40-80] had at least one medical procedure performed, whereas groups aged [80-100] had none; all age groups had a high number of laboratory procedures performed ranging from 43-46.</br>
-**Number of medications**: The [60-70) group had the most number of medications of 17; as the patient moves one age group away from it, the number decreases by 1 or 2. </br>
-**Number of visits**: Outpatient, inpatient, and emergency room visits were not very common (close to zero) before hospitalization for all age groups.
-
-##### 2.1.2.2. Categorical
-**Medical specialty**: We can see from Figure 14 graph the distribution of patients varies across different age groups and specialties. Among the patients with information about their physician's specialty, most, if not all, age groups seem to be admitted by a physician of Internal Medicine, while specialties categorized as 'Others' were second.
-
-
-```R
-# Summary statistics of age groups' time in hospital 
-age_time_in_hospital_stats <- readmissions %>% 
-  group_by(age) %>%
-  filter(!is.na(age), !is.na(time_in_hospital)) %>%
-  summarize(mean_time_in_hospital = mean(time_in_hospital),
-              sd_time_in_hospital = sd(time_in_hospital),
-              min_time_in_hospital = min(time_in_hospital),
-              first_time_in_hospital = quantile(time_in_hospital, probs=0.25),
-              median_time_in_hospital = median(time_in_hospital),
-              third_quartile_time_in_hospital = quantile(time_in_hospital, probs=0.75),
-              max_time_in_hospital = max(time_in_hospital)) %>%
-  arrange(desc(median_time_in_hospital), desc(mean_time_in_hospital))
-
-# Summary statistics of age groups' number of procedures
-age_n_procedures_stats <- readmissions %>% 
-  group_by(age) %>%
-  filter(!is.na(age), !is.na(n_procedures)) %>%
-  summarize(mean_n_procedures = mean(n_procedures),
-              sd_n_procedures = sd(n_procedures),
-              min_n_procedures = min(n_procedures),
-              first_n_procedures = quantile(n_procedures, probs=0.25),
-              median_n_procedures = median(n_procedures),
-              third_n_procedures = quantile(n_procedures, probs=0.75),
-              max_n_procedures = max(n_procedures)) %>%
-  arrange(desc(median_n_procedures), desc(mean_n_procedures))
-
-# Summary statistics of age groups' number of lab procedures
-age_n_lab_procedures_stats <- readmissions %>% 
-  group_by(age) %>%
-  filter(!is.na(age), !is.na(n_lab_procedures)) %>%
-  summarize(mean_n_lab_procedures = mean(n_lab_procedures),
-              sd_n_lab_procedures = sd(n_lab_procedures),
-              min_n_lab_procedures = min(n_lab_procedures),
-              first_n_lab_procedures = quantile(n_lab_procedures, probs=0.25),
-              median_n_lab_procedures = median(n_lab_procedures),
-              third_n_lab_procedures = quantile(n_lab_procedures, probs=0.75),
-              max_n_lab_procedures = max(n_lab_procedures))  %>%
-  arrange(desc(median_n_lab_procedures), desc(mean_n_lab_procedures))
-
-# Summary statistics of age groups' number of medications
-age_n_medications_stats <- readmissions %>% 
-  group_by(age) %>%
-  filter(!is.na(age), !is.na(n_medications)) %>%
-  summarize(mean_n_medications = mean(n_medications),
-              sd_n_medications = sd(n_medications),
-              min_n_medications = min(n_medications),
-              first_n_medications = quantile(n_medications, probs=0.25),
-              median_n_medications = median(n_medications),
-              third_n_medications = quantile(n_medications, probs=0.75),
-              max_n_medications = max(n_medications))  %>%
-  arrange(desc(median_n_medications), desc(mean_n_medications))
-
-# Summary statistics of age groups' number of outpatient visits
-age_n_outpatient_stats <- readmissions %>% 
-  group_by(age) %>%
-  filter(!is.na(age), !is.na(n_outpatient)) %>%
-  summarize(mean_n_outpatient = mean(n_outpatient),
-              sd_n_outpatient = sd(n_outpatient),
-              min_n_outpatient = min(n_outpatient),
-              first_n_outpatient = quantile(n_outpatient, probs=0.25),
-              median_n_outpatient = median(n_outpatient),
-              third_n_outpatient = quantile(n_outpatient, probs=0.75),
-              max_n_outpatient = max(n_outpatient))  %>%
-  arrange(desc(median_n_outpatient), desc(mean_n_outpatient))
-
-# Summary statistics of age groups' number of inpatient visits
-age_n_inpatient_stats <- readmissions %>% 
-  group_by(age) %>%
-  filter(!is.na(age), !is.na(n_inpatient)) %>%
-  summarize(mean_n_inpatient = mean(n_inpatient),
-              sd_n_inpatient = sd(n_inpatient),
-              min_n_inpatient = min(n_inpatient),
-              first_n_inpatient = quantile(n_inpatient, probs=0.25),
-              median_n_inpatient = median(n_inpatient),
-              third_n_inpatient = quantile(n_inpatient, probs=0.75),
-              max_n_inpatient = max(n_inpatient))  %>%
-  arrange(desc(median_n_inpatient), desc(mean_n_inpatient))
-
-# Summary statistics of age groups' number of ER visits
-age_n_emergency_stats <- readmissions %>% 
-  group_by(age) %>%
-  filter(!is.na(age), !is.na(n_emergency)) %>%
-  summarize(mean_n_emergency = mean(n_emergency),
-              sd_n_emergency = sd(n_emergency),
-              min_n_emergency = min(n_emergency),
-              first_n_emergency = quantile(n_emergency, probs=0.25),
-              median_n_emergency = median(n_emergency),
-              third_n_emergency = quantile(n_emergency, probs=0.75),
-              max_n_emergency = max(n_emergency))  %>%
-  arrange(desc(median_n_emergency), desc(mean_n_emergency))
-
-
-plyr::join_all(list(age_time_in_hospital_stats %>%
-          select(age, median_time_in_hospital#, mean_time_in_hospital
-            ),
-         age_n_procedures_stats %>%
-            select(age, median_n_procedures#, mean_n_procedures
-            ),
-         age_n_lab_procedures_stats %>%
-          select(age, median_n_lab_procedures#, mean_n_lab_procedures
-            ),
-         age_n_medications_stats %>%
-          select(age, median_n_medications#, mean_n_medications
-            ),
-         age_n_outpatient_stats %>%
-          select(age, median_n_outpatient#, mean_n_outpatient
-            ),
-         age_n_inpatient_stats %>%
-          select(age, median_n_inpatient#, mean_n_inpatient
-            ),
-         age_n_emergency_stats %>%
-          select(age, median_n_emergency#, mean_n_emergency
-            )),
-  by='age') %>%
-    arrange(desc(age))
-
-plyr::join_all(list(age_time_in_hospital_stats %>%
-          select(age, mean_time_in_hospital
-            ),
-         age_n_procedures_stats %>%
-            select(age, mean_n_procedures
-            ),
-         age_n_lab_procedures_stats %>%
-          select(age, mean_n_lab_procedures
-            ),
-         age_n_medications_stats %>%
-          select(age, mean_n_medications
-            ),
-         age_n_outpatient_stats %>%
-          select(age, mean_n_outpatient
-            ),
-         age_n_inpatient_stats %>%
-          select(age, mean_n_inpatient
-            ),
-         age_n_emergency_stats %>%
-          select(age, mean_n_emergency
-            )),
-  by='age') %>%
-    arrange(desc(age))
-```
-
-
-<table class="dataframe">
-<caption>A data.frame: 6 × 8</caption>
-<thead>
-  <tr><th scope=col>age</th><th scope=col>median_time_in_hospital</th><th scope=col>median_n_procedures</th><th scope=col>median_n_lab_procedures</th><th scope=col>median_n_medications</th><th scope=col>median_n_outpatient</th><th scope=col>median_n_inpatient</th><th scope=col>median_n_emergency</th></tr>
-  <tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>[90-100)</td><td>4</td><td>0</td><td>45</td><td>13</td><td>0</td><td>0</td><td>0</td></tr>
-  <tr><td>[80-90) </td><td>4</td><td>0</td><td>46</td><td>14</td><td>0</td><td>0</td><td>0</td></tr>
-  <tr><td>[70-80) </td><td>4</td><td>1</td><td>45</td><td>15</td><td>0</td><td>0</td><td>0</td></tr>
-  <tr><td>[60-70) </td><td>4</td><td>1</td><td>44</td><td>16</td><td>0</td><td>0</td><td>0</td></tr>
-  <tr><td>[50-60) </td><td>3</td><td>1</td><td>43</td><td>15</td><td>0</td><td>0</td><td>0</td></tr>
-  <tr><td>[40-50) </td><td>3</td><td>1</td><td>44</td><td>14</td><td>0</td><td>0</td><td>0</td></tr>
-</tbody>
-</table>
-
-
-
-
-<table class="dataframe">
-<caption>A data.frame: 6 × 8</caption>
-<thead>
-  <tr><th scope=col>age</th><th scope=col>mean_time_in_hospital</th><th scope=col>mean_n_procedures</th><th scope=col>mean_n_lab_procedures</th><th scope=col>mean_n_medications</th><th scope=col>mean_n_outpatient</th><th scope=col>mean_n_inpatient</th><th scope=col>mean_n_emergency</th></tr>
-  <tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>[90-100)</td><td>4.762667</td><td>0.6853333</td><td>43.97467</td><td>13.87333</td><td>0.2613333</td><td>0.5573333</td><td>0.1386667</td></tr>
-  <tr><td>[80-90) </td><td>4.813773</td><td>0.9694420</td><td>44.34965</td><td>15.29562</td><td>0.4007972</td><td>0.6045173</td><td>0.1472542</td></tr>
-  <tr><td>[70-80) </td><td>4.599093</td><td>1.3760421</td><td>43.57920</td><td>16.36142</td><td>0.3965189</td><td>0.6011409</td><td>0.1351470</td></tr>
-  <tr><td>[60-70) </td><td>4.384407</td><td>1.5996956</td><td>42.59716</td><td>17.22307</td><td>0.3757822</td><td>0.6074751</td><td>0.1603247</td></tr>
-  <tr><td>[50-60) </td><td>4.154537</td><td>1.5188679</td><td>42.48967</td><td>16.69946</td><td>0.3270440</td><td>0.6118598</td><td>0.2295597</td></tr>
-  <tr><td>[40-50) </td><td>4.011453</td><td>1.2985782</td><td>42.95537</td><td>15.31635</td><td>0.3021327</td><td>0.7207741</td><td>0.3957346</td></tr>
-</tbody>
-</table>
-
-
-
-
-```R
-# Specialty of admitting physician by age group
-age_and_medical_specialty_counts <- readmissions %>%
-  group_by(age, medical_specialty) %>%
-  summarize(n = n(), .groups = "drop_last") %>%
-  mutate(perc = label_percent(accuracy=0.01)(n/sum(n))) %>% 
-  arrange(age, desc(n)) %>%
-  ungroup()
-
-# Colorize the Physician's Specialty
-color_scheme <- iwanthue(seed=1234, force_init=TRUE)
-medical_specialty_colors <- color_scheme$hex(length(levels(factor(age_and_medical_specialty_counts$medical_specialty))))
-
-# Bar plot
-age_medical_specialty_bar_plot <- ggplot(age_and_medical_specialty_counts %>%
-                      filter(!is.na(medical_specialty))) + 
-  geom_chicklet(aes(x = age, y = n,
-                      fill = fct_reorder(medical_specialty, n)), 
-                  color="white",
-                  radius = grid::unit(1, "mm"), position="stack") +
-  ggtitle("Fig. 14: Stacked Bar Graph of the Patients' Age Groups by the\n                                  Specialty of the Admitting Physician\n") +
-  labs(x="\nDiagnosis", y="Number of patients\n", fill="Specialty of the Admitting Physician: ") +
-  scale_x_discrete(expand = c(0.01, 0)) + 
-  theme_economist() + 
-  scale_color_economist() + 
-    guides(fill = guide_legend(ncol=4,nrow=2,
-                               reverse = FALSE,
-                               override.aes = list(shape = 15,
-                                                   size = 4),
-                               title.position="top")) +
-  theme(legend.position="bottom",
-          legend.text = element_text(margin = margin(r = 2, unit = "pt"),
-                                     size = 10),
-          legend.title = element_text(face="bold",
-                                      size = 12),
-          axis.ticks = element_blank(),          
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-          plot.title = element_text(hjust = -0.9,
-                                    size= 14),
-          legend.box.margin = margin(t=0, b=0, l=-78, unit='pt')) +
-  scale_y_continuous(expand = c(0.01, 0),
-                       breaks = seq(0, 3500, by=500)) + 
-  scale_fill_manual(values = medical_specialty_colors)
-```
-
-
-```R
-age_and_medical_specialty_counts
-```
-
-
-<table class="dataframe">
-<caption>A tibble: 42 × 4</caption>
-<thead>
-  <tr><th scope=col>age</th><th scope=col>medical_specialty</th><th scope=col>n</th><th scope=col>perc</th></tr>
-  <tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>[40-50) </td><td>NA                    </td><td>1186</td><td>46.84%</td></tr>
-  <tr><td>[40-50) </td><td>InternalMedicine      </td><td> 352</td><td>13.90%</td></tr>
-  <tr><td>[40-50) </td><td>Other                 </td><td> 322</td><td>12.72%</td></tr>
-  <tr><td>[40-50) </td><td>Family/GeneralPractice</td><td> 234</td><td>9.24% </td></tr>
-  <tr><td>[40-50) </td><td>Emergency/Trauma      </td><td> 208</td><td>8.21% </td></tr>
-  <tr><td>[40-50) </td><td>Surgery               </td><td> 116</td><td>4.58% </td></tr>
-  <tr><td>[40-50) </td><td>Cardiology            </td><td> 114</td><td>4.50% </td></tr>
-  <tr><td>[50-60) </td><td>NA                    </td><td>2123</td><td>47.69%</td></tr>
-  <tr><td>[50-60) </td><td>InternalMedicine      </td><td> 608</td><td>13.66%</td></tr>
-  <tr><td>[50-60) </td><td>Other                 </td><td> 546</td><td>12.26%</td></tr>
-  <tr><td>[50-60) </td><td>Family/GeneralPractice</td><td> 336</td><td>7.55% </td></tr>
-  <tr><td>[50-60) </td><td>Emergency/Trauma      </td><td> 304</td><td>6.83% </td></tr>
-  <tr><td>[50-60) </td><td>Cardiology            </td><td> 290</td><td>6.51% </td></tr>
-  <tr><td>[50-60) </td><td>Surgery               </td><td> 245</td><td>5.50% </td></tr>
-  <tr><td>[60-70) </td><td>NA                    </td><td>2978</td><td>50.36%</td></tr>
-  <tr><td>[60-70) </td><td>Other                 </td><td> 714</td><td>12.08%</td></tr>
-  <tr><td>[60-70) </td><td>InternalMedicine      </td><td> 706</td><td>11.94%</td></tr>
-  <tr><td>[60-70) </td><td>Family/GeneralPractice</td><td> 396</td><td>6.70% </td></tr>
-  <tr><td>[60-70) </td><td>Emergency/Trauma      </td><td> 390</td><td>6.60% </td></tr>
-  <tr><td>[60-70) </td><td>Cardiology            </td><td> 383</td><td>6.48% </td></tr>
-  <tr><td>[60-70) </td><td>Surgery               </td><td> 346</td><td>5.85% </td></tr>
-  <tr><td>[70-80) </td><td>NA                    </td><td>3363</td><td>49.19%</td></tr>
-  <tr><td>[70-80) </td><td>InternalMedicine      </td><td>1055</td><td>15.43%</td></tr>
-  <tr><td>[70-80) </td><td>Other                 </td><td> 725</td><td>10.60%</td></tr>
-  <tr><td>[70-80) </td><td>Family/GeneralPractice</td><td> 495</td><td>7.24% </td></tr>
-  <tr><td>[70-80) </td><td>Emergency/Trauma      </td><td> 462</td><td>6.76% </td></tr>
-  <tr><td>[70-80) </td><td>Cardiology            </td><td> 412</td><td>6.03% </td></tr>
-  <tr><td>[70-80) </td><td>Surgery               </td><td> 325</td><td>4.75% </td></tr>
-  <tr><td>[80-90) </td><td>NA                    </td><td>2360</td><td>52.26%</td></tr>
-  <tr><td>[80-90) </td><td>InternalMedicine      </td><td> 705</td><td>15.61%</td></tr>
-  <tr><td>[80-90) </td><td>Emergency/Trauma      </td><td> 430</td><td>9.52% </td></tr>
-  <tr><td>[80-90) </td><td>Family/GeneralPractice</td><td> 349</td><td>7.73% </td></tr>
-  <tr><td>[80-90) </td><td>Other                 </td><td> 319</td><td>7.06% </td></tr>
-  <tr><td>[80-90) </td><td>Cardiology            </td><td> 198</td><td>4.38% </td></tr>
-  <tr><td>[80-90) </td><td>Surgery               </td><td> 155</td><td>3.43% </td></tr>
-  <tr><td>[90-100)</td><td>NA                    </td><td> 372</td><td>49.60%</td></tr>
-  <tr><td>[90-100)</td><td>InternalMedicine      </td><td> 139</td><td>18.53%</td></tr>
-  <tr><td>[90-100)</td><td>Emergency/Trauma      </td><td>  91</td><td>12.13%</td></tr>
-  <tr><td>[90-100)</td><td>Family/GeneralPractice</td><td>  72</td><td>9.60% </td></tr>
-  <tr><td>[90-100)</td><td>Other                 </td><td>  38</td><td>5.07% </td></tr>
-  <tr><td>[90-100)</td><td>Surgery               </td><td>  26</td><td>3.47% </td></tr>
-  <tr><td>[90-100)</td><td>Cardiology            </td><td>  12</td><td>1.60% </td></tr>
-</tbody>
-</table>
-
-
-
-<img src="documentation/Fig14_age_medical_specialty_bar_plot.png"/>
-
-**Diagnoses**: Figures 15-16 demonstrates the patient distribution across age groups and primary, secondary, and additional secondary diagnoses. Diagnoses other than the six listed were given to patients in most, if not all, age groups among these three types of diagnosis.
-
-
-```R
-# Primary diagnosis by age group
-age_and_diag_1_counts <- readmissions %>%
-  group_by(age, diag_1) %>%
-  summarize(n = n(), .groups = "drop_last") %>%
-  mutate(perc = label_percent(accuracy=0.01)(n/sum(n))) %>% 
-  arrange(age, desc(n)) %>%
-  ungroup()
-
-# Colorize
-color_scheme <- iwanthue(seed=1234, force_init=TRUE)
-diag_1_colors <- color_scheme$hex(length(levels(factor(age_and_diag_1_counts$diag_1,
-                                                      levels = c('Circulatory', 
-                                                                 'Diabetes',
-                                                                 'Digestive',
-                                                                 'Injury',
-                                                                 'Musculoskeletal',
-                                                                 'Respiratory',
-                                                                 'Other'),
-                                                       order = TRUE))))
-
-# Bar plot
-age_diag_bar_plot <- ggplot(age_and_diag_1_counts %>%
-                filter(!is.na(diag_1))) + 
-  geom_chicklet(aes(x = age, y = n,
-                      fill = fct_reorder(diag_1,n)), 
-                  radius = grid::unit(1, "mm"), position="stack") +
-  ggtitle("Fig. 15: Stacked Bar Graph of the Patients' Age Groups by Primary Diagnoses\n") +
-  labs(x="", y="Number of patients\n", fill="Diagnosis: ") +
-  scale_x_discrete(expand = c(0.01, 0)) + 
-  theme_economist() + 
-  scale_color_economist() + 
-    guides(fill = guide_legend(ncol=4,nrow=2,
-                               reverse = FALSE,
-                               override.aes = list(shape = 15,
-                                                   size = 4),
-                               title.position="top")) +
-  theme(legend.position="none",
-          legend.text = element_text(margin = margin(r = 2, unit = "pt"),
-                                     size = 10),
-          legend.title = element_text(face="bold",
-                                      size = 12),
-          axis.ticks = element_blank(),        
-          axis.title.x=element_blank(),
-          axis.text.x=element_blank(),
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-          plot.title = element_text(hjust = 0,
-                                    size= 11),
-          legend.box.margin = margin(t=0, b=0, l=-95, unit='pt')
-         ) +
-  scale_y_continuous(expand = c(0.01, 0),
-                       breaks = seq(0, 7500, by=2000)) +
-  scale_fill_manual(values = diag_1_colors)
-
-# Secondary diagnosis by age group
-age_and_diag_2_counts <- readmissions %>%
-  group_by(age, diag_2) %>%
-  summarize(n = n(), .groups = "drop_last") %>%
-  mutate(perc = label_percent(accuracy=0.01)(n/sum(n))) %>% 
-  arrange(age, desc(n)) %>%
-  ungroup()
-
-# Colorize
-color_scheme2 <- iwanthue(seed=1234, force_init=TRUE)
-diag_2_colors <- color_scheme2$hex(length(levels(factor(age_and_diag_2_counts$diag_2,
-                                                      levels = c('Circulatory', 
-                                                                 'Diabetes',
-                                                                 'Digestive',
-                                                                 'Injury',
-                                                                 'Musculoskeletal',
-                                                                 'Respiratory',
-                                                                 'Other'),
-                                                       order = TRUE))))
-
-# Bar plot
-age_diag_2_bar_plot <- ggplot(age_and_diag_2_counts %>%
-                filter(!is.na(diag_2))) + 
-  geom_chicklet(aes(x = age, y = n,
-                      fill = fct_reorder(diag_2,n)), 
-                  radius = grid::unit(1, "mm"), position="stack") +
-  ggtitle("Fig. 16: Stacked Bar Graph of the Patients' Age Groups by Secondary Diagnoses\n") +
-  labs(x="", y="Number of patients\n", fill="Secondary Diagnosis: ") +
-  scale_x_discrete(expand = c(0.01, 0)) + 
-  theme_economist() + 
-  scale_color_economist() + 
-    guides(fill = guide_legend(ncol=4,nrow=2,
-                               reverse = FALSE,
-                               override.aes = list(shape = 15,
-                                                   size = 4),
-                               title.position="top")) +
-  theme(legend.position="none",
-          legend.text = element_text(margin = margin(r = 2, unit = "pt"),
-                                     size = 10),
-          legend.title = element_text(face="bold",
-                                      size = 12),
-          axis.ticks = element_blank(),     
-          axis.title.x=element_blank(),
-          axis.text.x=element_blank(),
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-          plot.title = element_text(hjust = 0,
-                                    size= 11),
-          legend.box.margin = margin(t=0, b=-100, l=-100, unit='pt')
-         ) +
-  scale_y_continuous(expand = c(0.01, 0),
-                       breaks = seq(0, 7500, by=2000)) +
-  scale_fill_manual(values = diag_1_colors)
-
-
-# Additional Secondary diagnosis by age group
-age_and_diag_3_counts <- readmissions %>%
-  group_by(age, diag_3) %>%
-  summarize(n = n(), .groups = "drop_last") %>%
-  mutate(perc = label_percent(accuracy=0.01)(n/sum(n))) %>% 
-  arrange(age, desc(n)) %>%
-  ungroup()
-
-# Colorize
-color_scheme <- iwanthue(seed=1234, force_init=TRUE)
-diag_3_colors <- color_scheme$hex(length(levels(factor(age_and_diag_3_counts$diag_3,
-                                                      levels = c('Circulatory', 
-                                                                 'Diabetes',
-                                                                 'Digestive',
-                                                                 'Injury',
-                                                                 'Musculoskeletal',
-                                                                 'Respiratory',
-                                                                 'Other'),
-                                                       order = TRUE))))
-
-# Bar plot
-age_diag_3_bar_plot <- ggplot(age_and_diag_3_counts %>%
-                filter(!is.na(diag_3))) + 
-  geom_chicklet(aes(x = age, y = n,
-                      fill = fct_reorder(diag_3,n)),  
-                  radius = grid::unit(1, "mm"), position="stack") +
-  ggtitle("Fig. 17: Stacked Bar Graph of the Patients' Age Groups by Additional Secondary Diagnoses\n") +
-  labs(x="\nAge group", y="Number of patients\n", fill="Diagnosis: ") +
-  scale_x_discrete(expand = c(0.01, 0)) + 
-  theme_economist() + 
-  scale_color_economist() + 
-    guides(fill = guide_legend(ncol=4,nrow=2,
-                               reverse = FALSE,
-                               override.aes = list(shape = 15,
-                                                   size = 4),
-                               title.position="top")) +
-  theme(legend.position="bottom",
-          legend.text = element_text(margin = margin(r = 2, unit = "pt"),
-                                     size = 10),
-          legend.title = element_text(face="bold",
-                                      size = 12),
-          axis.ticks = element_blank(), 
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-          plot.title = element_text(hjust = 0,
-                                    size= 10),
-          legend.box.margin = margin(t=0, b=0, l=-110, unit='pt')
-         ) +
-  scale_y_continuous(expand = c(0.01, 0),
-                       breaks = seq(0, 7500, by=2000)) +
-  scale_fill_manual(values = diag_3_colors)
-
-#ggarrange(age_diag_bar_plot, 
-#          age_diag_2_bar_plot,
-#          age_diag_3_bar_plot,
-#          ncol = 1, nrow = 3,
-#          heights = c(0.9,0.9,1.65),
-#          align = "v")
-```
-
-
-```R
-age_and_diag_1_counts
-age_and_diag_2_counts
-age_and_diag_3_counts
-```
-
-
-<table class="dataframe">
-<caption>A tibble: 45 × 4</caption>
-<thead>
-  <tr><th scope=col>age</th><th scope=col>diag_1</th><th scope=col>n</th><th scope=col>perc</th></tr>
-  <tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>[40-50) </td><td>Other          </td><td> 750</td><td>29.62%</td></tr>
-  <tr><td>[40-50) </td><td>Circulatory    </td><td> 504</td><td>19.91%</td></tr>
-  <tr><td>[40-50) </td><td>Respiratory    </td><td> 376</td><td>14.85%</td></tr>
-  <tr><td>[40-50) </td><td>Diabetes       </td><td> 369</td><td>14.57%</td></tr>
-  <tr><td>[40-50) </td><td>Digestive      </td><td> 271</td><td>10.70%</td></tr>
-  <tr><td>[40-50) </td><td>Injury         </td><td> 162</td><td>6.40% </td></tr>
-  <tr><td>[40-50) </td><td>Musculoskeletal</td><td> 100</td><td>3.95% </td></tr>
-  <tr><td>[50-60) </td><td>Circulatory    </td><td>1256</td><td>28.21%</td></tr>
-  <tr><td>[50-60) </td><td>Other          </td><td>1164</td><td>26.15%</td></tr>
-  <tr><td>[50-60) </td><td>Respiratory    </td><td> 694</td><td>15.59%</td></tr>
-  <tr><td>[50-60) </td><td>Digestive      </td><td> 442</td><td>9.93% </td></tr>
-  <tr><td>[50-60) </td><td>Diabetes       </td><td> 393</td><td>8.83% </td></tr>
-  <tr><td>[50-60) </td><td>Injury         </td><td> 273</td><td>6.13% </td></tr>
-  <tr><td>[50-60) </td><td>Musculoskeletal</td><td> 230</td><td>5.17% </td></tr>
-  <tr><td>[60-70) </td><td>Circulatory    </td><td>1962</td><td>33.18%</td></tr>
-  <tr><td>[60-70) </td><td>Other          </td><td>1402</td><td>23.71%</td></tr>
-  <tr><td>[60-70) </td><td>Respiratory    </td><td> 836</td><td>14.14%</td></tr>
-  <tr><td>[60-70) </td><td>Digestive      </td><td> 554</td><td>9.37% </td></tr>
-  <tr><td>[60-70) </td><td>Injury         </td><td> 400</td><td>6.76% </td></tr>
-  <tr><td>[60-70) </td><td>Diabetes       </td><td> 385</td><td>6.51% </td></tr>
-  <tr><td>[60-70) </td><td>Musculoskeletal</td><td> 373</td><td>6.31% </td></tr>
-  <tr><td>[60-70) </td><td>NA             </td><td>   1</td><td>0.02% </td></tr>
-  <tr><td>[70-80) </td><td>Circulatory    </td><td>2392</td><td>34.99%</td></tr>
-  <tr><td>[70-80) </td><td>Other          </td><td>1693</td><td>24.76%</td></tr>
-  <tr><td>[70-80) </td><td>Respiratory    </td><td> 964</td><td>14.10%</td></tr>
-  <tr><td>[70-80) </td><td>Digestive      </td><td> 585</td><td>8.56% </td></tr>
-  <tr><td>[70-80) </td><td>Injury         </td><td> 444</td><td>6.49% </td></tr>
-  <tr><td>[70-80) </td><td>Diabetes       </td><td> 385</td><td>5.63% </td></tr>
-  <tr><td>[70-80) </td><td>Musculoskeletal</td><td> 373</td><td>5.46% </td></tr>
-  <tr><td>[70-80) </td><td>NA             </td><td>   1</td><td>0.01% </td></tr>
-  <tr><td>[80-90) </td><td>Circulatory    </td><td>1482</td><td>32.82%</td></tr>
-  <tr><td>[80-90) </td><td>Other          </td><td>1269</td><td>28.10%</td></tr>
-  <tr><td>[80-90) </td><td>Respiratory    </td><td> 691</td><td>15.30%</td></tr>
-  <tr><td>[80-90) </td><td>Digestive      </td><td> 402</td><td>8.90% </td></tr>
-  <tr><td>[80-90) </td><td>Injury         </td><td> 321</td><td>7.11% </td></tr>
-  <tr><td>[80-90) </td><td>Diabetes       </td><td> 181</td><td>4.01% </td></tr>
-  <tr><td>[80-90) </td><td>Musculoskeletal</td><td> 168</td><td>3.72% </td></tr>
-  <tr><td>[80-90) </td><td>NA             </td><td>   2</td><td>0.04% </td></tr>
-  <tr><td>[90-100)</td><td>Circulatory    </td><td> 228</td><td>30.40%</td></tr>
-  <tr><td>[90-100)</td><td>Other          </td><td> 220</td><td>29.33%</td></tr>
-  <tr><td>[90-100)</td><td>Respiratory    </td><td> 119</td><td>15.87%</td></tr>
-  <tr><td>[90-100)</td><td>Digestive      </td><td>  75</td><td>10.00%</td></tr>
-  <tr><td>[90-100)</td><td>Injury         </td><td>  66</td><td>8.80% </td></tr>
-  <tr><td>[90-100)</td><td>Diabetes       </td><td>  34</td><td>4.53% </td></tr>
-  <tr><td>[90-100)</td><td>Musculoskeletal</td><td>   8</td><td>1.07% </td></tr>
-</tbody>
-</table>
-
-
-
-
-<table class="dataframe">
-<caption>A tibble: 47 × 4</caption>
-<thead>
-  <tr><th scope=col>age</th><th scope=col>diag_2</th><th scope=col>n</th><th scope=col>perc</th></tr>
-  <tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>[40-50) </td><td>Other          </td><td>1097</td><td>43.33%</td></tr>
-  <tr><td>[40-50) </td><td>Circulatory    </td><td> 526</td><td>20.77%</td></tr>
-  <tr><td>[40-50) </td><td>Diabetes       </td><td> 462</td><td>18.25%</td></tr>
-  <tr><td>[40-50) </td><td>Respiratory    </td><td> 181</td><td>7.15% </td></tr>
-  <tr><td>[40-50) </td><td>Digestive      </td><td> 129</td><td>5.09% </td></tr>
-  <tr><td>[40-50) </td><td>Injury         </td><td>  77</td><td>3.04% </td></tr>
-  <tr><td>[40-50) </td><td>Musculoskeletal</td><td>  53</td><td>2.09% </td></tr>
-  <tr><td>[40-50) </td><td>NA             </td><td>   7</td><td>0.28% </td></tr>
-  <tr><td>[50-60) </td><td>Other          </td><td>1587</td><td>35.65%</td></tr>
-  <tr><td>[50-60) </td><td>Circulatory    </td><td>1266</td><td>28.44%</td></tr>
-  <tr><td>[50-60) </td><td>Diabetes       </td><td> 705</td><td>15.84%</td></tr>
-  <tr><td>[50-60) </td><td>Respiratory    </td><td> 477</td><td>10.71%</td></tr>
-  <tr><td>[50-60) </td><td>Digestive      </td><td> 210</td><td>4.72% </td></tr>
-  <tr><td>[50-60) </td><td>Musculoskeletal</td><td> 102</td><td>2.29% </td></tr>
-  <tr><td>[50-60) </td><td>Injury         </td><td> 100</td><td>2.25% </td></tr>
-  <tr><td>[50-60) </td><td>NA             </td><td>   5</td><td>0.11% </td></tr>
-  <tr><td>[60-70) </td><td>Other          </td><td>2036</td><td>34.43%</td></tr>
-  <tr><td>[60-70) </td><td>Circulatory    </td><td>1965</td><td>33.23%</td></tr>
-  <tr><td>[60-70) </td><td>Respiratory    </td><td> 717</td><td>12.13%</td></tr>
-  <tr><td>[60-70) </td><td>Diabetes       </td><td> 687</td><td>11.62%</td></tr>
-  <tr><td>[60-70) </td><td>Digestive      </td><td> 252</td><td>4.26% </td></tr>
-  <tr><td>[60-70) </td><td>Injury         </td><td> 140</td><td>2.37% </td></tr>
-  <tr><td>[60-70) </td><td>Musculoskeletal</td><td> 107</td><td>1.81% </td></tr>
-  <tr><td>[60-70) </td><td>NA             </td><td>   9</td><td>0.15% </td></tr>
-  <tr><td>[70-80) </td><td>Circulatory    </td><td>2483</td><td>36.32%</td></tr>
-  <tr><td>[70-80) </td><td>Other          </td><td>2339</td><td>34.21%</td></tr>
-  <tr><td>[70-80) </td><td>Respiratory    </td><td> 840</td><td>12.29%</td></tr>
-  <tr><td>[70-80) </td><td>Diabetes       </td><td> 675</td><td>9.87% </td></tr>
-  <tr><td>[70-80) </td><td>Digestive      </td><td> 227</td><td>3.32% </td></tr>
-  <tr><td>[70-80) </td><td>Injury         </td><td> 162</td><td>2.37% </td></tr>
-  <tr><td>[70-80) </td><td>Musculoskeletal</td><td> 103</td><td>1.51% </td></tr>
-  <tr><td>[70-80) </td><td>NA             </td><td>   8</td><td>0.12% </td></tr>
-  <tr><td>[80-90) </td><td>Other          </td><td>1691</td><td>37.44%</td></tr>
-  <tr><td>[80-90) </td><td>Circulatory    </td><td>1613</td><td>35.72%</td></tr>
-  <tr><td>[80-90) </td><td>Respiratory    </td><td> 575</td><td>12.73%</td></tr>
-  <tr><td>[80-90) </td><td>Diabetes       </td><td> 330</td><td>7.31% </td></tr>
-  <tr><td>[80-90) </td><td>Digestive      </td><td> 136</td><td>3.01% </td></tr>
-  <tr><td>[80-90) </td><td>Injury         </td><td> 102</td><td>2.26% </td></tr>
-  <tr><td>[80-90) </td><td>Musculoskeletal</td><td>  56</td><td>1.24% </td></tr>
-  <tr><td>[80-90) </td><td>NA             </td><td>  13</td><td>0.29% </td></tr>
-  <tr><td>[90-100)</td><td>Other          </td><td> 306</td><td>40.80%</td></tr>
-  <tr><td>[90-100)</td><td>Circulatory    </td><td> 281</td><td>37.47%</td></tr>
-  <tr><td>[90-100)</td><td>Respiratory    </td><td>  82</td><td>10.93%</td></tr>
-  <tr><td>[90-100)</td><td>Diabetes       </td><td>  47</td><td>6.27% </td></tr>
-  <tr><td>[90-100)</td><td>Digestive      </td><td>  19</td><td>2.53% </td></tr>
-  <tr><td>[90-100)</td><td>Injury         </td><td>  10</td><td>1.33% </td></tr>
-  <tr><td>[90-100)</td><td>Musculoskeletal</td><td>   5</td><td>0.67% </td></tr>
-</tbody>
-</table>
-
-
-
-
-<table class="dataframe">
-<caption>A tibble: 48 × 4</caption>
-<thead>
-  <tr><th scope=col>age</th><th scope=col>diag_3</th><th scope=col>n</th><th scope=col>perc</th></tr>
-  <tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>[40-50) </td><td>Other          </td><td>1084</td><td>42.81%</td></tr>
-  <tr><td>[40-50) </td><td>Diabetes       </td><td> 528</td><td>20.85%</td></tr>
-  <tr><td>[40-50) </td><td>Circulatory    </td><td> 520</td><td>20.54%</td></tr>
-  <tr><td>[40-50) </td><td>Respiratory    </td><td> 135</td><td>5.33% </td></tr>
-  <tr><td>[40-50) </td><td>Digestive      </td><td> 129</td><td>5.09% </td></tr>
-  <tr><td>[40-50) </td><td>Injury         </td><td>  53</td><td>2.09% </td></tr>
-  <tr><td>[40-50) </td><td>NA             </td><td>  49</td><td>1.94% </td></tr>
-  <tr><td>[40-50) </td><td>Musculoskeletal</td><td>  34</td><td>1.34% </td></tr>
-  <tr><td>[50-60) </td><td>Other          </td><td>1635</td><td>36.73%</td></tr>
-  <tr><td>[50-60) </td><td>Circulatory    </td><td>1229</td><td>27.61%</td></tr>
-  <tr><td>[50-60) </td><td>Diabetes       </td><td> 875</td><td>19.65%</td></tr>
-  <tr><td>[50-60) </td><td>Respiratory    </td><td> 290</td><td>6.51% </td></tr>
-  <tr><td>[50-60) </td><td>Digestive      </td><td> 200</td><td>4.49% </td></tr>
-  <tr><td>[50-60) </td><td>Musculoskeletal</td><td> 101</td><td>2.27% </td></tr>
-  <tr><td>[50-60) </td><td>Injury         </td><td>  74</td><td>1.66% </td></tr>
-  <tr><td>[50-60) </td><td>NA             </td><td>  48</td><td>1.08% </td></tr>
-  <tr><td>[60-70) </td><td>Other          </td><td>2068</td><td>34.97%</td></tr>
-  <tr><td>[60-70) </td><td>Circulatory    </td><td>1839</td><td>31.10%</td></tr>
-  <tr><td>[60-70) </td><td>Diabetes       </td><td>1042</td><td>17.62%</td></tr>
-  <tr><td>[60-70) </td><td>Respiratory    </td><td> 470</td><td>7.95% </td></tr>
-  <tr><td>[60-70) </td><td>Digestive      </td><td> 214</td><td>3.62% </td></tr>
-  <tr><td>[60-70) </td><td>Injury         </td><td> 125</td><td>2.11% </td></tr>
-  <tr><td>[60-70) </td><td>Musculoskeletal</td><td> 114</td><td>1.93% </td></tr>
-  <tr><td>[60-70) </td><td>NA             </td><td>  41</td><td>0.69% </td></tr>
-  <tr><td>[70-80) </td><td>Other          </td><td>2383</td><td>34.85%</td></tr>
-  <tr><td>[70-80) </td><td>Circulatory    </td><td>2292</td><td>33.52%</td></tr>
-  <tr><td>[70-80) </td><td>Diabetes       </td><td>1082</td><td>15.83%</td></tr>
-  <tr><td>[70-80) </td><td>Respiratory    </td><td> 558</td><td>8.16% </td></tr>
-  <tr><td>[70-80) </td><td>Digestive      </td><td> 235</td><td>3.44% </td></tr>
-  <tr><td>[70-80) </td><td>Musculoskeletal</td><td> 130</td><td>1.90% </td></tr>
-  <tr><td>[70-80) </td><td>Injury         </td><td> 124</td><td>1.81% </td></tr>
-  <tr><td>[70-80) </td><td>NA             </td><td>  33</td><td>0.48% </td></tr>
-  <tr><td>[80-90) </td><td>Other          </td><td>1645</td><td>36.43%</td></tr>
-  <tr><td>[80-90) </td><td>Circulatory    </td><td>1542</td><td>34.15%</td></tr>
-  <tr><td>[80-90) </td><td>Diabetes       </td><td> 633</td><td>14.02%</td></tr>
-  <tr><td>[80-90) </td><td>Respiratory    </td><td> 404</td><td>8.95% </td></tr>
-  <tr><td>[80-90) </td><td>Digestive      </td><td> 122</td><td>2.70% </td></tr>
-  <tr><td>[80-90) </td><td>Injury         </td><td>  80</td><td>1.77% </td></tr>
-  <tr><td>[80-90) </td><td>Musculoskeletal</td><td>  67</td><td>1.48% </td></tr>
-  <tr><td>[80-90) </td><td>NA             </td><td>  23</td><td>0.51% </td></tr>
-  <tr><td>[90-100)</td><td>Other          </td><td> 292</td><td>38.93%</td></tr>
-  <tr><td>[90-100)</td><td>Circulatory    </td><td> 264</td><td>35.20%</td></tr>
-  <tr><td>[90-100)</td><td>Diabetes       </td><td> 101</td><td>13.47%</td></tr>
-  <tr><td>[90-100)</td><td>Respiratory    </td><td>  58</td><td>7.73% </td></tr>
-  <tr><td>[90-100)</td><td>Digestive      </td><td>  16</td><td>2.13% </td></tr>
-  <tr><td>[90-100)</td><td>Musculoskeletal</td><td>   9</td><td>1.20% </td></tr>
-  <tr><td>[90-100)</td><td>Injury         </td><td>   8</td><td>1.07% </td></tr>
-  <tr><td>[90-100)</td><td>NA             </td><td>   2</td><td>0.27% </td></tr>
-</tbody>
-</table>
-
-
-
-<img src="documentation/Fig15-17_age_diag_bar_plot.png"/>
-
-**Prediabetes test results**: For patients who took a glucose test, the distributions of 'Normal' and 'High' results appear to be similar across age groups, while the majority of patients across age groups who took an A1C test had a 'High' result.
-
-
-```R
-# Glucose test result by age group
-age_and_glucose_test_counts <- readmissions %>%
-  group_by(age, glucose_test) %>%
-  summarize(n = n(), .groups = "drop_last") %>%
-  mutate(perc = label_percent(accuracy=0.01)(n/sum(n))) %>% 
-  arrange(age, desc(n)) %>%
-  ungroup()
-
-# Bar plot
-age_glucose_test_bar_plot <- ggplot(age_and_glucose_test_counts %>%
-                    filter(glucose_test != "no")) + 
-  geom_chicklet(aes(x = age, y = n,
-                      fill = fct_reorder(glucose_test,n)), 
-                  radius = grid::unit(1, "mm"), position="stack") +
-  ggtitle("Fig. 18: Stacked Bar Graph of the Patients' Age Groups by Glucose Prediabetes Test Result\n") +
-  labs(x="", y="Number of patients\n", fill="Test Result: ") +
-  scale_x_discrete(expand = c(0.01, 0)) + 
-  theme_economist() + 
-  scale_color_economist() + 
-    guides(fill = guide_legend(reverse = FALSE,
-                               override.aes = list(shape = 15,
-                                                   size = 4),
-                               title.position="top")) +
-  theme(legend.position="none",
-          legend.text = element_text(margin = margin(r = 2, unit = "pt"),
-                                     size = 10),
-          legend.title = element_text(face="bold",
-                                      size = 12),
-          axis.ticks = element_blank(),        
-          axis.title.x=element_blank(),
-          axis.text.x=element_blank(),
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-          plot.title = element_text(hjust = 0,
-                                    size= 10),
-          legend.box.margin = margin(t=0, b=0, l=-95, unit='pt')
-         ) +
-  scale_y_continuous(expand = c(0.01, 0),
-                       breaks = seq(0, 400, by=100)) +
-  scale_fill_manual(values = c("#8BD69D", "#BD3E38"),
-                      labels = c("Normal", "High")
-                     )
-
-# A1C by age group
-age_and_A1Ctest_counts <- readmissions %>%
-  group_by(age, A1Ctest) %>%
-  filter(age != "Missing", A1Ctest != "Missing") %>%
-  summarize(n = n(), .groups = "drop_last") %>%
-  mutate(perc = label_percent(accuracy=0.01)(n/sum(n))) %>% 
-  arrange(age, desc(n)) %>%
-  ungroup()
-
-# Bar plot
-age_A1Ctest_bar_plot <- ggplot(age_and_A1Ctest_counts %>%
-                    filter(A1Ctest != "no")) + 
-  geom_chicklet(aes(x = age, y = n,
-                      fill = fct_reorder(A1Ctest,n)),  
-                  radius = grid::unit(1, "mm"), position="stack") +
-  ggtitle("Fig. 19: Stacked Bar Graph of the Patients' Age Groups by A1C Prediabetes Test Result       \n") +
-  labs(x="\nAge group", y="Number of patients\n", fill="Test Result: ") +
-  scale_x_discrete(expand = c(0.01, 0)) + 
-  theme_economist() + 
-  scale_color_economist() + 
-    guides(fill = guide_legend(reverse = FALSE,
-                               override.aes = list(shape = 15,
-                                                   size = 4),
-                               title.position="top")) +
-  theme(legend.position="bottom",
-          legend.text = element_text(margin = margin(r = 2, unit = "pt"),
-                                     size = 10),
-          legend.title = element_text(face="bold",
-                                      size = 12),
-          axis.ticks = element_blank(), 
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-          plot.title = element_text(hjust = 0,
-                                    size= 10),
-          legend.box.margin = margin(t=0, b=0, l=-320, unit='pt')
-         ) +
-  scale_y_continuous(expand = c(0.01, 0),
-                      breaks = seq(0, 850, by=200)) +
-  scale_fill_manual(values = c("#8BD69D", "#BD3E38"),
-                      labels = c("Normal", "High")
-                     )
-
-#ggarrange(age_glucose_test_bar_plot, 
-#          age_A1Ctest_bar_plot,
-#          ncol = 1, nrow = 2,
-#          heights = c(0.85,1.4),
-#          align = "v")
-```
-
-
-```R
-age_and_glucose_test_counts %>%
-  filter(glucose_test!="no")
-age_and_A1Ctest_counts
-```
-
-
-<table class="dataframe">
-<caption>A tibble: 12 × 4</caption>
-<thead>
-  <tr><th scope=col>age</th><th scope=col>glucose_test</th><th scope=col>n</th><th scope=col>perc</th></tr>
-  <tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>[40-50) </td><td>high  </td><td> 82</td><td>3.24%</td></tr>
-  <tr><td>[40-50) </td><td>normal</td><td> 59</td><td>2.33%</td></tr>
-  <tr><td>[50-60) </td><td>normal</td><td>100</td><td>2.25%</td></tr>
-  <tr><td>[50-60) </td><td>high  </td><td> 88</td><td>1.98%</td></tr>
-  <tr><td>[60-70) </td><td>normal</td><td>143</td><td>2.42%</td></tr>
-  <tr><td>[60-70) </td><td>high  </td><td>127</td><td>2.15%</td></tr>
-  <tr><td>[70-80) </td><td>high  </td><td>198</td><td>2.90%</td></tr>
-  <tr><td>[70-80) </td><td>normal</td><td>197</td><td>2.88%</td></tr>
-  <tr><td>[80-90) </td><td>normal</td><td>159</td><td>3.52%</td></tr>
-  <tr><td>[80-90) </td><td>high  </td><td>156</td><td>3.45%</td></tr>
-  <tr><td>[90-100)</td><td>high  </td><td> 35</td><td>4.67%</td></tr>
-  <tr><td>[90-100)</td><td>normal</td><td> 31</td><td>4.13%</td></tr>
-</tbody>
-</table>
-
-
-
-
-<table class="dataframe">
-<caption>A tibble: 18 × 4</caption>
-<thead>
-  <tr><th scope=col>age</th><th scope=col>A1Ctest</th><th scope=col>n</th><th scope=col>perc</th></tr>
-  <tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>[40-50) </td><td>no    </td><td>1938</td><td>76.54%</td></tr>
-  <tr><td>[40-50) </td><td>high  </td><td> 447</td><td>17.65%</td></tr>
-  <tr><td>[40-50) </td><td>normal</td><td> 147</td><td>5.81% </td></tr>
-  <tr><td>[50-60) </td><td>no    </td><td>3560</td><td>79.96%</td></tr>
-  <tr><td>[50-60) </td><td>high  </td><td> 631</td><td>14.17%</td></tr>
-  <tr><td>[50-60) </td><td>normal</td><td> 261</td><td>5.86% </td></tr>
-  <tr><td>[60-70) </td><td>no    </td><td>4990</td><td>84.39%</td></tr>
-  <tr><td>[60-70) </td><td>high  </td><td> 683</td><td>11.55%</td></tr>
-  <tr><td>[60-70) </td><td>normal</td><td> 240</td><td>4.06% </td></tr>
-  <tr><td>[70-80) </td><td>no    </td><td>5885</td><td>86.08%</td></tr>
-  <tr><td>[70-80) </td><td>high  </td><td> 626</td><td>9.16% </td></tr>
-  <tr><td>[70-80) </td><td>normal</td><td> 326</td><td>4.77% </td></tr>
-  <tr><td>[80-90) </td><td>no    </td><td>3886</td><td>86.05%</td></tr>
-  <tr><td>[80-90) </td><td>high  </td><td> 396</td><td>8.77% </td></tr>
-  <tr><td>[80-90) </td><td>normal</td><td> 234</td><td>5.18% </td></tr>
-  <tr><td>[90-100)</td><td>no    </td><td> 679</td><td>90.53%</td></tr>
-  <tr><td>[90-100)</td><td>high  </td><td>  44</td><td>5.87% </td></tr>
-  <tr><td>[90-100)</td><td>normal</td><td>  27</td><td>3.60% </td></tr>
-</tbody>
-</table>
-
-
-
-<img src="documentation/Fig18-19_age_test_bar_plot.png"/>
-
-**Diabetes medication**: In all age groups, people with a prescription and a change in diabetes medication outnumbered those without a prescription and no change.
-
-
-```R
-# Change in diabestes medication by age group
-age_and_change_counts <- readmissions %>%
-  group_by(age, change) %>%
-  summarize(n = n(), .groups = "drop_last") %>%
-  mutate(perc = label_percent(accuracy=0.01)(n/sum(n))) %>% 
-  arrange(age, desc(n)) %>%
-  ungroup()
-
-# Bar plot
-age_change_bar_plot <- ggplot(age_and_change_counts) + 
-  geom_chicklet(aes(x = age, y = n,
-                      fill = fct_reorder(change,n)), 
-                  #color="white",
-                  radius = grid::unit(1, "mm"), position="stack") +
-  ggtitle("Fig. 20: Stacked Bar Graph of the Patient's Response to the Question\n              Related to the Change in Diabetes Medication\n") +
-  labs(x="", y="Number of patients\n", fill="Response: ") +
-  scale_x_discrete(expand = c(0.01, 0)) + 
-  theme_economist() + 
-  scale_color_economist() + 
-    guides(fill = guide_legend(reverse = TRUE,
-                               override.aes = list(shape = 15,
-                                                   size = 4),
-                               title.position="top")) +
-  theme(legend.position="none",
-          legend.text = element_text(margin = margin(r = 2, unit = "pt"),
-                                     size = 10),
-          legend.title = element_text(face="bold",
-                                      size = 12),
-          axis.ticks = element_blank(),        
-          axis.title.x=element_blank(),
-          axis.text.x=element_blank(),
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-          plot.title = element_text(hjust = 0,
-                                    size= 11.5),
-          legend.box.margin = margin(t=0, b=0, l=-92, unit='pt')
-         ) +
-  scale_y_continuous(expand = c(0.01, 0),
-                       breaks = seq(0, 7500, by=2000)) +
-    scale_fill_manual(values = c("#EE6C4D", "#98C1D9"),
-                      labels = c("No", "Yes")
-                     ) 
-
-# A1C by age group
-age_and_diabetes_med_counts <- readmissions %>%
-  group_by(age, diabetes_med) %>%
-  summarize(n = n(), .groups = "drop_last") %>%
-  mutate(perc = label_percent(accuracy=0.01)(n/sum(n))) %>% 
-  arrange(age, desc(n)) %>%
-  ungroup()
-
-# Bar plot
-age_diabetes_med_bar_plot <- ggplot(age_and_diabetes_med_counts) + 
-  geom_chicklet(aes(x = age, y = n,
-                      fill = fct_reorder(diabetes_med,n)),  
-                  #color="white",
-                  radius = grid::unit(1, "mm"), position="stack") +
-  ggtitle("Fig. 21: Stacked Bar Graph of the Patient's Response to the Question\n               Related to the Prescription of a Diabetes Medication\n") +
-  labs(x="\nAge group", y="Number of patients\n", fill="Response: ") +
-  scale_x_discrete(expand = c(0.01, 0)) + 
-  theme_economist() + 
-  scale_color_economist() + 
-    guides(fill = guide_legend(ncol=3,nrow=1,
-                               reverse = TRUE,
-                               override.aes = list(shape = 15,
-                                                   size = 4),
-                               title.position="top")) +
-  theme(legend.position="bottom",
-          legend.text = element_text(margin = margin(r = 2, unit = "pt"),
-                                     size = 11.5),
-          legend.title = element_text(face="bold",
-                                      size = 12),
-          axis.ticks = element_blank(), 
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-          plot.title = element_text(hjust = 0,
-                                    size= 11.5),
-          legend.box.margin = margin(t=0, b=0, l=-305, unit='pt')
-         ) +
-  scale_y_continuous(expand = c(0.01, 0),
-                       breaks = seq(0, 7500, by=2000)) +
-    scale_fill_manual(values = c("#EE6C4D", "#98C1D9"),
-                      labels = c("No", "Yes")
-                     )
-
-
-#ggarrange(age_change_bar_plot, 
-#          age_diabetes_med_bar_plot,#+
-#          	#rremove("x.text"), 
-#          ncol = 1, nrow = 2,
-#          heights = c(0.85,1.4),
-#          align = "v")
-```
-
-<img src="documentation/Fig20-21_diabetes_med_question_bar_plot.png"/>
-
-**Readmission**: Although all of the age groups have patients who mostly had not readmitted, the difference between their readmissions and non-readmissions seem to be little.
-
-
-```R
-# Readmission by age group
-age_and_readmitted_counts <- readmissions %>%
-  group_by(age, readmitted) %>%
-  summarize(n = n(), .groups = "drop_last") %>%
-  mutate(perc = label_percent(accuracy=0.01)(n/sum(n))) %>% 
-  arrange(age, desc(n)) %>%
-  ungroup()
-
-# Bar plot
-age_readmitted_bar_plot <- ggplot(age_and_readmitted_counts) + 
-  geom_chicklet(aes(x = age, y = n,
-                      fill = fct_reorder(readmitted, n)), 
-                  color="white",
-                  radius = grid::unit(1, "mm"), position="stack") +
-  ggtitle("Fig. 22: Stacked Bar Graph of the Patients' Age Groups by Readmission\n") +
-  labs(x="\nDiagnosis", y="Number of patients\n", fill="Readmitted ") +
-  scale_x_discrete(expand = c(0.01, 0)) + 
-  theme_economist() + 
-  scale_color_economist() + 
-    guides(fill = guide_legend(reverse = FALSE,
-                               override.aes = list(shape = 15,
-                                                   size = 4),
-                               title.position="top")) +
-  theme(legend.position="bottom",
-          legend.text = element_text(margin = margin(r = 2, unit = "pt"),
-                                     size = 10),
-          legend.title = element_text(face="bold",
-                                      size = 12),
-          axis.ticks = element_blank(),          
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-          plot.title = element_text(hjust = 0,
-                                    size= 12),
-          legend.box.margin = margin(t=0, b=0, l=-338, unit='pt')) +
-  scale_y_continuous(expand = c(0.01, 0),
-                       breaks = seq(0, 6000, by=1000)) +
-    scale_fill_manual(values = c("#EE6C4D", "#98C1D9"),
-                      labels = c("Yes", "No")
-                     )
-```
-
-
-```R
-age_and_readmitted_counts
-```
-
-
-<table class="dataframe">
-<caption>A tibble: 12 × 4</caption>
-<thead>
-  <tr><th scope=col>age</th><th scope=col>readmitted</th><th scope=col>n</th><th scope=col>perc</th></tr>
-  <tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>[40-50) </td><td>no </td><td>1405</td><td>55.49%</td></tr>
-  <tr><td>[40-50) </td><td>yes</td><td>1127</td><td>44.51%</td></tr>
-  <tr><td>[50-60) </td><td>no </td><td>2486</td><td>55.84%</td></tr>
-  <tr><td>[50-60) </td><td>yes</td><td>1966</td><td>44.16%</td></tr>
-  <tr><td>[60-70) </td><td>no </td><td>3143</td><td>53.15%</td></tr>
-  <tr><td>[60-70) </td><td>yes</td><td>2770</td><td>46.85%</td></tr>
-  <tr><td>[70-80) </td><td>no </td><td>3501</td><td>51.21%</td></tr>
-  <tr><td>[70-80) </td><td>yes</td><td>3336</td><td>48.79%</td></tr>
-  <tr><td>[80-90) </td><td>no </td><td>2277</td><td>50.42%</td></tr>
-  <tr><td>[80-90) </td><td>yes</td><td>2239</td><td>49.58%</td></tr>
-  <tr><td>[90-100)</td><td>no </td><td> 434</td><td>57.87%</td></tr>
-  <tr><td>[90-100)</td><td>yes</td><td> 316</td><td>42.13%</td></tr>
-</tbody>
-</table>
-
-
-
-<img src="documentation/Fig22_age_readmitted_bar_plot.png"/>
-
-### 2.2. Patient Readmission
+### 2.2. Correlation Analysis
 In this section, the patients' readmission will be analyzed by different representing features through contingency tables, graphs, and regression analysis.
 
 As previously mentioned, the number of readmitted patients is 11,754 which translates to an overall readmission rate of 47.02%.
-
-#### 2.2.1. By Variable
 
 The table below shows the comparisons of means and medians of the readmitted, not readmitted, and overall patients in terms of the seven (7) numeric features. We can see that the three sets seem to be the same in characteristics.
 
@@ -2439,7 +1259,9 @@ readmitted_factor %>%
 
 
 
-#### 2.2.2. Model
+### 2.3. Logistic Regression
+
+#### 2.3.1. Model
 Since the feature representing a patient's readmission takes on two values, 'yes' or 'no', it is used as the dependent variable of a multivariate logistic regression model in order to predict the odds of readmission. Also, not all of the patient's features are used as independent variables, that is, variables *medical_specialty*, *glucose_test*, and *A1Ctest* were excluded due to large number of missing values. Variables with few missing values *(diag_1*, *diag_2*, and *diag_3)* were imputed by their respective modes. 
 
 The reference category for each factor variable is:
@@ -2591,7 +1413,7 @@ summary_logstc
 
 
 
-##### 2.2.2.1. Odds Ratios
+#### 2.3.2. Odds Ratio
 To interpret the odds ratios in the model, we will separate them into categorical and numerical variables once more.
 
 The odds ratio for categorical data is the percentage increase (or decrease) in the odds of readmission among patients within a particular case-category compared to those in the control or reference group. Therefore:
