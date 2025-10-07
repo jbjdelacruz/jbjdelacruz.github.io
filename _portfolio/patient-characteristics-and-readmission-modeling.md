@@ -3,7 +3,7 @@ title: 'Patient Characteristics and Readmission Modeling'
 collection: portfolio
 permalink: /portfolio/patient-characteristics-and-readmission-modeling
 date: 2023-03-06
-last_updated: 2024-11-06
+last_updated: 2025-10-07
 excerpt: 'This report analyzes ten years of hospital data (n ≈ 25,000) from 130 US hospitals to identify high-risk groups for readmission. Using multivariate logistic regression, it measures the effects of variables such as age, diabetes diagnosis or medication, and length of stay on patient readmission, supporting targeted follow-up care after discharge.'
 venue: 'DataCamp'
 categories:
@@ -11,8 +11,8 @@ categories:
 slidesurl: []
 images:
   - '/files/patient-characteristics-and-readmission-modeling/images/page-1.png'
-link: 'https://www.datacamp.com/datalab/w/25b9af80-8fb3-4b12-a863-2188ee07d059'
-url: 'https://www.datacamp.com/datalab/w/25b9af80-8fb3-4b12-a863-2188ee07d059'
+# link: 'https://www.datacamp.com/datalab/w/25b9af80-8fb3-4b12-a863-2188ee07d059'
+# url: 'https://www.datacamp.com/datalab/w/25b9af80-8fb3-4b12-a863-2188ee07d059'
 thumbnail: '/images/projects/project5-cover.png'
 featured: false
 doc_type: 'Full Report'
@@ -32,155 +32,207 @@ The main objective of this report is to explore patient characteristics and read
 - Investigate and model the patient readmissions by their representing features.
 - Identify patient groups with the best readmission rates.
 
-### 1.3. Libraries
+### 1.3. Libraries & Functions
 
 ```R
 # Load required packages
 library(tidyverse) 
 library(dplyr)
 library(ggplot2)
+library(Amelia)
 library(scales)
-library(ggfun)
 library(ggchicklet)
 library(ggthemes)
-library(patchwork)
 library(ggpubr)
-library(mlbench)
 
+library(ggfun) # for round rectangle borders and backgrounds in ggplots
+library(patchwork) # for combining ggplots into the same graphic		
+
+# Install and load the "mlbench" package							   
+#suppressWarnings(suppressMessages(install.packages("mlbench")))
+#suppressPackageStartupMessages(library(mlbench))
+
+
+# ==========================================================
+# Function: GroupedMedian()
+# Purpose: Compute the median of grouped (interval) data
+# Reference: http://stackoverflow.com/a/18931054/1270695
+# ==========================================================
+
+GroupedMedian <- function(frequencies, intervals, sep = NULL, trim = NULL) {
+  
+  # ----------------------------------------------------------
+  # Step 1. Preprocessing intervals (if they are text-based)
+  # ----------------------------------------------------------
+  # If "sep" is specified, attempt to parse textual intervals
+  # into numeric lower and upper boundaries.
+  # Example: "20-29" → c(20, 29)
+  if (!is.null(sep)) {
+    if (is.null(trim)) pattern <- ""
+    else if (trim == "cut") pattern <- "\\[|\\]|\\(|\\)"
+    else pattern <- trim
+    
+    # Clean intervals and split into numeric matrix
+    intervals <- sapply(
+      strsplit(gsub(pattern, "", intervals), sep),
+      as.numeric
+    )
+  }
+
+  # ----------------------------------------------------------
+  # Step 2. Calculate midpoints and cumulative frequencies
+  # ----------------------------------------------------------
+  Midpoints <- rowMeans(intervals)
+  cf <- cumsum(frequencies)
+
+  # ----------------------------------------------------------
+  # Step 3. Identify the median class
+  # ----------------------------------------------------------
+  Midrow <- findInterval(max(cf) / 2, cf) + 1
+
+  # ----------------------------------------------------------
+  # Step 4. Extract parameters for grouped median formula
+  # ----------------------------------------------------------
+  L   <- intervals[1, Midrow]       # Lower class boundary of median class
+  h   <- diff(intervals[, Midrow])  # Width of the median class
+  f   <- frequencies[Midrow]        # Frequency of median class
+  cf2 <- cf[Midrow - 1]             # Cumulative frequency before median class
+  n_2 <- max(cf) / 2                # Half of total frequency (n/2)
+
+  # ----------------------------------------------------------
+  # Step 5. Apply the grouped median formula
+  # ----------------------------------------------------------
+  # Median = L + ((n/2 – cf_before) / f_median) * class_width
+  median_value <- L + (n_2 - cf2) / f * h
+
+  # Return unformatted numeric median
+  unname(median_value)
+}
 ```
 
 ### 1.4. Dataset
 The [dataset](https://archive.ics.uci.edu/ml/datasets/Diabetes+130-US+hospitals+for+years+1999-2008) referenced was part of the clinical care system at 130 hospitals and integrated delivery networks in the United States ([Strack et al., 2014](#reference)).
 
-![Variable Descriptions](/files/patient-characteristics-and-readmission-modeling//images/vars-desc.png)
+![Variable Descriptions](/files/patient-characteristics-and-readmission-modeling/images/vars-desc.png)
 
 ```R                     
 # Read 'readmissions' dataset
-readmissions <- readr::read_csv('data/hospital_readmissions.csv', show_col_types = FALSE) %>%
-  mutate_if(is.character,as.factor) %>%
-  mutate_all(~ if_else(.x == "Missing", NA,.x))
+readmissions <- read_csv('data/hospital_readmissions.csv', show_col_types = FALSE)
+#glimpse(readmissions)
 
-#is.na(readmissions)
-#colSums(is.na(readmissions))
-#which(colSums(is.na(readmissions))>0)
-#names(which(colSums(is.na(readmissions))>0))
-#missmap(readmissions, col=c("blue", "red"), legend=FALSE)
-
-#summary(readmissions)
-#par(mfrow=c(1,6))
-#for(i in 1:17) {
-#    boxplot(readmissions[,i], main=names(readmissions)[i])
-#}
+# Mutate 'Missing' values to NA & convert character variables to factors
+readmissions <- readmissions %>%
+    mutate_all(~ if_else(.x == "Missing", NA, .x)) %>%
+    mutate_if(is.character, as.factor)
+head(readmissions)
 ```
 
-## 2. Results and Discussion
-### 2.1. Patient Characteristics
+| age &lt;fct&gt; | time_in_hospital &lt;dbl&gt; | n_lab_procedures &lt;dbl&gt; | n_procedures &lt;dbl&gt; | n_medications &lt;dbl&gt; | n_outpatient &lt;dbl&gt; | n_inpatient &lt;dbl&gt; | n_emergency &lt;dbl&gt; | medical_specialty &lt;fct&gt; | diag_1 &lt;fct&gt; | diag_2 &lt;fct&gt; | diag_3 &lt;fct&gt; | glucose_test &lt;fct&gt; | A1Ctest &lt;fct&gt; | change &lt;fct&gt; | diabetes_med &lt;fct&gt; | readmitted &lt;fct&gt; |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [70-80) | 8 | 72 | 1 | 18 | 2 | 0 | 0 | NA               | Circulatory | Respiratory | Other       | no | no | no  | yes | no  |
+| [70-80) | 3 | 34 | 2 | 13 | 0 | 0 | 0 | Other            | Other       | Other       | Other       | no | no | no  | yes | no  |
+| [50-60) | 5 | 45 | 0 | 18 | 0 | 0 | 0 | NA               | Circulatory | Circulatory | Circulatory | no | no | yes | yes | yes |
+| [70-80) | 2 | 36 | 0 | 12 | 1 | 0 | 0 | NA               | Circulatory | Other       | Diabetes    | no | no | yes | yes | yes |
+| [60-70) | 1 | 42 | 0 |  7 | 0 | 0 | 0 | InternalMedicine | Other       | Circulatory | Respiratory | no | no | no  | yes | no  |
+| [40-50) | 2 | 51 | 0 | 10 | 0 | 0 | 0 | NA               | Other       | Other       | Other       | no | no | no  | no  | yes |
+
+```R
+# Check NA's
+colSums(is.na(readmissions)) # NA's per column
+which(colSums(is.na(readmissions))>0) # column indices containing NA's
+missmap(readmissions, col=c("red", "green"), legend=FALSE) # missingness map
+```
+              age  time_in_hospital  n_lab_procedures      n_procedures 
+                0                 0                 0                 0 
+    n_medications      n_outpatient       n_inpatient       n_emergency 
+                0                 0                 0                 0 
+    medical_specialty            diag_1            diag_2            diag_3 
+                12382                 4                42               196 
+     glucose_test           A1Ctest            change      diabetes_med 
+                0                 0                 0                 0 
+       readmitted 
+                0 
+
+
+    medical_specialty            diag_1            diag_2            diag_3 
+                    9                10                11                12  
+
+![Missingness Map](/files/patient-characteristics-and-readmission-modeling/images/missingness_map.png)
+         
+## 2. Results & Discussion
+
+### 2.1. Descriptive Statistics
 The following information describe the characteristics of the sample composing of 25,000 patients admitted to the hospital after being discharged.
 
-#### 2.1.1. Overall
-##### 2.1.1.1. Numerical
-**Age**: The grouped mean and median ages are approximately 68 and 69, respectively, with a standard deviation of ~13, indicating that the hospital primarily admitted elderly patients. As shown in Figure 1, the distribution of patients across age groups is approximately symmetric at the mean.
+#### 2.1.1. Numerical
 
+##### 2.1.1.1. Age
+
+![Fig. 1: Bar Graph of the Patients' Age Groups](/files/patient-characteristics-and-readmission-modeling/images/Fig1_age_bar_plot.png)
+
+The grouped mean and median ages are approximately 68 and 69, respectively, with a standard deviation of ~13, indicating that the hospital primarily admitted elderly patients. As shown in Figure 1, the distribution of patients across age groups is approximately symmetric at the mean.
+
+| Variable | Mean  | Std. Dev.  | Med.  |
+|---|---|---|---|
+| Age group | 68.4412 | 13.15607 | 69.3286 |
 
 ```R
 # Frequency Distribution Table (FDT) for Age
 age_fdt <- readmissions %>%
-  select(age) %>%
-  group_by(age) %>%
-  count() %>%
-  mutate(class_interval = paste(as.numeric(unlist(regmatches(age, gregexpr("[[:digit:]]+", age)))), collapse = "-"),
-           class_mark = mean(as.numeric(unlist(regmatches(age, gregexpr("[[:digit:]]+", age)))))) %>%
-  ungroup() %>%
-  mutate(cum_freq = cumsum(n),
+	select(age) %>%
+	group_by(age) %>%
+	count() %>%
+	mutate(
+		class_interval = paste(as.numeric(unlist(regmatches(age, gregexpr("[[:digit:]]+", age)))), collapse = "-"),
+        class_mark = mean(as.numeric(unlist(regmatches(age, gregexpr("[[:digit:]]+", age)))))
+	) %>%
+	ungroup() %>%
+	mutate(cum_freq = cumsum(n),
            n_times_cm = n*class_mark) %>%
-  select(age, class_interval, everything())
-
-# Create GroupedMedian() function to calculate the median of grouped data	
-# Reference: http://stackoverflow.com/a/18931054/1270695
-GroupedMedian <- function(frequencies, intervals, sep = NULL, trim = NULL) {
-  # If "sep" is specified, the function will try to create the 
-  #   required "intervals" matrix. "trim" removes any unwanted 
-  #   characters before attempting to convert the ranges to numeric.
-  if (!is.null(sep)) {
-    if (is.null(trim)) pattern <- ""
-    else if (trim == "cut") pattern <- "\\[|\\]|\\(|\\)"
-    else pattern <- trim
-    intervals <- sapply(strsplit(gsub(pattern, "", intervals), sep), as.numeric)
-  }
-
-  Midpoints <- rowMeans(intervals)
-  cf <- cumsum(frequencies)
-  Midrow <- findInterval(max(cf)/2, cf) + 1
-  L <- intervals[1, Midrow]      # lower class boundary of median class
-  h <- diff(intervals[, Midrow]) # size of median class
-  f <- frequencies[Midrow]       # frequency of median class
-  cf2 <- cf[Midrow - 1]          # cumulative frequency class before median class
-  n_2 <- max(cf)/2               # total observations divided by 2
-
-  unname(L + (n_2 - cf2)/f * h)
-}
-
-# Grouped Mean, Median, and Sample SD
-grouped_age_stats <- age_fdt %>% 
-  summarize(Variable = "Age group",
-        "Mean" = sum(n_times_cm)/sum(n),
-              "Std. Dev." = sqrt(sum(n*(Mean-class_mark)^2)/(sum(n))),
-        "Med." = GroupedMedian(frequencies = age_fdt$n, intervals = age_fdt$class_interval, sep = "-")
-       )
-
-grouped_age_stats
+	select(age, class_interval, everything())
 
 # Bar plot
 age_bar_plot <- ggplot(age_fdt, aes(group=1)) + 
-  geom_chicklet(aes(x = age,
+	geom_chicklet(aes(x = age,
                       y = n,
-            group=1), 
+					  group=1), 
                   color="white",
                   fill="#6C8CBF",
                   radius = grid::unit(1, "mm"), position="stack") +
     
-  # Plot mean and median lines
-  geom_vline(xintercept=3.344, color="red", linewidth=0.6) +
+	# Plot mean line
+	geom_vline(xintercept=3.344, color="red", linewidth=0.6) +
  
-  ggtitle("Fig. 1: Bar Graph of the Patients' Age Groups\n") +
-  labs(x="\nAge group", y="Number of patients\n") +
-  scale_y_continuous(expand = c(0.01, 0), limits = c(0,7000),
+	ggtitle("Fig. 1: Bar Graph of the Patients' Age Groups\n") +
+	labs(x="\nAge group", y="Number of patients\n") +
+	scale_y_continuous(expand = c(0.01, 0), limits = c(0,7000),
                       breaks = seq(0, 7000, by=1000)) +
-  theme_economist() + 
-  scale_color_economist() +
-  theme(plot.title = element_text(size= 12),
+	theme_economist() + 
+	scale_color_economist() +
+	theme(plot.title = element_text(size= 12),
           panel.grid.minor = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
+		  panel.grid.major = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3),
           axis.ticks = element_blank()
          ) +
-  annotate("text", x=2.7, y=6500, 
-       label=paste("Mean = ",sum(age_fdt$n_times_cm)/sum(age_fdt$n)),
-       color="red",
-       size=3.5)
+	annotate("text", x=2.7, y=6500, 
+			 label=paste("Mean = ",sum(age_fdt$n_times_cm)/sum(age_fdt$n)),
+			 color="red",
+			 size=3.5)
 ```
 
+##### 2.1.1.2. Time in Hospital
 
-<table class="dataframe">
-<caption>A tibble: 1 × 4</caption>
-<thead>
-  <tr><th scope=col>Variable</th><th scope=col>Mean</th><th scope=col>Std. Dev.</th><th scope=col>Med.</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>Age group</td><td>68.4412</td><td>13.15607</td><td>69.3286</td></tr>
-</tbody>
-</table>
+![Fig. 2: Distribution of the Time Length in Hospital](/files/patient-characteristics-and-readmission-modeling/images/Fig2_time_in_hospital_dst_plot.png)
 
+The mean and median lengths of stay in the hospital are 4.4533 and 4, respectively, with a standard deviation of ~3. Figure 2 shows a positively skewed distribution for this patient feature.
 
-
-<img src="documentation/Fig1_age_bar_plot.png"/>
-
-**Time in hospital**: The mean and median lengths of stay in the hospital are 4.4533 and 4, respectively, with a standard deviation of ~3. Figure 2 shows a positively skewed distribution for this patient feature.
-
+| Variable | Mean | Std. Dev. | Min. | Median  | Max. |
+|---|---|---|---|---|---|
+| time_in_hospital | 4.45332 | 3.00147 | 1 | 4 | 14 |
 
 ```R
 # Summary statistics for numerical variables
@@ -204,12 +256,12 @@ sum_stats <- data.frame(
                      `Min.` = V3,
                      `Median` = V4,
                      `Max.` = V5))
-
 rownames(sum_stats) <- 1: nrow(sum_stats)
-sum_stats
 
-# time in hospital
-time_in_hospital_dst_plot <- ggplot(readmissions, aes(x = time_in_hospital)) + 
+## Time in hospital
+
+# Plot
+time_in_hospital_dst_plot <- ggplot(readmissions, aes(x = time_in_hospital)) +
   geom_histogram(aes(y=after_stat(density)),
                    colour="white",
                    fill="#5AA7A7",
@@ -217,9 +269,8 @@ time_in_hospital_dst_plot <- ggplot(readmissions, aes(x = time_in_hospital)) +
   geom_density(alpha=0.2,
                  fill="#FF6666") +
 
-  # Plot mean and median lines
+  # Mean line
   geom_vline(aes(xintercept = mean(time_in_hospital)), col="red", linewidth=0.6) +
-  #geom_vline(aes(xintercept = median(time_in_hospital)), col="blue", linewidth=0.6) +
   
   ggtitle("Fig. 2: Distribution of the Time Length in Hospital\n") +
   labs(x="\nNumber of days (from 1 to 14)", y="Density\n") +
@@ -242,269 +293,285 @@ time_in_hospital_dst_plot <- ggplot(readmissions, aes(x = time_in_hospital)) +
        label=paste("Mean = ",round(mean(readmissions$time_in_hospital),4)),
        color="red",
        size=3.5)
+
+# Summary statistics
+sum_stats %>% filter(Variable == "time_in_hospital")
 ```
 
+##### 2.1.1.3. Number of Procedures
 
-<table class="dataframe">
-<caption>A data.frame: 7 × 6</caption>
-<thead>
-  <tr><th></th><th scope=col>Variable</th><th scope=col>Mean</th><th scope=col>Std. Dev.</th><th scope=col>Min.</th><th scope=col>Median</th><th scope=col>Max.</th></tr>
-  <tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><th scope=row>1</th><td>time_in_hospital</td><td> 4.45332</td><td> 3.0014699</td><td>1</td><td> 4</td><td> 14</td></tr>
-  <tr><th scope=row>2</th><td>n_lab_procedures</td><td>43.24076</td><td>19.8186202</td><td>1</td><td>44</td><td>113</td></tr>
-  <tr><th scope=row>3</th><td>n_procedures    </td><td> 1.35236</td><td> 1.7151793</td><td>0</td><td> 1</td><td>  6</td></tr>
-  <tr><th scope=row>4</th><td>n_medications   </td><td>16.25240</td><td> 8.0605318</td><td>1</td><td>15</td><td> 79</td></tr>
-  <tr><th scope=row>5</th><td>n_outpatient    </td><td> 0.36640</td><td> 1.1954782</td><td>0</td><td> 0</td><td> 33</td></tr>
-  <tr><th scope=row>6</th><td>n_inpatient     </td><td> 0.61596</td><td> 1.1779511</td><td>0</td><td> 0</td><td> 15</td></tr>
-  <tr><th scope=row>7</th><td>n_emergency     </td><td> 0.18660</td><td> 0.8858735</td><td>0</td><td> 0</td><td> 64</td></tr>
-</tbody>
-</table>
+![Fig. 3: Distribution of the Number of Medical Procedures, Fig. 4: Distribution of the Number of Laboratory Procedures](/files/patient-characteristics-and-readmission-modeling/images/Fig3-4_n_procedures_dst_plot.png)
 
-
-
-<img src="documentation/Fig2_time_in_hospital_dst_plot.png"/>
-
-**Number of procedures**: The mean and median number of medical procedures performed during the hospital stay are 1.3524 and 1, with a standard deviation of 1.7152, respectively, whereas the mean and median numbers of laboratory procedures performed are 43.2408 and 44, respectively, with a standard deviation of 19.8186. This implies that throughout their hospitalization, patients underwent laboratory procedures more frequently than medical procedures.
+The mean and median number of medical procedures performed during the hospital stay are 1.3524 and 1, with a standard deviation of 1.7152, respectively, whereas the mean and median numbers of laboratory procedures performed are 43.2408 and 44, respectively, with a standard deviation of 19.8186. This implies that throughout their hospitalization, patients underwent laboratory procedures more frequently than medical procedures.
 
 Based on Figures 3 and 4, the two types of procedures exhibit dissimilar distributional characteristics, with medical procedures demonstrating positive skewness, and laboratory procedures showing slight symmetry.
 
+| Variable | Mean | Std. Dev. | Min. | Median  | Max. |
+|---|---|---|---|---|---|
+| n_lab_procedures | 43.24076 | 19.818620 | 1 | 44 | 113 |
+| n_procedures     |  1.35236 |  1.715179 | 0 |  1 |   6 |
 
 ```R
-# Number of Procedures
+## Number of Procedures
+
+# Plot
 n_procedures_hs_dst_plot <- ggplot(readmissions, aes(x = n_procedures)) + 
-  geom_histogram(aes(y=after_stat(density)),
+	geom_histogram(aes(y=after_stat(density)),
+
                    colour="white",
                    fill="#5AA7A7",
                    binwidth=0.5
                   ) +
-  geom_density(alpha=0.2,
+	geom_density(alpha=0.2,
                  fill="#FF6666") +
 
-  # Plot mean and median lines
-  geom_vline(aes(xintercept = mean(n_procedures)), col="red", linewidth=0.6) +
-  #geom_vline(aes(xintercept = median(n_procedures)), col="blue", linewidth=0.6) +
-  
-  ggtitle("Fig. 3: Distribution of the Number of Medical Procedures\n") +
-  labs(x="\nNumber of procedures performed during the hospital stay", y="Density\n") +
-  theme_economist() + 
-  scale_color_economist() +
-  theme(plot.title = element_text(size= 12),
+	# Mean line
+	geom_vline(aes(xintercept = mean(n_procedures)), col="red", linewidth=0.6) +
+
+	ggtitle("Fig. 3: Distribution of the Number of Medical Procedures\n") +
+	labs(x="\nNumber of procedures performed during the hospital stay", y="Density\n") +
+	theme_economist() + 
+	scale_color_economist() +
+	theme(plot.title = element_text(size= 12),
           panel.grid.minor = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
+		  panel.grid.major = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3)
          ) +
-  annotate("text", x=mean(readmissions$n_procedures)+0.72, y=0.7, 
-       label=paste("Mean = ",round(mean(readmissions$n_procedures),4)),
-       color="red",
-       size=3.5)
+	annotate("text", x=mean(readmissions$n_procedures)+0.72, y=0.7, 
+			 label=paste("Mean = ",round(mean(readmissions$n_procedures),4)),
+			 color="red",
+			 size=3.5)
 
-# Number of Lab Procedures
+## Number of Lab Procedures
+
+# Plot
 n_lab_procedures_hs_dst_plot <- ggplot(readmissions, aes(x = n_lab_procedures)) + 
   geom_histogram(aes(y=after_stat(density)),
                    colour="white",
                    fill="#5AA7A7",
                    binwidth=3
                   ) +
-  geom_density(alpha=0.2,
+	geom_density(alpha=0.2,
                  fill="#FF6666") +
 
-  # Plot mean and median lines
-  geom_vline(aes(xintercept = mean(n_lab_procedures)), col="red", linewidth=0.6) +
-  #geom_vline(aes(xintercept = median(n_lab_procedures)), col="blue", linewidth=0.6) +
-  
-  ggtitle("Fig. 4: Distribution of the Number of Laboratory Procedures\n") +
-  labs(x="\nNumber of lab procedures performed during the hospital stay", y="Density\n") +
-  theme_economist() + 
-  scale_color_economist() +
-  theme(plot.title = element_text(size= 12),
+	# Mean line
+	geom_vline(aes(xintercept = mean(n_lab_procedures)), col="red", linewidth=0.6) +
+	
+	ggtitle("Fig. 4: Distribution of the Number of Laboratory Procedures\n") +
+	labs(x="\nNumber of lab procedures performed during the hospital stay", y="Density\n") +
+	theme_economist() + 
+	scale_color_economist() +
+	theme(plot.title = element_text(size= 12),
           panel.grid.minor = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
+		  panel.grid.major = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3)
          ) +
-  annotate("text", x=mean(readmissions$n_lab_procedures)+14, y=0.025, 
-       label=paste("Mean = ",round(mean(readmissions$n_lab_procedures),4)),
-       color="red",
-       size=3.5)
+	annotate("text", x=mean(readmissions$n_lab_procedures)+14, y=0.025, 
+			 label=paste("Mean = ",round(mean(readmissions$n_lab_procedures),4)),
+			 color="red",
+			 size=3.5)
 
-#ggarrange(n_procedures_hs_dst_plot, n_lab_procedures_hs_dst_plot, 
-#          ncol = 1, nrow = 2)
+ggarrange(n_procedures_hs_dst_plot, n_lab_procedures_hs_dst_plot, 
+          ncol = 1, nrow = 2)
+
+# Summary statistics
+sum_stats %>% filter(str_detect(Variable, "procedures"))
 ```
 
-<img src="documentation/Fig3-4_n_procedures_dst_plot.png"/>
+##### 2.1.1.4. Number of Medications
 
-**Number of medications**: The mean and median numbers of medications administered during the hospital stay are 16.2524 and 15, with a standard deviation of 8.0605, as well as a slightly skewed distribution to the right.
+![Fig. 5: Distribution of the Number of Medications](/files/patient-characteristics-and-readmission-modeling/images/Fig5_n_medications_hs_dst_plot.png)
 
+The mean and median numbers of medications administered during the hospital stay are 16.2524 and 15, with a standard deviation of 8.0605, as well as a slightly skewed distribution to the right.
+
+| Variable | Mean | Std. Dev. | Min. | Median  | Max. |
+|---|---|---|---|---|---|
+| n_medications | 16.2524 | 8.060532 | 1 | 15 | 79 |
 
 ```R
-# Number of Procedures
+## Number of Medications
+
+# Plot
 n_medications_hs_dst_plot <- ggplot(readmissions, aes(x = n_medications)) + 
-  geom_histogram(aes(y=after_stat(density)),
+	geom_histogram(aes(y=after_stat(density)),
                    colour="white",
                    fill="#5AA7A7",
                    binwidth=1
                   ) +
-  geom_density(alpha=0.2,
+	geom_density(alpha=0.2,
                  fill="#FF6666") +
 
-  # Plot mean and median lines
-  geom_vline(aes(xintercept = mean(n_medications)), col="red", linewidth=0.6) +
-  #geom_vline(aes(xintercept = median(n_medications)), col="blue", linewidth=0.6) +
-  
-  ggtitle("Fig. 5: Distribution of the Number of Medications\n") +
-  labs(x="\nNumber of medications administered during the hospital stay", y="Density\n") +
-  scale_y_continuous(expand = c(0.01, 0),
+	# Mean line
+	geom_vline(aes(xintercept = mean(n_medications)), col="red", linewidth=0.6) +
+	
+	ggtitle("Fig. 5: Distribution of the Number of Medications\n") +
+	labs(x="\nNumber of medications administered during the hospital stay", y="Density\n") +
+	scale_y_continuous(expand = c(0.01, 0),
                        limits = c(0,0.065),
                        breaks = seq(0,0.065, by=0.01)) +
-  theme_economist() + 
-  scale_color_economist() +
-  theme(plot.title = element_text(size= 12),
+	theme_economist() + 
+	scale_color_economist() +
+	theme(plot.title = element_text(size= 12),
           panel.grid.minor = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
+		  panel.grid.major = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3)
          ) +
-  annotate("text", x=mean(readmissions$n_medications)+9, y=0.065, 
-       label=paste("Mean = ",round(mean(readmissions$n_medications),4)),
-       color="red",
-       size=3.5)
+	annotate("text", x=mean(readmissions$n_medications)+9, y=0.065, 
+			 label=paste("Mean = ",round(mean(readmissions$n_medications),4)),
+			 color="red",
+			 size=3.5)
+
+# Summary statistics
+sum_stats %>% filter(Variable == "n_medications")
 ```
 
-<img src="documentation/Fig5_n_medications_hs_dst_plot.png"/>
+##### 2.1.1.5. Number of Visits
 
-**Number of visits**: The mean numbers of outpatient, inpatient, and emergency room visits in the year preceding a hospital stay are 0.3664, 0.616, and 0.1866, with medians of 0 for all types, and standard deviations of 1.1955, 1.178, and 0.8859, respectively. The numbers of visits for all types are positively skewed, indicating that visitation is not much frequent among patients a year prior to their hospitalization.
+![Fig. 6: Distribution of the Number of Outpatient Visits, Fig. 7: Distribution of the Number of Inpatient Visits, Fig. 8: Distribution of the Number of Emergency Room Visits](/files/patient-characteristics-and-readmission-modeling/images/Fig6-8_n_visits_dst_plot.png)
 
+The mean numbers of outpatient, inpatient, and emergency room visits in the year preceding a hospital stay are 0.3664, 0.616, and 0.1866, with medians of 0 for all types, and standard deviations of 1.1955, 1.178, and 0.8859, respectively. The numbers of visits for all types are positively skewed, indicating that visitation is not much frequent among patients a year prior to their hospitalization.
+
+| Variable | Mean | Std. Dev. | Min. | Median  | Max. |
+|---|---|---|---|---|---|
+| n_outpatient | 0.36640 | 1.1954782 | 0 | 0 | 33 |
+| n_inpatient  | 0.61596 | 1.1779511 | 0 | 0 | 15 |
+| n_emergency  | 0.18660 | 0.8858735 | 0 | 0 | 64 |
 
 ```R
-# Outpatient
+## Outpatient
+
+# Plot
 n_outpatient_hs_dst_plot <- ggplot(readmissions, aes(x = n_outpatient)) + 
-  geom_histogram(aes(y=after_stat(density)),
+	geom_histogram(aes(y=after_stat(density)),
                    colour="white",
                    fill="#5AA7A7",
                    binwidth=1
                   ) +
-  geom_density(alpha=0.2,
+	geom_density(alpha=0.2,
                  fill="#FF6666") +
 
-  # Plot mean and median lines
-  geom_vline(aes(xintercept = mean(n_outpatient)), col="red", linewidth=0.6) +
-  #geom_vline(aes(xintercept = median(n_outpatient)), col="blue", linewidth=0.6) +
-  
-  ggtitle("Fig. 6: Distribution of the Number of Outpatient Visits\n") +
-  labs(x="\nNumber of outpatient visits in the year before a hospital stay", y="Density\n") +
-  scale_y_continuous(expand = c(0.01, 0),
+	# Mean line
+	geom_vline(aes(xintercept = mean(n_outpatient)), col="red", linewidth=0.6) +
+	
+	ggtitle("Fig. 6: Distribution of the Number of Outpatient Visits\n") +
+	labs(x="\nNumber of outpatient visits in the year before a hospital stay", y="Density\n") +
+	scale_y_continuous(expand = c(0.01, 0),
                        limits = c(0,1),
                        breaks = seq(0,1, by=0.2)) +
-  scale_x_continuous(expand = c(0.01, 0),
+	scale_x_continuous(expand = c(0.01, 0),
                        #limits = c(0,75),
                        breaks = seq(0,35, by=5)) +
-  theme_economist() + 
-  scale_color_economist() +
-  theme(plot.title = element_text(size= 12),
+	theme_economist() + 
+	scale_color_economist() +
+	theme(plot.title = element_text(size= 12),
           panel.grid.minor = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
+		  panel.grid.major = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3)
          ) +
-  annotate("text", x=3.6, y=0.97, 
-       label=paste("Mean = ",round(mean(readmissions$n_outpatient),4)),
-       color="red",
-       size=3.5)
+	annotate("text", x=3.6, y=0.97, 
+			 label=paste("Mean = ",round(mean(readmissions$n_outpatient),4)),
+			 color="red",
+			 size=3.5)
 
-# Inpatient
-n_inpatient_procedures_hs_dst_plot <- ggplot(readmissions, aes(x = n_inpatient)) + 
-  geom_histogram(aes(y=after_stat(density)),
+## Inpatient
+
+# Plot
+n_inpatient_hs_dst_plot <- ggplot(readmissions, aes(x = n_inpatient)) + 
+	geom_histogram(aes(y=after_stat(density)),
                    colour="white",
                    fill="#5AA7A7",
                    binwidth=1
                   ) +
-  geom_density(alpha=0.2,
+	geom_density(alpha=0.2,
                  fill="#FF6666") +
 
-  # Plot mean and median lines
-  geom_vline(aes(xintercept = mean(n_inpatient)), col="red", linewidth=0.6) +
-  #geom_vline(aes(xintercept = median(n_inpatient)), col="blue", linewidth=0.6) +
-  
-  ggtitle("Fig. 7: Distribution of the Number of Inpatient Visits\n") +
-  labs(x="\nNumber of inpatient visits in the year before the hospital stay", y="Density\n") +
-  scale_y_continuous(expand = c(0.01, 0),
+	# Mean line
+	geom_vline(aes(xintercept = mean(n_inpatient)), col="red", linewidth=0.6) +
+	
+	ggtitle("Fig. 7: Distribution of the Number of Inpatient Visits\n") +
+	labs(x="\nNumber of inpatient visits in the year before the hospital stay", y="Density\n") +
+	scale_y_continuous(expand = c(0.01, 0),
                        limits = c(0,1),
                        breaks = seq(0,1, by=0.2)) +
-  scale_x_continuous(expand = c(0.01, 0),
+	scale_x_continuous(expand = c(0.01, 0),
                        #limits = c(0,75),
                        breaks = seq(0,18, by=3)) +
-  theme_economist() + 
-  scale_color_economist() +
-  theme(plot.title = element_text(size= 12),
+	theme_economist() + 
+	scale_color_economist() +
+	theme(plot.title = element_text(size= 12),
           panel.grid.minor = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
+		  panel.grid.major = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3)
          ) +
-  annotate("text", x=2, y=0.97, 
-       label=paste("Mean = ",round(mean(readmissions$n_inpatient),4)),
-       color="red",
-       size=3.5)
+	annotate("text", x=2, y=0.97, 
+			 label=paste("Mean = ",round(mean(readmissions$n_inpatient),4)),
+			 color="red",
+			 size=3.5)
 
-# Emergency
-n_emergency_procedures_hs_dst_plot <- ggplot(readmissions, aes(x = n_emergency)) + 
-  geom_histogram(aes(y=after_stat(density)),
+## Emergency
+
+# Plot
+n_emergency_hs_dst_plot <- ggplot(readmissions, aes(x = n_emergency)) + 
+	geom_histogram(aes(y=after_stat(density)),
                    colour="white",
                    fill="#5AA7A7",
                    binwidth=1
                    ) +
-  geom_density(alpha=0.2,
+	geom_density(alpha=0.2,
                  fill="#FF6666") +
 
-  # Plot mean and median lines
-  geom_vline(aes(xintercept = mean(n_emergency)), col="red", linewidth=0.6) +
-  #geom_vline(aes(xintercept = median(n_emergency)), col="blue", linewidth=0.6) +
-  
-  ggtitle("Fig. 8: Distribution of the Number of Emergency Room Visits\n") +
-  labs(x="\nNumber of visits to the emergency room in the year before the hospital stay", y="Density\n") +
-  scale_y_continuous(expand = c(0.01, 0),
+	# Mean line
+	geom_vline(aes(xintercept = mean(n_emergency)), col="red", linewidth=0.6) +
+	
+	ggtitle("Fig. 8: Distribution of the Number of Emergency Room Visits\n") +
+	labs(x="\nNumber of visits to the emergency room in the year before the hospital stay", y="Density\n") +
+	scale_y_continuous(expand = c(0.01, 0),
                        limits = c(0,1),
                        breaks = seq(0,1, by=0.2)) +
-  scale_x_continuous(expand = c(0.01, 0),
+	scale_x_continuous(expand = c(0.01, 0),
                        #limits = c(0,75),
                        breaks = seq(0,75, by=10)) +
-  theme_economist() + 
-  scale_color_economist() +
-  theme(plot.title = element_text(size= 12),
+	theme_economist() + 
+	scale_color_economist() +
+	theme(plot.title = element_text(size= 12),
           panel.grid.minor = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
+		  panel.grid.major = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3)
          ) +
-  annotate("text", x=6.7, y=0.97, 
-       label=paste("Mean = ",round(mean(readmissions$n_emergency),4)),
-       color="red",
-       size=3.5)
+	annotate("text", x=6.7, y=0.97, 
+			 label=paste("Mean = ",round(mean(readmissions$n_emergency),4)),
+			 color="red",
+			 size=3.5)
 
-#ggarrange(n_outpatient_hs_dst_plot, 
-#          n_inpatient_procedures_hs_dst_plot,
-#          n_emergency_procedures_hs_dst_plot, 
-#          ncol = 1, nrow = 3)
+ggarrange(n_outpatient_hs_dst_plot, 
+         n_inpatient_hs_dst_plot,
+         n_emergency_hs_dst_plot, 
+         ncol = 1, nrow = 3)
+
+# Summary statistics
+sum_stats %>% filter(Variable %in% c("n_outpatient", "n_inpatient", "n_emergency"))
 ```
 
-<img src="documentation/Fig6-8_n_visits_dst_plot.png"/>
 
-##### Categorical
+#### 2.1.2. Categorical
 
 **Medical Specialty**: Of the 12,618 (50.47%) patients with a recorded admitting physician, 3,565 had an admitting physician whose specialty was Internal Medicine.
 
@@ -957,8 +1024,8 @@ readmitted_fdt
 
 <img src="documentation/Fig13_readmitted_bar_plot.png"/>
 
-#### By Age
-##### Numbers
+#### 2.1.2. By Age
+##### 2.1.2.1. Numerical
 
 The following statements can be said about the age groups' hospital stay through the comparisons of their seven (7) discrete numerical features. In general,
 
@@ -966,7 +1033,8 @@ The following statements can be said about the age groups' hospital stay through
 **Number of procedures**: Groups aged [40-80] had at least one medical procedure performed, whereas groups aged [80-100] had none; all age groups had a high number of laboratory procedures performed ranging from 43-46.</br>
 **Number of medications**: The [60-70) group had the most number of medications of 17; as the patient moves one age group away from it, the number decreases by 1 or 2. </br>
 **Number of visits**: Outpatient, inpatient, and emergency room visits were not very common (close to zero) before hospitalization for all age groups.
-##### Categories
+
+##### 2.1.2.2. Categorical
 **Medical specialty**: We can see from Figure 14 graph the distribution of patients varies across different age groups and specialties. Among the patients with information about their physician's specialty, most, if not all, age groups seem to be admitted by a physician of Internal Medicine, while specialties categorized as 'Others' were second.
 
 
@@ -1994,12 +2062,12 @@ age_and_readmitted_counts
 
 <img src="documentation/Fig22_age_readmitted_bar_plot.png"/>
 
-### Patient Readmissions
+### 2.2. Patient Readmission
 In this section, the patients' readmission will be analyzed by different representing features through contingency tables, graphs, and regression analysis.
 
 As previously mentioned, the number of readmitted patients is 11,754 which translates to an overall readmission rate of 47.02%.
 
-#### By Variable
+#### 2.2.1. By Variable
 
 The table below shows the comparisons of means and medians of the readmitted, not readmitted, and overall patients in terms of the seven (7) numeric features. We can see that the three sets seem to be the same in characteristics.
 
@@ -2371,7 +2439,7 @@ readmitted_factor %>%
 
 
 
-#### Model
+#### 2.2.2. Model
 Since the feature representing a patient's readmission takes on two values, 'yes' or 'no', it is used as the dependent variable of a multivariate logistic regression model in order to predict the odds of readmission. Also, not all of the patient's features are used as independent variables, that is, variables *medical_specialty*, *glucose_test*, and *A1Ctest* were excluded due to large number of missing values. Variables with few missing values *(diag_1*, *diag_2*, and *diag_3)* were imputed by their respective modes. 
 
 The reference category for each factor variable is:
@@ -2523,7 +2591,7 @@ summary_logstc
 
 
 
-##### Odds Ratios
+##### 2.2.2.1. Odds Ratios
 To interpret the odds ratios in the model, we will separate them into categorical and numerical variables once more.
 
 The odds ratio for categorical data is the percentage increase (or decrease) in the odds of readmission among patients within a particular case-category compared to those in the control or reference group. Therefore:
@@ -2539,7 +2607,7 @@ The odds ratio for numerical variables is the percentage increase (or decrease) 
 2. An increase in the number of procedures performed during a patient's hospital stay reduces the odds of readmission by 4.29%.
 3. With every increase in the number of outpatient, inpatient, and emergency department visits prior to hospitalization, the odds of readmission rise by 46.79%, 12.85%, and 24.15%, respectively.
 
-## Recommendations
+## 3. Recommendations
 Using the odds ratios of the multivariate logistic model, the following groups should be the hospital's focus for their follow up efforts to better monitor patients with high probability of readmission:
 
 1. Individuals that are at least 60 but below 90 years of age at the time of admission.
@@ -2548,9 +2616,6 @@ Using the odds ratios of the multivariate logistic model, the following groups s
 
 Nevertheless, it is also advised to explore for additional characteristics that can help better predict the probability of readmission among patients, as the data used may be insufficient to reliably identify patient groups with the best readmission rates.
 
-## Reference
+## 4. Reference
 
 Strack, B., DeShazo, J. P., Gennings, C., Olmo, J. L., Ventura, S., Cios, K. J., & Clore, J. N. (2014). *Impact of HbA1c measurement on hospital readmission rates: Analysis of 70,000 clinical database patient records.* *BioMed Research International, 2014,* 781670, 11 pages. [https://doi.org/10.1155/2014/781670](https://doi.org/10.1155/2014/781670)
-
-
-
