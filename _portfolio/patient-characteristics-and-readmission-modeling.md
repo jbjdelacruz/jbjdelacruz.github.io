@@ -3,7 +3,7 @@ title: 'Patient Characteristics and Readmission Modeling'
 collection: portfolio
 permalink: /portfolio/patient-characteristics-and-readmission-modeling
 date: 2023-03-06
-last_updated: 2025-10-07
+last_updated: 2025-10-08
 excerpt: 'This report analyzes ten years of hospital data (n ≈ 25,000) from 130 US hospitals to identify high-risk groups for readmission. Using multivariate logistic regression, it measures the effects of variables such as age, diabetes diagnosis or medication, and length of stay on patient readmission, supporting targeted follow-up care after discharge.'
 venue: 'DataCamp'
 categories:
@@ -44,26 +44,19 @@ library(scales)
 library(ggchicklet)
 library(ggthemes)
 library(ggpubr)
-
-library(ggfun) # for round rectangle borders and backgrounds in ggplots
-library(patchwork) # for combining ggplots into the same graphic		
-
 library(rwantshue)
-
-# Install and load the "mlbench" package							   
-#suppressWarnings(suppressMessages(install.packages("mlbench")))
-#suppressPackageStartupMessages(library(mlbench))
+library(questionr)
 
 # ========================================================
 # Function: GroupedMedian()
 # Purpose: Compute the median of grouped data
-# Reference: http://stackoverflow.com/a/18931054/1270695
+# Reference: Mahto (2013)
 # ========================================================
 
 GroupedMedian <- function(frequencies, intervals, sep = NULL, trim = NULL) {
   
   # ----------------------------------------------------------
-  # Step 1. Preprocessing intervals (if they are text-based)
+  # Step 1. Preprocessing intervals
   # ----------------------------------------------------------
   # If "sep" is specified, attempt to parse textual intervals
   # into numeric lower and upper boundaries.
@@ -106,7 +99,7 @@ GroupedMedian <- function(frequencies, intervals, sep = NULL, trim = NULL) {
   # Median = L + ((n/2 – cf_before) / f_median) * class_width
   median_value <- L + (n_2 - cf2) / f * h
 
-  # Return unformatted numeric median
+  # Return median
   unname(median_value)
 }
 
@@ -1439,5 +1432,7 @@ Using the odds ratios of the multivariate logistic model, the following groups s
 Nevertheless, it is also advised to explore for additional characteristics that can help better predict the probability of readmission among patients, as the data used may be insufficient to reliably identify patient groups with the best readmission rates.
 
 ## 4. Reference
+
+Mahto, A. (2013, September 21). Answer to “How to calculate the median on grouped dataset?” Stack Overflow. http://stackoverflow.com/a/18931054/1270695
 
 Strack, B., DeShazo, J. P., Gennings, C., Olmo, J. L., Ventura, S., Cios, K. J., & Clore, J. N. (2014). *Impact of HbA1c measurement on hospital readmission rates: Analysis of 70,000 clinical database patient records.* *BioMed Research International, 2014,* 781670, 11 pages. [https://doi.org/10.1155/2014/781670](https://doi.org/10.1155/2014/781670)
