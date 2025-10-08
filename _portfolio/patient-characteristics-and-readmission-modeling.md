@@ -3,7 +3,7 @@ title: 'Patient Characteristics and Readmission Modeling'
 collection: portfolio
 permalink: /portfolio/patient-characteristics-and-readmission-modeling
 date: 2023-03-06
-last_updated: 2025-10-08
+last_updated: 2025-10-09
 excerpt: 'This report analyzes ten years of hospital data (n ≈ 25,000) from 130 US hospitals to identify high-risk groups for readmission. Using multivariate logistic regression, it measures the effects of variables such as age, diabetes diagnosis or medication, and length of stay on patient readmission, supporting targeted follow-up care after discharge.'
 venue: 'DataCamp'
 categories:
@@ -40,6 +40,7 @@ library(tidyverse)
 library(dplyr)
 library(ggplot2)
 library(Amelia)
+library(summarytools)
 library(scales)
 library(ggchicklet)
 library(ggthemes)
@@ -117,7 +118,7 @@ plot_distribution <- function(data, var,
                               fill_color = "#5AA7A7", density_color = "#FF6666",
                               mean_color = "red") {
   
-  # Ensure tidy evaluation works for variable input
+  # Evaluate the variable input
   var <- rlang::enquo(var)
   
   # Compute variable mean
@@ -210,6 +211,9 @@ missmap(readmissions, col=c("red", "green"), legend=FALSE) # missingness map
     medical_specialty            diag_1            diag_2            diag_3 
                     9                10                11                12  
 
+
+                    
+
 ![Missingness Map](/files/patient-characteristics-and-readmission-modeling/images/missingness_map.png)
          
 ## 2. Results & Discussion
@@ -223,37 +227,24 @@ The following information describe the characteristics of the sample composing o
 
 ![Fig. 1: Distribution of the Time Length in Hospital](/files/patient-characteristics-and-readmission-modeling/images/Fig1_time_in_hospital_dst_plot.png)
 
-The mean and median lengths of stay in the hospital are 4.4533 and 4, respectively, with a standard deviation of ~3. Figure 2 shows a positively skewed distribution for this patient feature.
+The mean and median lengths of hospital stay are 4.45 and 4 days, respectively, with a standard deviation of approximately 3 days. As shown in Figure 2, the distribution of hospital stay duration is positively skewed, indicating that most patients were hospitalized for shorter periods.
 
-| Variable | Mean | Std. Dev. | Min. | Median  | Max. |
-|---|---|---|---|---|---|
-| time_in_hospital | 4.45332 | 3.00147 | 1 | 4 | 14 |
+| Variable           |      N |    Mean | Std.Dev | Min | Q1 | Median | Q3 | Max |
+| ------------------ | -----: | ------: | ------: | --: | -: | -----: | -: | --: |
+| time_in_hospital   | 25,000 |  4.4533 |  3.0015 |   1 |  2 |      4 |  6 |  14 |
 
 ```R
 # Summary statistics for numerical variables
-sum_stats <- data.frame(
-    Variable = readmissions %>%
-    select_if(is.numeric) %>%
-    colnames) %>%
-  bind_cols(as.data.frame(t(readmissions %>%
-                              summarise_if(is.numeric, list(mean)) %>%
-                              bind_rows(readmissions %>%
-                                          summarise_if(is.numeric, list(sd)), 
-                                        readmissions %>%
-                                          summarise_if(is.numeric, list(min)),
-                                        readmissions %>%
-                                          summarise_if(is.numeric, list(median)),
-                                        readmissions %>%
-                                          summarise_if(is.numeric, list(max)))
-                             )) %>%
-              rename(Mean = V1,
-                     `Std. Dev.` = V2,
-                     `Min.` = V3,
-                     `Median` = V4,
-                     `Max.` = V5))
-rownames(sum_stats) <- 1: nrow(sum_stats)
+sum_stats <- descr(readmissions) %>%
+  t() %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column("Variable") %>%
+  select(Variable, N, Mean, Std.Dev, Min, Q1, Median, Q3, Max) %>%
+  mutate(across(where(is.numeric), round, 4))
 
-# Fig. 1: Time in Hospital
+## Time in Hospital
+
+# Fig. 1
 plot_distribution(readmissions, time_in_hospital,
   fig_title = "Fig. 1: Distribution of the Time Length in Hospital\n",
   x_label = "\nNumber of days (from 1 to 14)",
@@ -272,14 +263,12 @@ sum_stats %>% filter(Variable == "time_in_hospital")
 
 ![Fig. 2: Distribution of the Number of Medical Procedures, Fig. 4: Distribution of the Number of Laboratory Procedures](/files/patient-characteristics-and-readmission-modeling/images/Fig2-3_n_procedures_dst_plot.png)
 
-The mean and median number of medical procedures performed during the hospital stay are 1.3524 and 1, with a standard deviation of 1.7152, respectively, whereas the mean and median numbers of laboratory procedures performed are 43.2408 and 44, respectively, with a standard deviation of 19.8186. This implies that throughout their hospitalization, patients underwent laboratory procedures more frequently than medical procedures.
+During hospitalization, patients underwent an average of approximately one medical procedure and 43 to 44 laboratory procedures, with standard deviations of 1.72 and 19.82, respectively. Figures 3 and 4 further illustrate distinct distributional patterns between the two procedure types: medical procedures exhibit positive skewness, indicating that most patients underwent few procedures, whereas laboratory procedures display a nearly symmetric distribution, suggesting a more consistent level of administration across patients.
 
-Based on Figures 3 and 4, the two types of procedures exhibit dissimilar distributional characteristics, with medical procedures demonstrating positive skewness, and laboratory procedures showing slight symmetry.
-
-| Variable | Mean | Std. Dev. | Min. | Median  | Max. |
-|---|---|---|---|---|---|
-| n_lab_procedures | 43.24076 | 19.818620 | 1 | 44 | 113 |
-| n_procedures     |  1.35236 |  1.715179 | 0 |  1 |   6 |
+| Variable           |      N |    Mean | Std.Dev | Min | Q1 | Median | Q3 | Max |
+| ------------------ | -----: | ------: | ------: | --: | -: | -----: | -: | --: |
+| n_procedures       | 25,000 |  1.3524 |  1.7152 |   0 |  0 |      1 |  2 |   6 |
+| n_lab_procedures   | 25,000 | 43.2408 | 19.8186 |   1 | 31 |     44 | 57 | 113 |
 
 ```R
 # Fig. 2: Number of Procedures
@@ -315,11 +304,11 @@ sum_stats %>% filter(str_detect(Variable, "procedures"))
 
 ![Fig. 4: Distribution of the Number of Medications](/files/patient-characteristics-and-readmission-modeling/images/Fig4_n_medications_hs_dst_plot.png)
 
-The mean and median numbers of medications administered during the hospital stay are 16.2524 and 15, with a standard deviation of 8.0605, as well as a slightly skewed distribution to the right.
+The average number of medications administered during hospitalization is 16.25, with a median of 15 and a standard deviation of 8.06. This indicates that medication usage varied notably among patients, with some receiving substantially more medications than others. The distribution is slightly right-skewed, suggesting that while most patients received a moderate number of medications, a smaller proportion were prescribed a relatively higher number.
 
-| Variable | Mean | Std. Dev. | Min. | Median  | Max. |
-|---|---|---|---|---|---|
-| n_medications | 16.2524 | 8.060532 | 1 | 15 | 79 |
+| Variable           |      N |    Mean | Std.Dev | Min | Q1 | Median | Q3 | Max |
+| ------------------ | -----: | ------: | ------: | --: | -: | -----: | -: | --: |
+| n_medications      | 25,000 | 16.2524 |  8.0605 |   1 | 11 |     15 | 20 |  79 |
 
 ```R
 # Fig. 4: Number of Medications
@@ -342,13 +331,13 @@ sum_stats %>% filter(Variable == "n_medications")
 
 ![Fig. 5: Distribution of the Number of Outpatient Visits, Fig. 6: Distribution of the Number of Inpatient Visits, Fig. 7: Distribution of the Number of Emergency Room Visits](/files/patient-characteristics-and-readmission-modeling/images/Fig5-7_n_visits_dst_plot.png)
 
-The mean numbers of outpatient, inpatient, and emergency room visits in the year preceding a hospital stay are 0.3664, 0.616, and 0.1866, with medians of 0 for all types, and standard deviations of 1.1955, 1.178, and 0.8859, respectively. The numbers of visits for all types are positively skewed, indicating that visitation is not much frequent among patients a year prior to their hospitalization.
+The average numbers of outpatient, inpatient, and emergency room visits in the year preceding hospitalization are all below one, with median values of zero across visit types. This indicates that most patients had no recorded visits prior to admission. The moderate standard deviations suggest some variation in visit frequency, as a small subset of patients had multiple visits. Overall, the positively skewed distributions imply that frequent pre-hospital visits were uncommon within the patient population.
 
-| Variable | Mean | Std. Dev. | Min. | Median  | Max. |
-|---|---|---|---|---|---|
-| n_outpatient | 0.36640 | 1.1954782 | 0 | 0 | 33 |
-| n_inpatient  | 0.61596 | 1.1779511 | 0 | 0 | 15 |
-| n_emergency  | 0.18660 | 0.8858735 | 0 | 0 | 64 |
+| Variable           |      N |    Mean | Std.Dev | Min | Q1 | Median | Q3 | Max |
+| ------------------ | -----: | ------: | ------: | --: | -: | -----: | -: | --: |
+| n_outpatient       | 25,000 |  0.3664 |  1.1955 |   0 |  0 |      0 |  0 |  33 |
+| n_inpatient        | 25,000 |  0.6160 |  1.1780 |   0 |  0 |      0 |  1 |  15 |
+| n_emergency        | 25,000 |  0.1866 |  0.8859 |   0 |  0 |      0 |  0 |  64 |
 
 ```R
 # Fig. 5: Outpatient Visits
@@ -399,26 +388,38 @@ sum_stats %>% filter(Variable %in% c("n_outpatient", "n_inpatient", "n_emergency
 
 ![Fig. 8: Bar Graph of the Patients' Age Groups](/files/patient-characteristics-and-readmission-modeling/images/Fig8_age_bar_plot.png)
 
-The grouped mean and median ages are approximately 68 and 69, respectively, with a standard deviation of ~13, indicating that the hospital primarily admitted elderly patients. As shown in Figure 1, the distribution of patients across age groups is approximately symmetric at the mean.
+The grouped mean and median ages are approximately 68 and 69 years, respectively, with a standard deviation of about 13 years, indicating that the hospitals primarily admitted elderly patients. Moreover, Figure 8 shows that the age distribution is approximately symmetric around the mean.
 
-| Variable | Mean  | Std. Dev.  | Med.  |
-|---|---|---|---|
-| Age group | 68.4412 | 13.15607 | 69.3286 |
+|  age_group  | class_interval |      n | lower | upper | class_mark  |  cumulative  | n_times_cm |
+|-------------|----------------|-------:|------:|------:|------------:|-------------:|-----------:|
+| [40–50)     | 40–50          |  2,532 |    40 |    50 |         45  |       2,532  |    113,940 |
+| [50–60)     | 50–60          |  4,452 |    50 |    60 |         55  |       6,984  |    244,860 |
+| [60–70)     | 60–70          |  5,913 |    60 |    70 |         65  |      12,897  |    384,345 |
+| [70–80)     | 70–80          |  6,837 |    70 |    80 |         75  |      19,734  |    512,775 |
+| [80–90)     | 80–90          |  4,516 |    80 |    90 |         85  |      24,250  |    383,860 |
+| [90–100)    | 90–100         |    750 |    90 |   100 |         95  |      25,000  |     71,250 |
+
+| Variable   |   Mean   |  Std.Dev |  Median  |
+|------------|---------:|---------:|---------:|
+| Age group  | 68.4412  | 13.1561  | 69.3286  |
 
 ```R
-# Frequency Distribution Table (FDT) for Age
+
+## Age
+
+# Frequency distribution table
 age_fdt <- readmissions %>%
-	select(age) %>%
-	group_by(age) %>%
-	count() %>%
-	mutate(
-		class_interval = paste(as.numeric(unlist(regmatches(age, gregexpr("[[:digit:]]+", age)))), collapse = "-"),
-        class_mark = mean(as.numeric(unlist(regmatches(age, gregexpr("[[:digit:]]+", age)))))
-	) %>%
-	ungroup() %>%
-	mutate(cum_freq = cumsum(n),
-           n_times_cm = n*class_mark) %>%
-	select(age, class_interval, everything())
+  count(age, name = "n") %>% 
+  mutate(
+    lower = as.numeric(str_extract(age, "(?<=\\[|\\()(\\d+)")),
+    upper = as.numeric(str_extract(age, "(\\d+)(?=\\)|\\])")),
+    class_interval = paste(lower, upper, sep = "-"),
+    class_mark = (lower + upper) / 2,
+    cumulative = cumsum(n),
+    n_times_cm = n * class_mark
+  ) %>%
+  select(age, class_interval, everything()) %>%
+  rename(age_group = age)
 
 # Figure 8: Age
 age_bar_plot <- ggplot(age_fdt, aes(group=1)) + 
@@ -451,6 +452,16 @@ age_bar_plot <- ggplot(age_fdt, aes(group=1)) +
 			 label=paste("Mean = ",sum(age_fdt$n_times_cm)/sum(age_fdt$n)),
 			 color="red",
 			 size=3.5)
+
+# Summary statistics
+age_stats <- age_fdt %>%
+  summarise(
+    Variable = "Age group",
+    Mean = sum(n * class_mark) / sum(n),
+    Std.Dev = sqrt(sum(n * (class_mark - (sum(n * class_mark) / sum(n)))^2) / sum(n)),
+    Median = GroupedMedian(frequencies = n, intervals = class_interval, sep = "-")
+  ) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 4)))
 ```
 
 ##### 2.1.2.1. Medical Specialty
@@ -469,7 +480,7 @@ medical_specialty_fdt <- readmissions %>%
   mutate(perc = label_percent(accuracy=0.01)(n/sum(n))) %>%
   arrange(desc(n))
 
-# Age
+# Figure 9:
 medical_specialty_bar_plot <- ggplot(medical_specialty_fdt %>% 
                     filter(!is.na(medical_specialty))) + 
   geom_chicklet(aes(x = fct_reorder(medical_specialty,n),
