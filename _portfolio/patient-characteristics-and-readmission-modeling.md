@@ -388,26 +388,25 @@ sum_stats %>% filter(Variable %in% c("n_outpatient", "n_inpatient", "n_emergency
 
 ![Fig. 8: Bar Graph of the Patients' Age Groups](/files/patient-characteristics-and-readmission-modeling/images/Fig8_age_bar_plot.png)
 
-The grouped mean and median ages are approximately 68 and 69 years, respectively, with a standard deviation of about 13 years, indicating that the hospitals primarily admitted elderly patients. Moreover, Figure 8 shows that the age distribution is approximately symmetric around the mean.
+With a grouped mean of 68.4 years and a median of 69.3 years, the age distribution appears fairly symmetric and moderately dispersed (SD = 13.2). As seen in Figure 8, most patients admitted were between 50 and 90 years old.
 
-|  age_group  | class_interval |      n | lower | upper | class_mark  |  cumulative  | n_times_cm |
-|-------------|----------------|-------:|------:|------:|------------:|-------------:|-----------:|
-| [40–50)     | 40–50          |  2,532 |    40 |    50 |         45  |       2,532  |    113,940 |
-| [50–60)     | 50–60          |  4,452 |    50 |    60 |         55  |       6,984  |    244,860 |
-| [60–70)     | 60–70          |  5,913 |    60 |    70 |         65  |      12,897  |    384,345 |
-| [70–80)     | 70–80          |  6,837 |    70 |    80 |         75  |      19,734  |    512,775 |
-| [80–90)     | 80–90          |  4,516 |    80 |    90 |         85  |      24,250  |    383,860 |
-| [90–100)    | 90–100         |    750 |    90 |   100 |         95  |      25,000  |     71,250 |
+| Age Group | Frequency | Cumulative Frequency | Cumulative Relative Frequency |
+| --------- | --------: | -------------------: | ----------------------------: |
+| [40–50)   |     2,532 |                2,532 |                        0.1013 |
+| [50–60)   |     4,452 |                6,984 |                        0.2794 |
+| [60–70)   |     5,913 |               12,897 |                        0.5159 |
+| [70–80)   |     6,837 |               19,734 |                        0.7894 |
+| [80–90)   |     4,516 |               24,250 |                        0.9700 |
+| [90–100)  |       750 |               25,000 |                        1.0000 |
 
 | Variable   |   Mean   |  Std.Dev |  Median  |
 |------------|---------:|---------:|---------:|
 | Age group  | 68.4412  | 13.1561  | 69.3286  |
 
 ```R
-
 ## Age
 
-# Frequency distribution table
+# Frequency table
 age_fdt <- readmissions %>%
   count(age, name = "n") %>% 
   mutate(
@@ -415,13 +414,13 @@ age_fdt <- readmissions %>%
     upper = as.numeric(str_extract(age, "(\\d+)(?=\\)|\\])")),
     class_interval = paste(lower, upper, sep = "-"),
     class_mark = (lower + upper) / 2,
-    cumulative = cumsum(n),
+    cf = cumsum(n),
+    crf = cf/sum(n),
     n_times_cm = n * class_mark
   ) %>%
-  select(age, class_interval, everything()) %>%
-  rename(age_group = age)
+  select(age, class_interval, everything())
 
-# Figure 8: Age
+# Fig. 8
 age_bar_plot <- ggplot(age_fdt, aes(group=1)) + 
 	geom_chicklet(aes(x = age,
                       y = n,
@@ -466,21 +465,31 @@ age_stats <- age_fdt %>%
 
 ##### 2.1.2.1. Medical Specialty
 
-<img src="documentation/Fig9_medical_specialty_bar_plot.png"/>
+![Fig. 9: Bar Graph of the Specialty of Patients' Admitting Physician](/files/patient-characteristics-and-readmission-modeling/images/Fig9_medical_specialty_bar_plot.png)
 
-Of the 12,618 (50.47%) patients with a recorded admitting physician, 3,565 had an admitting physician whose specialty was Internal Medicine.
+Out of the 12,618 patients with a recorded admitting physician, Internal Medicine was the most common specialty, accounting for 3,565 patients (28.25%). This was followed by physicians classified under Other specialties (21.11%), Emergency/Trauma (14.94%), and Family/General Practice (14.92%). Fewer patients were admitted by specialists in Cardiology (11.17%) and Surgery (9.61%).
+
+| Medical Specialty  | Frequency  | Percentage  |
+|---|---|---|
+| Internal Medicine       | 3565 | 28.25% |
+| Other                  | 2664 | 21.11% |
+| Emergency/Trauma       | 1885 | 14.94% |
+| Family/GeneralPractice | 1882 | 14.92% |
+| Cardiology             | 1409 | 11.17% |
+| Surgery                | 1213 | 9.61%  |
 
 ```R
-# Frequency Distribution Table (FDT) for the Specialty of the Admitting Physician
+# Frequency table
 medical_specialty_fdt <- readmissions %>%
-  select(medical_specialty) %>%
-  group_by(medical_specialty) %>%
-  count() %>%
-  ungroup() %>%
-  mutate(perc = label_percent(accuracy=0.01)(n/sum(n))) %>%
-  arrange(desc(n))
+	select(medical_specialty) %>%
+  filter(!is.na(medical_specialty)) %>%
+	group_by(medical_specialty) %>%
+	count() %>%
+	ungroup() %>%
+	mutate(perc = label_percent(accuracy=0.01)(n/sum(n))) %>%
+	arrange(desc(n))
 
-# Figure 9:
+# Fig. 9
 medical_specialty_bar_plot <- ggplot(medical_specialty_fdt %>% 
                     filter(!is.na(medical_specialty))) + 
   geom_chicklet(aes(x = fct_reorder(medical_specialty,n),
@@ -510,9 +519,6 @@ medical_specialty_bar_plot <- ggplot(medical_specialty_fdt %>%
           plot.title = element_text(hjust = 0,
                                     size= 12),
           legend.box.margin = margin(t=0, b=0, l=-95, unit='pt'))  +
-  #scale_y_continuous(expand = c(0.01, 0),
-    #                   limits = c(0, 13000),
-    #                   breaks = seq(0, 13000, by=2000)) +
   scale_x_discrete(expand = c(0.11, 0),
            labels = rev(c("Internal\nMedicine",
                 "Other",
@@ -525,32 +531,61 @@ medical_specialty_bar_plot <- ggplot(medical_specialty_fdt %>%
 
 ##### 2.1.2.2. Diagnoses
 
-<img src="documentation/Fig10_diag_stacked_bar_plot.png"/>
+![Fig. 10: Stacked Bar Graph of the Patients' Diagnoses](/files/patient-characteristics-and-readmission-modeling/images/Fig10_diag_stacked_bar_plot.png)
 
-Most of the circulatory diagnoses or 7,824 (31.30%) were identified as primary, whereas most of the patients who had a diagnosis other than circulatory, diabetes, digestive, injury, musculoskeletal, or respiratory received it as a secondary (9,056 or 36.22%) and additional secondary (9,107 or 36.43%).
+Across all diagnosis types, circulatory diseases were the most frequently reported, accounting for approximately 31% to 33% for each. Among primary diagnoses, circulatory conditions were followed by respiratory diseases (14.72%). For secondary diagnoses, diabetes (11.64%) and respiratory diseases (11.51%) occurred with nearly equal frequency, whereas among additional secondary diagnoses, diabetes (17.18%) ranked as the second most common.
 
+Furthermore, the distribution of digestive, injury, and musculoskeletal diagnoses was relatively consistent between secondary and additional secondary types, suggesting a similar pattern of occurrence for these less frequent diagnoses.
+
+| Diagnosis Type | Diagnosis | Frequency | Percentage |
+|---|---|---|---|
+| Primary | Circulatory     | 7,824 | 31.30% |
+| Primary | Respiratory     | 3,680 | 14.72% |
+| Primary | Digestive       | 2,329 | 9.32%  |
+| Primary | Diabetes        | 1,747 | 6.99%  |
+| Primary | Injury          | 1,666 | 6.67%  |
+| Primary | Musculoskeletal | 1,252 | 5.01%  |
+| Primary | Other           | 6,498 | 26.00% |
+| Secondary | Circulatory     | 8,134 | 32.59% |
+| Secondary | Diabetes        | 2,906 | 11.64% |
+| Secondary | Respiratory     | 2,872 | 11.51% |
+| Secondary | Digestive       |  973 | 3.90%  |
+| Secondary | Injury          |  591 | 2.37%  |
+| Secondary | Musculoskeletal |  426 | 1.71%  |
+| Secondary | Other           | 9,056 | 36.28% |
+| Additional Secondary | Circulatory     | 7,686 | 30.99% |
+| Additional Secondary | Diabetes        | 4,261 | 17.18% |
+| Additional Secondary | Respiratory     | 1,915 | 7.72%  |
+| Additional Secondary | Digestive       |  916 | 3.69%  |
+| Additional Secondary | Injury          |  464 | 1.87%  |
+| Additional Secondary | Musculoskeletal |  455 | 1.83%  |
+| Additional Secondary | Other           | 9,107 | 36.72% |
 
 ```R
-# Table for the diagnoses
+# Frequency table
 diag_tbl <- readmissions %>% 
   select(diag_1, diag_2, diag_3) %>%
-  pivot_longer(cols = c(1:3), 
-                 names_to = "diag_type",
-                 values_to = "diag") %>%
+  pivot_longer(
+    cols = everything(), 
+    names_to = "diag_type",
+    values_to = "diag"
+  ) %>%
+  filter(!is.na(diag)) %>%
   group_by(diag_type, diag) %>%
-  summarize(n=n(), .groups="keep") %>%
-  group_by(diag_type) %>%
-  mutate(perc=label_percent(accuracy = 0.01)(n/sum(n))) %>%
+  summarize(n = n(), .groups = "drop_last") %>%
+  mutate(perc = n / sum(n)) %>% 
+  ungroup() %>%
   arrange(diag_type, desc(n)) %>%
-  ungroup()
+  mutate(perc = label_percent(accuracy = 0.01)(perc)) 
 
 # Colorize the Physician's Specialty
 color_scheme1 <- iwanthue(seed=1234, force_init=TRUE)
 diag_colors <- color_scheme1$hex(length(levels(factor(diag_tbl$diag))))
 
-#convert diagnostic type to factor and specify level order
+# Convert diagnostic type to factor and specify level order
 diag_tbl$diag_type <- factor(diag_tbl$diag_type, levels=c('diag_3', 'diag_2', 'diag_1'))
 
+# Fig. 10
 diag_stacked_bar_plot <- ggplot(diag_tbl %>% filter(!is.na(diag))) + 
   geom_chicklet(aes(x = diag_type, y = n,
                       fill = fct_reorder(diag, n)),
@@ -559,7 +594,6 @@ diag_stacked_bar_plot <- ggplot(diag_tbl %>% filter(!is.na(diag))) +
                   radius = grid::unit(0.75, "mm"),
                   position="dodge") +
   coord_flip() +	
-    #scale_x_discrete(labels = c("Additional Secondary", "Secondary", "Primary")) + 
   ggtitle("Fig. 10: Stacked Bar Graph of the Patients' Diagnoses\n") +
   labs(x="Diagnosis Type\n", y="\nNumber of patients", fill="Diagnosis: ") +
   theme_economist() + 
@@ -585,15 +619,7 @@ diag_stacked_bar_plot <- ggplot(diag_tbl %>% filter(!is.na(diag))) +
           plot.title = element_text(hjust = 0,
                                     size= 12),
           legend.box.margin = margin(t=0, b=0, l=-135, unit='pt')) +
-  scale_fill_manual(values = diag_colors#,
-            #labels = rev(c("Missing",
-          #			"Circulatory",
-          #				 "Other",
-          #			"Diabetes",
-          #		    "Respiratory",
-          #		    "Digestive",
-          #			"Injury",
-          #			"Musculoskeletal"))
+  scale_fill_manual(values = diag_colors,
            ) +
   scale_y_continuous(expand = c(0.01, 0),
                    limits = c(0, 10200),
@@ -604,29 +630,44 @@ diag_stacked_bar_plot <- ggplot(diag_tbl %>% filter(!is.na(diag))) +
 
 ##### 2.1.2.3. Prediabetes Test
 
-<img src="documentation/Fig11_diab_test_stacked_bar_plot.png"/>
+![Fig. 11: Stacked Bar Graph of the Patients' Prediabetes Test Results](/files/patient-characteristics-and-readmission-modeling/images/Fig11_diab_test_stacked_bar_plot.png)
 
 A total of 20,938 (83.75%) had not performed an A1C test, while 23,625 (94.50%) had not performed a glucose test. For those who had performed, however, a high result was seen more than a normal one for A1C tests and almost equal number in high and normal results for glucose test.
 
-```R
-# Table for Prediabetes tests
-diab_test_tbl <- readmissions %>% 
-  select(glucose_test, A1Ctest) %>%
-  rename(A1C = A1Ctest, 
-           Glucose = glucose_test) %>%
-  pivot_longer(cols = c(1:2), 
-                 names_to = "prediab_test",
-                 values_to = "result") %>%
-  group_by(prediab_test, result) %>%
-  summarize(n=n(), .groups="keep") %>%
-  group_by(prediab_test) %>%
-  mutate(perc=label_percent(accuracy = 0.01)(n/sum(n))) %>%
-  arrange(prediab_test, desc(n)) %>%
-  ungroup()
+| Prediabetes Test   | Result  | Frequency  | Percentage   |
+|---|---|---|---|
+| A1C     | Not Performed     | 20,938 | 83.75% |
+| A1C     | High   |  2,827 | 11.31% |
+| A1C     | Normal |  1,235 | 4.94%  |
+| Glucose | Not Performed     | 23,625 | 94.50% |
+| Glucose | Normal |   689 | 2.76%  |
+| Glucose | High   |   686 | 2.74%  |
 
-#convert test result type to factor and specify level order
+```R
+# Frequency table
+diab_test_tbl <- readmissions %>%
+  select(glucose_test, A1Ctest) %>%
+  rename(
+    Glucose = glucose_test,
+    A1C = A1Ctest
+  ) %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "prediab_test",
+    values_to = "result"
+  ) %>%
+  filter(!is.na(result)) %>%
+  group_by(prediab_test, result) %>%
+  summarize(n = n(), .groups = "drop_last") %>%
+  mutate(perc = n / sum(n)) %>%
+  ungroup() %>%
+  arrange(prediab_test, desc(n)) %>%
+  mutate(perc = label_percent(accuracy = 0.01)(perc))
+
+# Convert test result type to factor and specify level order
 diab_test_tbl$result <- factor(diab_test_tbl$result, levels=c("no",'normal','high'))
 
+# Fig. 11
 diab_test_stacked_bar_plot <- ggplot(diab_test_tbl) + 
   geom_chicklet(aes(x = fct_reorder(prediab_test, n), y = n,
                       fill = result),
@@ -671,26 +712,38 @@ diab_test_stacked_bar_plot <- ggplot(diab_test_tbl) +
 
 ##### 2.1.2.4. Diabetes Medication
 
-<img src="documentation/Fig12_diab_ques_stacked_bar_plot.png"/>
+![Fig. 12: Stacked Bar Graph of the Patient's Response to Questions Related to Diabetes Medication](/files/patient-characteristics-and-readmission-modeling/images/Fig12_diab_ques_stacked_bar_plot.png)
 
 Among all the patients, 19,228 (76.91%) had been prescribed a diabetes medication, while 13,497 (53.99%) had not changed diabetes medication.
 
-```R
-# Table for change
-diab_ques_tbl <- readmissions %>% 
-  select(change, diabetes_med) %>%
-  rename("Was there a  \nchange in the \ndiabetes \nmedication?" = change, 
-           "Was there a  \nprescribed \ndiabetes \nmedication?"= diabetes_med) %>%
-  pivot_longer(cols = c(1:2), 
-                 names_to = "diab_ques",
-                 values_to = "response") %>%
-  group_by(diab_ques, response) %>%
-  summarize(n=n(), .groups="keep") %>%
-  group_by(diab_ques) %>%
-  mutate(perc=label_percent(accuracy = 0.01)(n/sum(n))) %>%
-  arrange(diab_ques, desc(n)) %>%
-  ungroup()
+| Question  | Response  | Frequency | Percentage  |
+|---|---|---|---|
+| Was there a change in the diabetes medication? | No  | 13,497 | 53.99% |
+| Was there a change in the diabetes medication? | Yes | 11,503 | 46.01% |
+| Was there a prescribed diabetes medication?    | Yes | 19,228 | 76.91% |
+| Was there a prescribed diabetes medication?    | No  |  5,772 | 23.09% |
 
+```R
+# Frequency Table
+diab_ques_tbl <- readmissions %>%
+  select(change, diabetes_med) %>%
+  rename(
+    `Was there a change in the diabetes medication?` = change,
+    `Was there a prescribed diabetes medication?` = diabetes_med
+  ) %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "diab_ques",
+    values_to = "response"
+  ) %>%
+  group_by(diab_ques, response) %>%
+  summarize(n = n(), .groups = "drop_last") %>%
+  mutate(perc = n / sum(n)) %>%
+  ungroup() %>%
+  arrange(diab_ques, desc(n)) %>%
+  mutate(perc = label_percent(accuracy = 0.01)(perc))
+
+# Fig. 12
 diab_ques_stacked_bar_plot <- ggplot(diab_ques_tbl) + 
   geom_chicklet(aes(x = fct_reorder(diab_ques, n), y = n,
                       fill = fct_reorder(response, n)),
@@ -702,7 +755,7 @@ diab_ques_stacked_bar_plot <- ggplot(diab_ques_tbl) +
     scale_fill_manual(values = c("#EE6C4D", "#98C1D9"),
                       labels = c("No", "Yes")
                      ) +
-  ggtitle("Fig. 12: Stacked Bar Graph of the Patient's Response to Questions Related to\n             Diabetes Medication\n") +
+  ggtitle("Fig. 12: Stacked Bar Graph of the Patient's Response to\nQuestions Related to Diabetes Medication\n") +
   labs(x="Question\n", y="\nNumber of patients", fill="Response:  ") +
   theme_economist() + 
   scale_color_economist() + 
@@ -717,11 +770,10 @@ diab_ques_stacked_bar_plot <- ggplot(diab_ques_tbl) +
           legend.title = element_text(face="bold",
                                       size = 12),
           axis.ticks = element_blank(),
-      axis.text.y = element_text(size=9.5),
-          panel.grid.minor = element_line(color="grey",
-                                          linetype="dashed",
-                                          linewidth=0.3),
-      panel.grid.major = element_line(color="grey",
+          axis.text.y = element_text(size = 9.5, angle = 45, hjust = 1),
+          axis.text.x = element_text(size=7.0),
+          panel.grid.minor = element_blank(),
+          panel.grid.major = element_line(color="grey",
                                           linetype="dashed",
                                           linewidth=0.3),
           plot.title = element_text(hjust = 0,
@@ -731,94 +783,7 @@ diab_ques_stacked_bar_plot <- ggplot(diab_ques_tbl) +
                    limits = c(),
                        breaks = seq(0, 25000, by=3000)) +
   scale_x_discrete(expand = c(0.5, 0))
-
-diab_ques_tbl
 ```
-
-
-<table class="dataframe">
-<caption>A tibble: 4 × 4</caption>
-<thead>
-  <tr><th scope=col>diab_ques</th><th scope=col>response</th><th scope=col>n</th><th scope=col>perc</th></tr>
-  <tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>Was there a  
-change in the 
-diabetes 
-medication?</td><td>no </td><td>13497</td><td>53.99%</td></tr>
-  <tr><td>Was there a  
-change in the 
-diabetes 
-medication?</td><td>yes</td><td>11503</td><td>46.01%</td></tr>
-  <tr><td>Was there a  
-prescribed 
-diabetes 
-medication?   </td><td>yes</td><td>19228</td><td>76.91%</td></tr>
-  <tr><td>Was there a  
-prescribed 
-diabetes 
-medication?   </td><td>no </td><td> 5772</td><td>23.09%</td></tr>
-</tbody>
-</table>
-
-
-```R
-# Table for change in diabetes medication
-change_tbl <- readmissions %>%
-  count(change, sort = TRUE) %>%
-  mutate(proportion = n/sum(n),
-           #Attribute = "change in the diabetes medication",
-           Percentage = label_percent(accuracy=0.01)(proportion),
-           lab.ypos = cumsum(proportion) - 0.6*proportion)
-
-# Create a pie chart
-change_pie_chart <- ggplot(change_tbl, aes(x = "", y = proportion, fill = change)) +
-    geom_bar(width=1,
-             stat = "identity",
-             color = "white",
-             linewidth=0.4) +
-    coord_polar("y", start = 0, direction = -1) +
-    geom_text(aes(y = lab.ypos, 
-                  label = paste(label_percent(accuracy=0.01)(proportion),
-                                "\n (", prettyNum(n,
-                                                  big.mark=","),")",
-                                sep="")), color = "grey5",  size = 5) +
-    scale_fill_manual(values = c("#EE6C4D", "#98C1D9"),
-                      labels = c("No", "Yes")
-                     ) +
-  ggtitle("Fig. 13: Pie Chart of Patient Distribution in Terms of the Change \nin Diabetes Medication") +
-  labs(x="", y="",
-         fill="Was there a change in the patient's diabetes medication?") +
-  scale_x_discrete(expand = c(0.01, 0)) + 
-  theme_economist() + 
-  scale_color_economist() +
-  theme(legend.position="bottom",
-          legend.text = element_text(margin = margin(r = 2, unit = "pt"),
-                                     size=10),
-          legend.title = element_text(face="bold",
-                                      size = 11),
-          axis.title = element_blank(),
-          axis.text = element_blank(),
-          axis.line = element_blank(),
-          axis.ticks = element_blank(),
-          panel.grid.minor = element_blank(),
-      panel.grid.major = element_blank(),
-          plot.background = element_rect(fill = "#D5E4EB"),
-          plot.title = element_text(vjust=7,
-                                    hjust=0.5,
-                                    size=14,
-                                    margin = margin(0,0,-30,0)),
-          plot.margin = unit(c(1.5,2,0.5,2), "cm"),
-          legend.box.margin = margin(t=-30, b=32, l=0, unit='pt')
-         ) +
-    guides(fill = guide_legend(reverse=TRUE,
-                               override.aes = list(shape = 15,
-                                                   size = 6),
-                               title.position="top"))
-```
-
-<img src="documentation/Fig13_change_pie_chart.png"/>
 
 ##### 2.1.2.5. Readmission
 
