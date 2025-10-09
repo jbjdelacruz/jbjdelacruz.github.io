@@ -3,7 +3,7 @@ title: 'Patient Characteristics and Readmission Modeling'
 collection: portfolio
 permalink: /portfolio/patient-characteristics-and-readmission-modeling
 date: 2023-03-06
-last_updated: 2025-10-09
+last_updated: 2025-10-10
 excerpt: 'This report analyzes ten years of hospital data (n ≈ 25,000) from 130 US hospitals to identify high-risk groups for readmission. Using multivariate logistic regression, it measures the effects of variables such as age, diabetes diagnosis or medication, and length of stay on patient readmission, supporting targeted follow-up care after discharge.'
 venue: 'DataCamp'
 categories:
@@ -240,7 +240,7 @@ sum_stats <- descr(readmissions) %>%
   as.data.frame() %>%
   tibble::rownames_to_column("Variable") %>%
   select(Variable, N, Mean, Std.Dev, Min, Q1, Median, Q3, Max) %>%
-  mutate(across(where(is.numeric), round, 4))
+  mutate(across(where(is.numeric), ~ round(.x, 4)))
 
 ## Time in Hospital
 
@@ -787,13 +787,17 @@ diab_ques_stacked_bar_plot <- ggplot(diab_ques_tbl) +
 
 ##### 2.1.2.5. Readmission
 
-<img src="documentation/Fig13_readmitted_bar_plot.png"/>
+![Fig. 13: Bar Graph of the Patients' Readmission](/files/patient-characteristics-and-readmission-modeling/images/Fig13_readmitted_bar_plot.png)
 
 A slightly higher number of patients were not readmitted to the hospital compared to those who were readmitted. The blue bar represents the number of patients who were readmitted, which is 11,754 (47.02%), while the orange bar represents the number of patients who were not readmitted, which is 13,246 (52.98%)
 
+| Readmitted | Frequency| Percentage  |
+|---|---|---|
+| No  | 13,246 | 52.98% |
+| Yes | 11,754 | 47.02% |
 
 ```R
-# Frequency Distribution Table (FDT) for the Readmission
+# Frequency table
 readmitted_fdt <- readmissions %>%
   select(readmitted) %>%
   group_by(readmitted) %>%
@@ -802,7 +806,7 @@ readmitted_fdt <- readmissions %>%
   mutate(perc = label_percent(accuracy=0.01)(n/sum(n))) %>%
   arrange(desc(n))
 
-# Age
+# Fig. 13
 readmitted_bar_plot <- ggplot(readmitted_fdt) + 
   geom_chicklet(aes(x = fct_reorder(readmitted,n),
                       y = n), 
@@ -836,52 +840,12 @@ readmitted_bar_plot <- ggplot(readmitted_fdt) +
            labels = c("Yes", "No"))
 ```
 
-
-```R
-readmitted_fdt
-```
-
-<table class="dataframe">
-<caption>A tibble: 2 × 3</caption>
-<thead>
-  <tr><th scope=col>readmitted</th><th scope=col>n</th><th scope=col>perc</th></tr>
-  <tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>no </td><td>13246</td><td>52.98%</td></tr>
-  <tr><td>yes</td><td>11754</td><td>47.02%</td></tr>
-</tbody>
-</table>
-
 ### 2.2. Correlation Analysis
-In this section, the patients' readmission will be analyzed by different representing features through contingency tables, graphs, and regression analysis.
+In this section, the patient readmission were analyzed by feature through contingency tables, graphs, and regression results.
 
 As previously mentioned, the number of readmitted patients is 11,754 which translates to an overall readmission rate of 47.02%.
 
 The table below shows the comparisons of means and medians of the readmitted, not readmitted, and overall patients in terms of the seven (7) numeric features. We can see that the three sets seem to be the same in characteristics.
-
-
-```R
-as.data.frame(xtabs(~ readmitted, data = readmissions)) %>%
-  rename(n_patients = Freq) %>%
-  mutate(rate=n_patients/sum(n_patients))
-```
-
-
-<table class="dataframe">
-<caption>A data.frame: 2 × 3</caption>
-<thead>
-  <tr><th scope=col>readmitted</th><th scope=col>n_patients</th><th scope=col>rate</th></tr>
-  <tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
-</thead>
-<tbody>
-  <tr><td>no </td><td>13246</td><td>0.52984</td></tr>
-  <tr><td>yes</td><td>11754</td><td>0.47016</td></tr>
-</tbody>
-</table>
-
-
-
 
 ```R
 # Summary statistics for numerical variables of readmitted patients
